@@ -16,30 +16,54 @@ Module Utils
     Public LEDPadding As Single = 0
     Public TimerIntervals As Integer = 30
     Public RoundedRectangleCornerRadius As Integer = 10
+    Public CpuUsagePauseValue As Integer = 60
 
-    'SDK Client
     Public IPAddress As String = "127.0.0.1"
     Public Port As Integer = 6742
     Public DeviceName As String = "Wallpaper1"
 
-    'Display
     Public BackgroundImage As String = Nothing
     Public ImageFit As ImageFit = ImageFit.Fill
     Public BackgroundColor As String = ColorTranslator.ToHtml(Color.Black)
 
-    Public Sub UpdateWEConfigValues()
+    Public Sub UpdateWEConfigValues(config As String, display As String)
+        SmoothingMode = CType(TryGetValue("smoothingMode", SmoothingMode.Default, config, display), SmoothingMode)
+        CompositingQuality = CType(TryGetValue("compositingQuality", CompositingQuality.Default, config, display), CompositingQuality)
+        InterpolationMode = CType(TryGetValue("interpolationMode", InterpolationMode.Default, config, display), InterpolationMode)
+        PixelOffsetMode = CType(TryGetValue("pixelOffsetMode", PixelOffsetMode.Default, config, display), PixelOffsetMode)
+        LEDShape = CType(TryGetValue("ledShape", LEDShape.Rectangle, config, display), LEDShape)
+        RoundedRectangleCornerRadius = CInt(TryGetValue("roundedRectangleRadius", 0, config, display))
+        LEDPadding = CSng(TryGetValue("ledPadding", 0F, config, display))
+        TimerIntervals = CInt(TryGetValue("ledUpdateInterval", 30, config, display))
+        IPAddress = CStr(TryGetValue("sdkIpAddress", "127.0.0.1", config, display))
+        Port = CInt(TryGetValue("sdkPort", 6742, config, display))
+        DeviceName = CStr(TryGetValue("deviceName", "Wallpaper1", config, display))
+        BackgroundImage = CStr(TryGetValue("coverImage", Nothing, config, display))
+        ImageFit = CType(TryGetValue("imageFit", ImageFit.None, config, display), ImageFit)
+        BackgroundColor = ColorTranslator.ToHtml(CStr(TryGetValue("backgroundColor", "0 0 0", config, display)).ToColor)
+        CpuUsagePauseValue = CInt(TryGetValue("cpuUsagePauseValue", 60, config, display))
+    End Sub
+
+    Public Function TryGetValue([property] As String, [default] As Object, Optional config As String = Nothing, Optional display As String = Nothing, Optional debug As Boolean = False) As Object
         Try
-            Dim config As String = WallpaperEngineConfig()
             Dim username As String = SystemInformation.UserName
             Dim mypath As String = Application.ExecutablePath.Replace("\", "/")
-            Dim display As String = frmWallpaper.ScreenDevicePath
-            Dim json = JObject.Parse(File.ReadAllText(config))
+            Dim debugpath As String = "G:/Program Files (x86)/Steam/steamapps/common/wallpaper_engine/projects/myprojects/openrgbwallpaper/OpenRGBWallpaperEngine.exe"
 
-            BackgroundImage = json(username)("wproperties")(mypath)(display)("coverImage")
+            Dim json = JObject.Parse(File.ReadAllText(config))
+            Dim item = json(username)("wproperties")(If(debug, debugpath, mypath))(display)([property])
+
+            If item IsNot Nothing Then
+                Return CType(item, Object)
+            Else
+                Return [default]
+            End If
+
         Catch ex As Exception
             Logger.Log($"{ex.Message} {ex.StackTrace}")
+            Return [default]
         End Try
-    End Sub
+    End Function
 
     <Extension>
     Public Sub DrawRoundedRectangle(graphics As Graphics, pen As Pen, bounds As Rectangle, radius As Integer)
@@ -161,6 +185,18 @@ Module Utils
         Return Color.FromArgb(modelcolor.R, modelcolor.G, modelcolor.B)
     End Function
 
+    <Extension>
+    Public Function ToColor(customcolor As String) As Color
+        Try
+            Dim red = Math.Ceiling(CSng(customcolor.Split(" ")(0)) * 255)
+            Dim green = Math.Ceiling(CSng(customcolor.Split(" ")(1)) * 255)
+            Dim blue = Math.Ceiling(CSng(customcolor.Split(" ")(2)) * 255)
+            Return Color.FromArgb(red, green, blue)
+        Catch ex As Exception
+            Return Color.Black
+        End Try
+    End Function
+
     Public Function WallpaperEngineConfig() As String
         Dim wallpaper32 As Process = Process.GetProcessesByName("wallpaper32").FirstOrDefault
         Dim wallpaper64 As Process = Process.GetProcessesByName("wallpaper64").FirstOrDefault
@@ -182,6 +218,11 @@ Module Utils
         Dim currScreen As Screen = Screen.FromControl(form)
         Dim currDisplay = PathDisplayTarget.GetDisplayTargets.Where(Function(x) x.ToDisplayDevice.DisplayName = currScreen.DeviceName).FirstOrDefault
         Return currDisplay.DevicePath.Replace("\", "/")
+    End Function
+
+    Public Function IsOpenRGBRunning() As Boolean
+        Dim OpenRGB As Process = Process.GetProcessesByName("OpenRGB").FirstOrDefault
+        Return Not OpenRGB Is Nothing
     End Function
 
 End Module

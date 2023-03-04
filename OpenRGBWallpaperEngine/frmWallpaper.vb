@@ -1,63 +1,68 @@
 ﻿Imports System.ComponentModel
+Imports System.IO
 Imports Color = System.Drawing.Color
 
 Public Class frmWallpaper
 
-    Dim renderString As String = Nothing
     Dim OffColor As Color = Color.FromArgb(255, 0, 0, 0)
+    Dim configFile As String = WallpaperEngineConfig()
+    Dim display As String = ScreenDevicePath
+    Dim configLastDate As Date = Now
 
     Public oRgbClient As OpenRgbClient = Nothing
-    Public IsPaused As Boolean = False
     Public BackImg As Image = Nothing
     Public ImgFit As ImageFit = ImageFit.Stretch
     Public cpuUsage As New PerformanceCounter("Processor", "% Processor Time", "_Total")
 
     Private Sub frmWallpaper_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        UpdateWEConfigValues()
+        If configFile <> "error" Then
+            UpdateWEConfigValues(configFile, display)
 
-        tmUpdate.Interval = TimerIntervals
-        BackColor = ColorTranslator.FromHtml(BackgroundColor)
-        BackImg = If(Utils.BackgroundImage = Nothing, Nothing, Image.FromFile(Utils.BackgroundImage))
-        ImgFit = Utils.ImageFit
+            configLastDate = File.GetLastWriteTime(configFile)
+            tmUpdate.Interval = TimerIntervals
+            BackColor = ColorTranslator.FromHtml(BackgroundColor)
+            BackImg = If(Utils.BackgroundImage = Nothing, Nothing, Image.FromFile(Utils.BackgroundImage))
+            ImgFit = Utils.ImageFit
+            If BackImg IsNot Nothing Then If ImgFit = ImageFit.Fit Then BackImg = BackImg.ResizeImage(ClientRectangle.Size, True)
 
-        If BackImg IsNot Nothing Then
-            If ImgFit = ImageFit.Fit Then BackImg = BackImg.ResizeImage(ClientRectangle.Size, True)
+            Connect()
         End If
-
-        Connect()
     End Sub
 
     Public Sub Connect()
-        Try
-            If oRgbClient IsNot Nothing Then If oRgbClient.Connected Then oRgbClient.Dispose()
+        If IsOpenRGBRunning() Then
+            Try
+                If oRgbClient IsNot Nothing Then If oRgbClient.Connected Then oRgbClient.Dispose()
 
-            oRgbClient = New OpenRgbClient(IPAddress, Port, DeviceName, True, protocolVersion:=2)
-            renderString = Nothing
-        Catch ex As Exception
-            renderString = $"Error: {ex.Message} {ex.StackTrace}"
-            Logger.Log($"{ex.Message} {ex.StackTrace}")
-        End Try
+                oRgbClient = New OpenRgbClient(IPAddress, Port, DeviceName, True, protocolVersion:=2)
+            Catch ex As Exception
+                Logger.Log($"{ex.Message} {ex.StackTrace}")
+                tmCheckOpenRGB.Start()
+            End Try
+        Else
+            tmCheckOpenRGB.Start()
+        End If
     End Sub
 
     Private Function HighCpuUsage() As Boolean
-        Return CInt(Math.Ceiling(cpuUsage.NextValue)) >= 60
+        Return CInt(Math.Ceiling(cpuUsage.NextValue)) >= CpuUsagePauseValue
     End Function
 
     Private Sub tmUpdate_Tick(sender As Object, e As EventArgs) Handles tmUpdate.Tick
-        If Not IsPaused AndAlso Not HighCpuUsage() Then Invalidate()
+        If Not HighCpuUsage() Then Invalidate()
     End Sub
 
-    Private Sub frmWallpaper_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+    Private Sub frmWallpaper_Closing(sender As Object, e As CancelEventArgs) Handles MyBase.Closing
         If oRgbClient IsNot Nothing Then
             If oRgbClient.Connected Then oRgbClient.Dispose()
         End If
     End Sub
 
     Private Sub PrepareGraphics(graphic As Graphics)
-        graphic.SmoothingMode = Drawing2D.SmoothingMode.HighSpeed
-        graphic.CompositingQuality = Drawing2D.CompositingQuality.HighSpeed
-        graphic.InterpolationMode = Drawing2D.InterpolationMode.Default
-        graphic.PixelOffsetMode = Drawing2D.PixelOffsetMode.HighSpeed
+        graphic.SmoothingMode = SmoothingMode
+        graphic.CompositingQuality = CompositingQuality
+        graphic.InterpolationMode = InterpolationMode
+        graphic.PixelOffsetMode = PixelOffsetMode
     End Sub
 
     Protected Overrides Sub OnPaint(e As PaintEventArgs)
@@ -107,7 +112,6 @@ Public Class frmWallpaper
                 End If
             End If
         Catch ex As Exception
-            renderString = $"Error: {ex.Message} {ex.StackTrace}"
             Logger.Log($"{ex.Message} {ex.StackTrace}")
         End Try
 
@@ -165,18 +169,30 @@ Public Class frmWallpaper
 
             End If
         Catch ex As Exception
-            renderString = $"Error: {ex.Message} {ex.StackTrace}"
             Logger.Log($"{ex.Message} {ex.StackTrace}")
         End Try
 
-        Try
-            If renderString <> Nothing Then
-                TextRenderer.DrawText(graphic, renderString, Font, New Point(20, 20), Color.White)
-            End If
-        Catch ex As Exception
-        End Try
-
         MyBase.OnPaint(e)
+    End Sub
+
+    Private Sub tmCheckOpenRGB_Tick(sender As Object, e As EventArgs) Handles tmCheckOpenRGB.Tick
+        Connect()
+        tmCheckOpenRGB.Stop()
+    End Sub
+
+    Private Sub tmConfig_Tick(sender As Object, e As EventArgs) Handles tmConfig.Tick
+        Dim configDate As Date = File.GetLastWriteTime(configFile)
+        If configLastDate <> configDate Then
+            configLastDate = configDate
+            UpdateWEConfigValues(configFile, display)
+
+            configLastDate = File.GetLastWriteTime(configFile)
+            tmUpdate.Interval = TimerIntervals
+            BackColor = ColorTranslator.FromHtml(BackgroundColor)
+            BackImg = If(Utils.BackgroundImage = Nothing, Nothing, Image.FromFile(Utils.BackgroundImage))
+            ImgFit = Utils.ImageFit
+            If BackImg IsNot Nothing Then If ImgFit = ImageFit.Fit Then BackImg = BackImg.ResizeImage(ClientRectangle.Size, True)
+        End If
     End Sub
 
 End Class

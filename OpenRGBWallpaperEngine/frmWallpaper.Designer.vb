@@ -22,36 +22,48 @@ Partial Class frmWallpaper
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Me.components = New System.ComponentModel.Container()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmWallpaper))
-        Me.tmUpdate = New System.Windows.Forms.Timer(Me.components)
-        Me.SuspendLayout()
-        '
-        'tmUpdate
-        '
-        Me.tmUpdate.Enabled = True
-        Me.tmUpdate.Interval = 10
-        '
-        'frmWallpaper
-        '
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None
-        Me.BackColor = System.Drawing.Color.Black
-        Me.ClientSize = New System.Drawing.Size(50, 50)
-        Me.ControlBox = False
-        Me.DoubleBuffered = True
-        Me.ForeColor = System.Drawing.Color.White
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
-        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.MaximizeBox = False
-        Me.MinimizeBox = False
-        Me.Name = "frmWallpaper"
-        Me.ShowIcon = False
-        Me.ShowInTaskbar = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.Manual
-        Me.Text = "OpenRGB Wallpaper"
-        Me.ResumeLayout(False)
-
+        components = New ComponentModel.Container()
+        Dim resources As ComponentModel.ComponentResourceManager = New ComponentModel.ComponentResourceManager(GetType(frmWallpaper))
+        tmUpdate = New Timer(components)
+        tmCheckOpenRGB = New Timer(components)
+        tmConfig = New Timer(components)
+        SuspendLayout()
+        ' 
+        ' tmUpdate
+        ' 
+        tmUpdate.Enabled = True
+        tmUpdate.Interval = 10
+        ' 
+        ' tmCheckOpenRGB
+        ' 
+        tmCheckOpenRGB.Interval = 30000
+        ' 
+        ' tmConfig
+        ' 
+        tmConfig.Enabled = True
+        tmConfig.Interval = 10000
+        ' 
+        ' frmWallpaper
+        ' 
+        AutoScaleMode = AutoScaleMode.None
+        BackColor = Drawing.Color.Black
+        ClientSize = New Size(192, 108)
+        ControlBox = False
+        DoubleBuffered = True
+        ForeColor = Drawing.Color.White
+        FormBorderStyle = FormBorderStyle.None
+        Icon = CType(resources.GetObject("$this.Icon"), Icon)
+        MaximizeBox = False
+        MinimizeBox = False
+        Name = "frmWallpaper"
+        ShowIcon = False
+        ShowInTaskbar = False
+        StartPosition = FormStartPosition.Manual
+        Text = "OpenRGB Wallpaper"
+        ResumeLayout(False)
     End Sub
 
     Friend WithEvents tmUpdate As Timer
+    Friend WithEvents tmCheckOpenRGB As Timer
+    Friend WithEvents tmConfig As Timer
 End Class

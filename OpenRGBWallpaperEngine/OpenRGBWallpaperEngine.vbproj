@@ -3,10 +3,20 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <StartupObject>OpenRGBWallpaperEngine.My.MyApplication</StartupObject>
+    <StartupObject>OpenRGBWallpaperEngine.frmWallpaper</StartupObject>
     <UseWindowsForms>true</UseWindowsForms>
     <MyType>WindowsForms</MyType>
     <ImportedNamespaces>OpenRGB.NET=False,System.Data=False,System.Drawing=False,System.Windows.Forms=False,Microsoft.VisualBasic=True,System=True,System.Collections=True,System.Collections.Generic=True,System.Diagnostics=True,System.Linq=True,System.Xml.Linq=True,System.Threading.Tasks=True,OpenRGBWallpaperEngine=True</ImportedNamespaces>
+    <ApplicationIcon>openrgbwall.ico</ApplicationIcon>
+    <Description>Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting on your wallpaper and synchronize wallpaper with other OpenRGB compatible devices by OpenRGB.</Description>
+    <Title>OpenRGB Wallpaper Engine</Title>
+    <Copyright>Copyright © 2023 Zettabyte Technology</Copyright>
+    <PackageProjectUrl>https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine</PackageProjectUrl>
+    <PackageIcon>openrgbwall.jpg</PackageIcon>
+    <RepositoryUrl>https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,10 +28,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="openrgbwall.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Import Include="OpenRGB.NET" />
     <Import Include="System.Data" />
     <Import Include="System.Drawing" />
     <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\Admin\Pictures\openrgbwall.jpg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

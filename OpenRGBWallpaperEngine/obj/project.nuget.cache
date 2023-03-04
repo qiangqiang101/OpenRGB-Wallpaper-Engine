@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "VcTA3v+cxwnI0XYqlERPiuQi8jw/i4hOeIAczJqfeIu482ddkzF50tr8sLT56k8l2aIcsITeT6mOzsr+gHn/rA==",
+  "dgSpecHash": "6WHvZLYGX0c07k/FAu2CJYEL85nLE/eFrVWxQ6REzzc4yl6aJVJjQKutBecrr/NyOErkFIWLK17Gjfa/EXETsg==",
   "success": true,
-  "projectFilePath": "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj",
+  "projectFilePath": "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\trash\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\newtonsoft.json\\13.0.2\\newtonsoft.json.13.0.2.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\openrgb.net\\2.0.0\\openrgb.net.2.0.0.nupkg.sha512",
