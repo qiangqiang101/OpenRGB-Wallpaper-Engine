@@ -1,4 +1,4 @@
-# OpenRGB-Wallpaper-Engine
+# OpenRGB Wallpaper Engine
 Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting on your wallpaper and synchronize wallpaper with other OpenRGB compatible devices by OpenRGB.
 
  ![image](https://user-images.githubusercontent.com/11488961/201601205-465ca003-1300-4caa-a7e5-1897fb00119f.png)
@@ -12,8 +12,6 @@ Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting
 ![IMG_6919](https://user-images.githubusercontent.com/11488961/202174769-6164a88d-039d-4922-a501-51649a4a2da6.JPG)
 
 # Download
-https://github.com/qiangqiang101/OpenRGB-Wallpaper/releases  
-https://gitlab.com/OpenRGBDevelopers/OpenRGB-Wallpaper/-/releases
 https://steamcommunity.com/sharedfiles/filedetails/?id=2942091593
 
 # Prerequisite
