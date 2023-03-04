@@ -1,9 +1,18 @@
 # OpenRGB Wallpaper Engine
-Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting on your wallpaper and synchronize wallpaper with other OpenRGB compatible devices by OpenRGB.
+![Github All Releases](https://img.shields.io/github/downloads/qiangqiang101/OpenRGB-Wallpaper-Engine/total.svg)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/qiangqiang101/OpenRGB-Wallpaper-Engine)
+![GitHub](https://img.shields.io/github/license/qiangqiang101/OpenRGB-Wallpaper-Engine)
+![GitHub branch checks state](https://img.shields.io/github/checks-status/qiangqiang101/OpenRGB-Wallpaper-Engine/master)
+![GitHub issues](https://img.shields.io/github/issues/qiangqiang101/OpenRGB-Wallpaper-Engine)
+![GitHub forks](https://img.shields.io/github/forks/qiangqiang101/OpenRGB-Wallpaper-Engine?style=social)
+![GitHub Repo stars](https://img.shields.io/github/stars/qiangqiang101/OpenRGB-Wallpaper-Engine?style=social)
+![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCAZlasvEy1euunP1M7nwj5Q?style=social)
+[![Donate via PayPal](https://img.shields.io/badge/Donate-Paypal-brightgreen)](https://paypal.me/imnotmental)
+[![Follow on Patreon](https://img.shields.io/badge/Donate-Patreon-orange)](https://www.patreon.com/imnotmental)
+
+Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting on your wallpaper and synchronize wallpaper with other OpenRGB compatible devices by [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB).
 
  ![image](https://user-images.githubusercontent.com/11488961/201601205-465ca003-1300-4caa-a7e5-1897fb00119f.png)
-
-Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting on your wallpaper and synchronize wallpaper with other OpenRGB compatible devices by  [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB). This application currently only works on Windows OS, tested on Windows 10 ver 21H1 and Windows 11 ver 21H2.
  
 # Screenshots 
 ![IMG_6915](https://user-images.githubusercontent.com/11488961/202174752-3ecf4780-be04-40de-9382-d5ad14732104.JPG)
