@@ -34,7 +34,7 @@ Public Class frmWallpaper
             Try
                 If oRgbClient IsNot Nothing Then If oRgbClient.Connected Then oRgbClient.Dispose()
 
-                oRgbClient = New OpenRgbClient(IPAddress, Port, DeviceName, True, protocolVersion:=2)
+                oRgbClient = New OpenRgbClient(IPAddress, Port, "Wallpaper Engine", True, protocolVersion:=2)
             Catch ex As Exception
                 Logger.Log($"{ex.Message} {ex.StackTrace}")
                 tmCheckOpenRGB.Start()

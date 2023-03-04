@@ -18,7 +18,6 @@ E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\
 E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.genruntimeconfig.cache
 E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\ref\OpenRGBWallpaperEngine.dll
 E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\WindowsDisplayAPI.dll
-E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.frmTest.resources
 E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\Newtonsoft.Json.dll
 E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\trash\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\OpenRGBWallpaperEngine.exe
 E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\trash\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\OpenRGBWallpaperEngine.deps.json

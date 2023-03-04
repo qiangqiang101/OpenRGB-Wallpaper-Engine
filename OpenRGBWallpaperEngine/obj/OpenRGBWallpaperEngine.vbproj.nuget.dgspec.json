@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\trash\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj": {}
+    "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj": {}
   },
   "projects": {
-    "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\trash\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj": {
+    "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\trash\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj",
+        "projectUniqueName": "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj",
         "projectName": "OpenRGBWallpaperEngine",
-        "projectPath": "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\trash\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj",
+        "projectPath": "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\OpenRGBWallpaperEngine\\OpenRGBWallpaperEngine.vbproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\trash\\OpenRGBWallpaperEngine\\obj\\",
+        "outputPath": "E:\\Users\\Admin\\Documents\\GitHub\\OpenRGB-Wallpaper-Engine\\OpenRGBWallpaperEngine\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
