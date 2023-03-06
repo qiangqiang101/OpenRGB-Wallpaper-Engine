@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "455d13c7-43c3-49e6-8980-a07510f296f0": {
+      "ProjectGuid": "455d13c7-43c3-49e6-8980-a07510f296f0",
+      "DisplayName": "OpenRGBWallpaperEngine",
+      "ColorIndex": 0
+    }
+  },
+  "NextColorIndex": 1
+}

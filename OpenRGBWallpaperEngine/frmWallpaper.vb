@@ -73,7 +73,7 @@ Public Class frmWallpaper
         Try
             If oRgbClient IsNot Nothing Then
                 If oRgbClient.Connected Then
-                    Dim wallpaper = oRgbClient.GetAllControllerData.Where(Function(x) x.Name = DeviceName).FirstOrDefault
+                    Dim wallpaper = oRgbClient.GetAllControllerData.SingleOrDefault(Function(x) x.Name = DeviceName)
                     Dim oMatrix = wallpaper.Zones.FirstOrDefault.MatrixMap
 
                     Dim Width As Integer = oMatrix.Width
