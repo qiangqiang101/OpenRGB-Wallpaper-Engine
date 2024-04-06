@@ -26,32 +26,38 @@ Module Utils
     Public ImageFit As ImageFit = ImageFit.Fill
     Public BackgroundColor As String = ColorTranslator.ToHtml(Color.Black)
 
+    Public DebugMode As Boolean = False
+
     Public Sub UpdateWEConfigValues(config As String, display As String)
-        SmoothingMode = CType(TryGetValue("smoothingMode", SmoothingMode.Default, config, display), SmoothingMode)
-        CompositingQuality = CType(TryGetValue("compositingQuality", CompositingQuality.Default, config, display), CompositingQuality)
-        InterpolationMode = CType(TryGetValue("interpolationMode", InterpolationMode.Default, config, display), InterpolationMode)
-        PixelOffsetMode = CType(TryGetValue("pixelOffsetMode", PixelOffsetMode.Default, config, display), PixelOffsetMode)
-        LEDShape = CType(TryGetValue("ledShape", LEDShape.Rectangle, config, display), LEDShape)
-        RoundedRectangleCornerRadius = CInt(TryGetValue("roundedRectangleRadius", 0, config, display))
-        LEDPadding = CSng(TryGetValue("ledPadding", 0F, config, display))
-        TimerIntervals = CInt(TryGetValue("ledUpdateInterval", 30, config, display))
-        IPAddress = CStr(TryGetValue("sdkIpAddress", "127.0.0.1", config, display))
-        Port = CInt(TryGetValue("sdkPort", 6742, config, display))
-        DeviceName = CStr(TryGetValue("deviceName", "Wallpaper1", config, display))
-        BackgroundImage = CStr(TryGetValue("coverImage", Nothing, config, display))
-        ImageFit = CType(TryGetValue("imageFit", ImageFit.None, config, display), ImageFit)
-        BackgroundColor = ColorTranslator.ToHtml(CStr(TryGetValue("backgroundColor", "0 0 0", config, display)).ToColor)
-        CpuUsagePauseValue = CInt(TryGetValue("cpuUsagePauseValue", 60, config, display))
+        Try
+            SmoothingMode = CType(TryGetValue("smoothingMode", SmoothingMode.Default, config, display), SmoothingMode)
+            CompositingQuality = CType(TryGetValue("compositingQuality", CompositingQuality.Default, config, display), CompositingQuality)
+            InterpolationMode = CType(TryGetValue("interpolationMode", InterpolationMode.Default, config, display), InterpolationMode)
+            PixelOffsetMode = CType(TryGetValue("pixelOffsetMode", PixelOffsetMode.Default, config, display), PixelOffsetMode)
+            LEDShape = CType(TryGetValue("ledShape", LEDShape.Rectangle, config, display), LEDShape)
+            RoundedRectangleCornerRadius = CInt(TryGetValue("roundedRectangleRadius", 0, config, display))
+            LEDPadding = CSng(TryGetValue("ledPadding", 0F, config, display))
+            TimerIntervals = CInt(TryGetValue("ledUpdateInterval", 30, config, display))
+            IPAddress = CStr(TryGetValue("sdkIpAddress", "127.0.0.1", config, display))
+            Port = CInt(TryGetValue("sdkPort", 6742, config, display))
+            DeviceName = CStr(TryGetValue("deviceName", "Wallpaper1", config, display))
+            BackgroundImage = CStr(TryGetValue("coverImage", Nothing, config, display))
+            ImageFit = CType(TryGetValue("imageFit", ImageFit.None, config, display), ImageFit)
+            BackgroundColor = ColorTranslator.ToHtml(CStr(TryGetValue("backgroundColor", "0 0 0", config, display)).ToColor)
+            CpuUsagePauseValue = CInt(TryGetValue("cpuUsagePauseValue", 60, config, display))
+        Catch ex As Exception
+            Logger.Log($"{ex.Message} {ex.StackTrace}")
+        End Try
     End Sub
 
-    Public Function TryGetValue([property] As String, [default] As Object, Optional config As String = Nothing, Optional display As String = Nothing, Optional debug As Boolean = False) As Object
+    Public Function TryGetValue([property] As String, [default] As Object, Optional config As String = Nothing, Optional display As String = Nothing) As Object
         Try
             Dim username As String = SystemInformation.UserName
             Dim mypath As String = Application.ExecutablePath.Replace("\", "/")
             Dim debugpath As String = "G:/Program Files (x86)/Steam/steamapps/common/wallpaper_engine/projects/myprojects/openrgbwallpaper/OpenRGBWallpaperEngine.exe"
 
             Dim json = JObject.Parse(File.ReadAllText(config))
-            Dim item = json(username)("wproperties")(If(debug, debugpath, mypath))(display)([property])
+            Dim item = json(username)("wproperties")(If(DebugMode, debugpath, mypath))(display)([property])
 
             If item IsNot Nothing Then
                 Return CType(item, Object)
@@ -62,6 +68,22 @@ Module Utils
         Catch ex As Exception
             Logger.Log($"{ex.Message} {ex.StackTrace}")
             Return [default]
+        End Try
+    End Function
+
+    Public Function TryGetUserSettings([property] As String, [default] As Object, Optional config As String = Nothing) As Object
+        Try
+            Dim username As String = SystemInformation.UserName
+            Dim json = JObject.Parse(File.ReadAllText(config))
+            Dim item = json(username)("general")("user")([property])
+
+            If item IsNot Nothing Then
+                Return CType(item, Object)
+            Else
+                Return [default]
+            End If
+        Catch ex As Exception
+
         End Try
     End Function
 
@@ -218,6 +240,20 @@ Module Utils
         Dim currScreen As Screen = Screen.FromControl(form)
         Dim currDisplay = PathDisplayTarget.GetDisplayTargets.Where(Function(x) x.ToDisplayDevice.DisplayName = currScreen.DeviceName).FirstOrDefault
         Return currDisplay.DevicePath.Replace("\", "/")
+    End Function
+
+    <Extension>
+    Public Function ScreenManaged(form As Form) As String
+        Dim currScreen As Screen = Screen.FromControl(form)
+        Dim identity As String = $"Monitor{CInt(currScreen.DeviceName.Replace("\\.\DISPLAY", Nothing)) - 1}"
+        Return identity
+    End Function
+
+    <Extension>
+    Public Function ScreenLayout(form As Form) As String
+        Dim currScreen As Screen = Screen.FromControl(form)
+        Dim identity As String = $"MonitorPositionL{currScreen.DeviceName.Replace("\\.\DISPLAY", Nothing)}T0"
+        Return identity
     End Function
 
     Public Function IsOpenRGBRunning() As Boolean

@@ -23,7 +23,7 @@ Partial Class frmWallpaper
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         components = New ComponentModel.Container()
-        Dim resources As ComponentModel.ComponentResourceManager = New ComponentModel.ComponentResourceManager(GetType(frmWallpaper))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmWallpaper))
         tmUpdate = New Timer(components)
         tmCheckOpenRGB = New Timer(components)
         tmConfig = New Timer(components)

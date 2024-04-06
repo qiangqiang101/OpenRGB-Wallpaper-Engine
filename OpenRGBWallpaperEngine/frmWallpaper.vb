@@ -6,6 +6,7 @@ Public Class frmWallpaper
 
     Dim OffColor As Color = Color.FromArgb(255, 0, 0, 0)
     Dim configFile As String = WallpaperEngineConfig()
+    Dim monitordetection As String = "devicepath"
     Dim display As String = ScreenDevicePath
     Dim configLastDate As Date = Now
 
@@ -16,6 +17,16 @@ Public Class frmWallpaper
 
     Private Sub frmWallpaper_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         If configFile <> "error" Then
+            monitordetection = TryGetUserSettings("monitordetection", "devicepath", configFile)
+            Select Case monitordetection
+                Case "devicepath"
+                    display = ScreenDevicePath
+                Case "managed"
+                    display = ScreenManaged
+                Case "layout"
+                    display = ScreenLayout
+            End Select
+
             UpdateWEConfigValues(configFile, display)
 
             configLastDate = File.GetLastWriteTime(configFile)
@@ -34,7 +45,7 @@ Public Class frmWallpaper
             Try
                 If oRgbClient IsNot Nothing Then If oRgbClient.Connected Then oRgbClient.Dispose()
 
-                oRgbClient = New OpenRgbClient(IPAddress, Port, "Wallpaper Engine", True, protocolVersion:=2)
+                oRgbClient = New OpenRgbClient(IPAddress, Port, "Wallpaper Engine", True, 1000, protocolVersionNumber:=4)
             Catch ex As Exception
                 Logger.Log($"{ex.Message} {ex.StackTrace}")
                 tmCheckOpenRGB.Start()
@@ -182,18 +193,22 @@ Public Class frmWallpaper
     End Sub
 
     Private Sub tmConfig_Tick(sender As Object, e As EventArgs) Handles tmConfig.Tick
-        Dim configDate As Date = File.GetLastWriteTime(configFile)
-        If configLastDate <> configDate Then
-            configLastDate = configDate
-            UpdateWEConfigValues(configFile, display)
+        Try
+            Dim configDate As Date = File.GetLastWriteTime(configFile)
+            If configLastDate <> configDate Then
+                configLastDate = configDate
+                UpdateWEConfigValues(configFile, display)
 
-            configLastDate = File.GetLastWriteTime(configFile)
-            tmUpdate.Interval = TimerIntervals
-            BackColor = ColorTranslator.FromHtml(BackgroundColor)
-            BackImg = If(Utils.BackgroundImage = Nothing, Nothing, Image.FromFile(Utils.BackgroundImage))
-            ImgFit = Utils.ImageFit
-            If BackImg IsNot Nothing Then If ImgFit = ImageFit.Fit Then BackImg = BackImg.ResizeImage(ClientRectangle.Size, True)
-        End If
+                configLastDate = File.GetLastWriteTime(configFile)
+                tmUpdate.Interval = TimerIntervals
+                BackColor = ColorTranslator.FromHtml(BackgroundColor)
+                BackImg = If(Utils.BackgroundImage = Nothing, Nothing, Image.FromFile(Utils.BackgroundImage))
+                ImgFit = Utils.ImageFit
+                If BackImg IsNot Nothing Then If ImgFit = ImageFit.Fit Then BackImg = BackImg.ResizeImage(ClientRectangle.Size, True)
+            End If
+        Catch ex As Exception
+            Logger.Log($"{ex.Message} {ex.StackTrace}")
+        End Try
     End Sub
 
 End Class
