@@ -15,6 +15,9 @@ Public Class frmWallpaper
     Public ImgFit As ImageFit = ImageFit.Stretch
     Public cpuUsage As New PerformanceCounter("Processor", "% Processor Time", "_Total")
 
+    Dim connectString As String = Nothing
+    Dim drawErrorStringOnScreen As Boolean = True
+
     Private Sub frmWallpaper_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         If configFile <> "error" Then
             monitordetection = TryGetUserSettings("monitordetection", "devicepath", configFile)
@@ -44,13 +47,16 @@ Public Class frmWallpaper
         If IsOpenRGBRunning() Then
             Try
                 If oRgbClient IsNot Nothing Then If oRgbClient.Connected Then oRgbClient.Dispose()
-
                 oRgbClient = New OpenRgbClient(IPAddress, Port, "Wallpaper Engine", True, 1000, protocolVersionNumber:=4)
+                connectString = Nothing
+                tmCheckOpenRGB.Stop()
             Catch ex As Exception
                 Logger.Log($"{ex.Message} {ex.StackTrace}")
+                connectString &= $"{vbCrLf}[{Now.ToString("hh:mm:ss tt")}] Connection attempt failed, Local OpenRGB server unavailable."
                 tmCheckOpenRGB.Start()
             End Try
         Else
+            connectString &= $"{vbCrLf}[{Now.ToString("hh:mm:ss tt")}] Connection attempt failed, OpenRGB isn't running."
             tmCheckOpenRGB.Start()
         End If
     End Sub
@@ -184,12 +190,20 @@ Public Class frmWallpaper
             Logger.Log($"{ex.Message} {ex.StackTrace}")
         End Try
 
+        Try
+            If drawErrorStringOnScreen AndAlso connectString <> Nothing Then
+                TextRenderer.DrawText(graphic, connectString, Font, New Point(20, 20), Color.White)
+            End If
+        Catch ex As Exception
+            Logger.Log($"{ex.Message} {ex.StackTrace}")
+        End Try
+
         MyBase.OnPaint(e)
     End Sub
 
     Private Sub tmCheckOpenRGB_Tick(sender As Object, e As EventArgs) Handles tmCheckOpenRGB.Tick
+        connectString &= $"{vbCrLf}[{Now.ToString("hh:mm:ss tt")}] Attempting to connect to local OpenRGB server."
         Connect()
-        tmCheckOpenRGB.Stop()
     End Sub
 
     Private Sub tmConfig_Tick(sender As Object, e As EventArgs) Handles tmConfig.Tick

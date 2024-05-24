@@ -23,7 +23,6 @@ C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\OpenRGBWallpaperEngine.deps.json
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\OpenRGBWallpaperEngine.runtimeconfig.json
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\OpenRGBWallpaperEngine.dll
-C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\ref\OpenRGBWallpaperEngine.dll
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\OpenRGBWallpaperEngine.pdb
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\Newtonsoft.Json.dll
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\bin\Release\net6.0-windows\OpenRGB.NET.dll
@@ -35,7 +34,6 @@ C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.AssemblyInfoInputs.cache
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.AssemblyInfo.vb
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.vbproj.CoreCompileInputs.cache
-C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.vbproj.CopyComplete
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.dll
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\ref\OpenRGBWallpaperEngine.dll
 C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.pdb
@@ -62,3 +60,6 @@ E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\
 E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\ref\OpenRGBWallpaperEngine.dll
 E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.sourcelink.json
 E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBW.8A8F73E9.Up2Date
+C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBWallpaperEngine.sourcelink.json
+C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\OpenRGBW.8A8F73E9.Up2Date
+C:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\obj\Release\net6.0-windows\refint\OpenRGBWallpaperEngine.dll
