@@ -23,7 +23,6 @@ Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting
 
 # Download
 - [Steam Workshop Stable](https://steamcommunity.com/sharedfiles/filedetails/?id=2942091593)
-- [Steam Workshop Experiment](https://steamcommunity.com/sharedfiles/filedetails/?id=2942380004)
 - [OpenRGB Wallpaper](https://github.com/qiangqiang101/OpenRGB-Wallpaper)
 - [Cover Images Download](https://github.com/qiangqiang101/OpenRGB-Wallpaper/wiki/Wallpapers)
 
