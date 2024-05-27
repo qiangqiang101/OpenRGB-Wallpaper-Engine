@@ -20,7 +20,7 @@ Imports System.Reflection
     "on your wallpaper and synchronize wallpaper with other OpenRGB compatible device"& _ 
     "s by OpenRGB."),  _
  Assembly: System.Reflection.AssemblyFileVersionAttribute("1.3.0.0"),  _
- Assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+63dbe7150863d8491ef28bf467b57b72937f61a2"),  _
+ Assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5efcb013c1134d2d16d3d01d01d9cf602fc4e75"),  _
  Assembly: System.Reflection.AssemblyProductAttribute("OpenRGBWallpaperEngine"),  _
  Assembly: System.Reflection.AssemblyTitleAttribute("OpenRGBWallpaperEngine"),  _
  Assembly: System.Reflection.AssemblyVersionAttribute("1.3.0.0"),  _

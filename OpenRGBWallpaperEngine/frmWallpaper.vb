@@ -192,7 +192,7 @@ Public Class frmWallpaper
 
         Try
             If drawErrorStringOnScreen AndAlso connectString <> Nothing Then
-                TextRenderer.DrawText(graphic, connectString, Font, New Point(20, 20), Color.White)
+                TextRenderer.DrawText(graphic, connectString, Font, New Point(20, 1), Color.White)
             End If
         Catch ex As Exception
             Logger.Log($"{ex.Message} {ex.StackTrace}")

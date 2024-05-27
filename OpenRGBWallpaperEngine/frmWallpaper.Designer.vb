@@ -36,7 +36,7 @@ Partial Class frmWallpaper
         ' 
         ' tmCheckOpenRGB
         ' 
-        tmCheckOpenRGB.Interval = 5000
+        tmCheckOpenRGB.Interval = 10000
         ' 
         ' tmConfig
         ' 
