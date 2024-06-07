@@ -11,8 +11,6 @@ Public Class frmWallpaper
     Dim configLastDate As Date = Now
 
     Public oRgbClient As OpenRgbClient = Nothing
-    Public BackImg As Image = Nothing
-    Public ImgFit As ImageFit = ImageFit.Stretch
     Public cpuUsage As New PerformanceCounter("Processor", "% Processor Time", "_Total")
 
     Dim connectString As String = Nothing
@@ -35,9 +33,8 @@ Public Class frmWallpaper
             configLastDate = File.GetLastWriteTime(configFile)
             tmUpdate.Interval = TimerIntervals
             BackColor = ColorTranslator.FromHtml(BackgroundColor)
-            BackImg = If(Utils.BackgroundImage = Nothing, Nothing, Image.FromFile(Utils.BackgroundImage))
-            ImgFit = Utils.ImageFit
-            If BackImg IsNot Nothing Then If ImgFit = ImageFit.Fit Then BackImg = BackImg.ResizeImage(ClientRectangle.Size, True)
+            pbDiffuser.Image = If(Utils.BackgroundImage = Nothing, Nothing, Image.FromFile(Utils.BackgroundImage))
+            pbDiffuser.SizeMode = Utils.SizeMode
 
             Connect()
         End If
@@ -134,63 +131,6 @@ Public Class frmWallpaper
         End Try
 
         Try
-            If BackImg IsNot Nothing Then
-                Select Case ImgFit
-                    Case ImageFit.None
-                        graphic.DrawImage(BackImg, ClientRectangle.X, ClientRectangle.Y, New Rectangle(0, 0, ClientRectangle.Width, ClientRectangle.Height), GraphicsUnit.Pixel)
-                    Case ImageFit.Center
-                        Dim imgSize As Integer = BackImg.Width + BackImg.Height
-                        Dim crSize As Integer = ClientRectangle.Width + ClientRectangle.Height
-                        Dim iX As Integer = (ClientRectangle.Width - BackImg.Width) / 2
-                        Dim iY As Integer = (ClientRectangle.Height - BackImg.Height) / 2
-
-                        If crSize > imgSize Then
-                            graphic.DrawImage(BackImg, iX, iY, New Rectangle(0, 0, ClientRectangle.Width, ClientRectangle.Height), GraphicsUnit.Pixel)
-                        Else
-                            graphic.DrawImage(BackImg, iX, iY, New Rectangle(0, 0, BackImg.Width, BackImg.Height), GraphicsUnit.Pixel)
-                        End If
-                    Case ImageFit.Stretch
-                        graphic.DrawImage(BackImg, New RectangleF(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height), New RectangleF(0, 0, BackImg.Width, BackImg.Height), GraphicsUnit.Pixel)
-                    Case ImageFit.Fill, ImageFit.Fit
-                        Dim aspectRatio As Double
-                        Dim newHeight, newWidth As Integer
-                        Dim maxWidth As Integer = Width
-                        Dim maxHeight As Integer = Width
-
-                        If BackImg.Width > maxWidth Or BackImg.Height > maxHeight Then
-                            If BackImg.Width >= BackImg.Height Then ' image is wider than tall
-                                newWidth = maxWidth
-                                aspectRatio = BackImg.Width / maxWidth
-                                newHeight = CInt(BackImg.Height / aspectRatio)
-                            Else ' image is taller than wide
-                                newHeight = maxHeight
-                                aspectRatio = BackImg.Height / maxHeight
-                                newWidth = CInt(BackImg.Width / aspectRatio)
-                            End If
-                        Else
-                            If BackImg.Width > BackImg.Height Then
-                                newWidth = maxWidth
-                                aspectRatio = BackImg.Width / maxWidth
-                                newHeight = CInt(BackImg.Height / aspectRatio)
-                            Else
-                                newHeight = maxHeight
-                                aspectRatio = BackImg.Height / maxHeight
-                                newWidth = CInt(BackImg.Width / aspectRatio)
-                            End If
-                        End If
-
-                        Dim newX As Integer = (Width - newWidth) / 2
-                        Dim newY As Integer = (Height - newHeight) / 2
-
-                        graphic.DrawImage(BackImg, New RectangleF(newX, newY, newWidth, newHeight))
-                End Select
-
-            End If
-        Catch ex As Exception
-            Logger.Log($"{ex.Message} {ex.StackTrace}")
-        End Try
-
-        Try
             If drawErrorStringOnScreen AndAlso connectString <> Nothing Then
                 TextRenderer.DrawText(graphic, connectString, Font, New Point(20, 1), Color.White)
             End If
@@ -216,9 +156,8 @@ Public Class frmWallpaper
                 configLastDate = File.GetLastWriteTime(configFile)
                 tmUpdate.Interval = TimerIntervals
                 BackColor = ColorTranslator.FromHtml(BackgroundColor)
-                BackImg = If(Utils.BackgroundImage = Nothing, Nothing, Image.FromFile(Utils.BackgroundImage))
-                ImgFit = Utils.ImageFit
-                If BackImg IsNot Nothing Then If ImgFit = ImageFit.Fit Then BackImg = BackImg.ResizeImage(ClientRectangle.Size, True)
+                pbDiffuser.Image = If(Utils.BackgroundImage = Nothing, Nothing, Image.FromFile(Utils.BackgroundImage))
+                pbDiffuser.SizeMode = Utils.SizeMode
             End If
         Catch ex As Exception
             Logger.Log($"{ex.Message} {ex.StackTrace}")

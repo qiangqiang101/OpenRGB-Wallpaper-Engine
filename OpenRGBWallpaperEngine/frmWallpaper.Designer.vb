@@ -27,6 +27,8 @@ Partial Class frmWallpaper
         tmUpdate = New Timer(components)
         tmCheckOpenRGB = New Timer(components)
         tmConfig = New Timer(components)
+        pbDiffuser = New PictureBox()
+        CType(pbDiffuser, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' tmUpdate
@@ -43,12 +45,24 @@ Partial Class frmWallpaper
         tmConfig.Enabled = True
         tmConfig.Interval = 5000
         ' 
+        ' pbDiffuser
+        ' 
+        pbDiffuser.BackColor = Drawing.Color.Transparent
+        pbDiffuser.Dock = DockStyle.Fill
+        pbDiffuser.Location = New Point(0, 0)
+        pbDiffuser.Name = "pbDiffuser"
+        pbDiffuser.Size = New Size(192, 108)
+        pbDiffuser.SizeMode = PictureBoxSizeMode.Zoom
+        pbDiffuser.TabIndex = 0
+        pbDiffuser.TabStop = False
+        ' 
         ' frmWallpaper
         ' 
         AutoScaleMode = AutoScaleMode.None
         BackColor = Drawing.Color.Black
         ClientSize = New Size(192, 108)
         ControlBox = False
+        Controls.Add(pbDiffuser)
         DoubleBuffered = True
         ForeColor = Drawing.Color.White
         FormBorderStyle = FormBorderStyle.None
@@ -60,10 +74,12 @@ Partial Class frmWallpaper
         ShowInTaskbar = False
         StartPosition = FormStartPosition.Manual
         Text = "OpenRGB Wallpaper"
+        CType(pbDiffuser, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
     End Sub
 
     Friend WithEvents tmUpdate As Timer
     Friend WithEvents tmCheckOpenRGB As Timer
     Friend WithEvents tmConfig As Timer
+    Friend WithEvents pbDiffuser As PictureBox
 End Class

@@ -23,7 +23,7 @@ Module Utils
     Public DeviceName As String = "Wallpaper1"
 
     Public BackgroundImage As String = Nothing
-    Public ImageFit As ImageFit = ImageFit.Fill
+    Public SizeMode As PictureBoxSizeMode = PictureBoxSizeMode.Zoom
     Public BackgroundColor As String = ColorTranslator.ToHtml(Color.Black)
 
     Public DebugMode As Boolean = False
@@ -42,7 +42,7 @@ Module Utils
             Port = CInt(TryGetValue("sdkPort", 6742, config, display))
             DeviceName = CStr(TryGetValue("deviceName", "Wallpaper1", config, display))
             BackgroundImage = CStr(TryGetValue("coverImage", Nothing, config, display))
-            ImageFit = CType(TryGetValue("imageFit", ImageFit.None, config, display), ImageFit)
+            SizeMode = CType(TryGetValue("sizeMode", PictureBoxSizeMode.CenterImage, config, display), PictureBoxSizeMode)
             BackgroundColor = ColorTranslator.ToHtml(CStr(TryGetValue("backgroundColor", "0 0 0", config, display)).ToColor)
             CpuUsagePauseValue = CInt(TryGetValue("cpuUsagePauseValue", 60, config, display))
         Catch ex As Exception
@@ -83,7 +83,7 @@ Module Utils
                 Return [default]
             End If
         Catch ex As Exception
-
+            Return [default]
         End Try
     End Function
 
@@ -262,14 +262,6 @@ Module Utils
     End Function
 
 End Module
-
-Public Enum ImageFit
-    None
-    Fill
-    Fit
-    Stretch
-    Center
-End Enum
 
 Public Enum LEDShape
     Rectangle
