@@ -63,7 +63,10 @@ Public Class frmWallpaper
     End Function
 
     Private Sub tmUpdate_Tick(sender As Object, e As EventArgs) Handles tmUpdate.Tick
-        If Not HighCpuUsage() Then Invalidate()
+        If Not HighCpuUsage() Then
+            Invalidate()
+            If connectString <> Nothing Then pbDiffuser.Invalidate()
+        End If
     End Sub
 
     Private Sub frmWallpaper_Closing(sender As Object, e As CancelEventArgs) Handles MyBase.Closing
@@ -124,15 +127,9 @@ Public Class frmWallpaper
                             If count >= wallpaper.Leds.Count Then count = 0
                         Next
                     Next
+                Else
+                    tmCheckOpenRGB.Start()
                 End If
-            End If
-        Catch ex As Exception
-            Logger.Log($"{ex.Message} {ex.StackTrace}")
-        End Try
-
-        Try
-            If drawErrorStringOnScreen AndAlso connectString <> Nothing Then
-                TextRenderer.DrawText(graphic, connectString, Font, New Point(20, 1), Color.White)
             End If
         Catch ex As Exception
             Logger.Log($"{ex.Message} {ex.StackTrace}")
@@ -164,4 +161,13 @@ Public Class frmWallpaper
         End Try
     End Sub
 
+    Private Sub pbDiffuser_Paint(sender As Object, e As PaintEventArgs) Handles pbDiffuser.Paint
+        Try
+            If drawErrorStringOnScreen AndAlso connectString <> Nothing Then
+                e.Graphics.DrawString(connectString, Font, Brushes.White, New PointF(20, 1))
+            End If
+        Catch ex As Exception
+            Logger.Log($"{ex.Message} {ex.StackTrace}")
+        End Try
+    End Sub
 End Class

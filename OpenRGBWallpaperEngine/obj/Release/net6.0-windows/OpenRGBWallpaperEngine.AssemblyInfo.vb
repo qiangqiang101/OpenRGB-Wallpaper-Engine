@@ -19,11 +19,11 @@ Imports System.Reflection
  Assembly: System.Reflection.AssemblyDescriptionAttribute("Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting "& _ 
     "on your wallpaper and synchronize wallpaper with other OpenRGB compatible device"& _ 
     "s by OpenRGB."),  _
- Assembly: System.Reflection.AssemblyFileVersionAttribute("1.4.0.0"),  _
- Assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+14a05ad0494e3900d28e093065ecd5a5a570990d"),  _
+ Assembly: System.Reflection.AssemblyFileVersionAttribute("1.5.0.0"),  _
+ Assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2075361812f3d077f5f8426233dec46de1542d15"),  _
  Assembly: System.Reflection.AssemblyProductAttribute("OpenRGBWallpaperEngine"),  _
  Assembly: System.Reflection.AssemblyTitleAttribute("OpenRGBWallpaperEngine"),  _
- Assembly: System.Reflection.AssemblyVersionAttribute("1.4.0.0"),  _
+ Assembly: System.Reflection.AssemblyVersionAttribute("1.5.0.0"),  _
  Assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine"),  _
  Assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0"),  _
  Assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")> 
