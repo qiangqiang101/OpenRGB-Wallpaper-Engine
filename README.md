@@ -12,8 +12,8 @@
 
 Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting on your wallpaper and synchronize wallpaper with other OpenRGB compatible devices by [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB).
 
-![image](https://user-images.githubusercontent.com/11488961/201601205-465ca003-1300-4caa-a7e5-1897fb00119f.png)
-![Wallpaper Engine](https://user-images.githubusercontent.com/11488961/223149326-c279a386-f549-445a-8dad-6dc18a14dcca.png)
+<img width="904" height="711" alt="QQ_1783458311061" src="https://github.com/user-attachments/assets/b04a8d31-04e3-4a0a-ac78-678c364eedd2" />
+<img width="904" height="711" alt="QQ_1783458318865" src="https://github.com/user-attachments/assets/a008beb0-08aa-4f8b-a4da-b28a5c00792c" />
 
 # 📸 Showcase
 ![IMG_6915](https://user-images.githubusercontent.com/11488961/202174752-3ecf4780-be04-40de-9382-d5ad14732104.JPG)
