@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\mocs_compilation_Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEngineWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\RGBController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\EWIEGA46WW\qrc_OpenRGBWallpaperEnginePlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\mocs_compilation_Release.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\mocs_compilation_MinSizeRel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\mocs_compilation_RelWithDebInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEngineWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBPluginInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\ResourceManagerInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\RGBController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\filesystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\i2c_smbus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Debug\ui_OpenRGBWallpaperEngineWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Release\ui_OpenRGBWallpaperEngineWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_MinSizeRel\ui_OpenRGBWallpaperEngineWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_RelWithDebInfo\ui_OpenRGBWallpaperEngineWidget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\b86487495550f2377872ccee3bfe8938\qrc_OpenRGBWallpaperEnginePlugin.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc" />
+    <None Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEngineWidget.ui" />
+    <None Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\timestamp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{20CB5A8B-4A47-371F-B7D4-BADA8341ACAF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{61FC21AB-7817-3B36-AD6D-D3F0C82532D3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{297D3425-E394-3B8A-86EB-8355DCA6CEF8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

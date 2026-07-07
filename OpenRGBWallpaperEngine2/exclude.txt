@@ -1,0 +1,2 @@
+OpenRGBWallpaperEngine.dll.config
+\publish\

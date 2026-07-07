@@ -1,4 +1,4 @@
-# OpenRGB Wallpaper Engine
+# OpenRGB Wallpaper Engine 2
 ![Github All Releases](https://img.shields.io/github/downloads/qiangqiang101/OpenRGB-Wallpaper-Engine/total.svg)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/qiangqiang101/OpenRGB-Wallpaper-Engine)
 ![GitHub](https://img.shields.io/github/license/qiangqiang101/OpenRGB-Wallpaper-Engine)
@@ -15,32 +15,56 @@ Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting
 ![image](https://user-images.githubusercontent.com/11488961/201601205-465ca003-1300-4caa-a7e5-1897fb00119f.png)
 ![Wallpaper Engine](https://user-images.githubusercontent.com/11488961/223149326-c279a386-f549-445a-8dad-6dc18a14dcca.png)
 
-# Screenshots 
+# 📸 Showcase
 ![IMG_6915](https://user-images.githubusercontent.com/11488961/202174752-3ecf4780-be04-40de-9382-d5ad14732104.JPG)
 ![IMG_6916](https://user-images.githubusercontent.com/11488961/202174762-a31ea030-35ec-47d6-a1b7-d8cee2229893.JPG)
 ![IMG_6917](https://user-images.githubusercontent.com/11488961/202174765-5b2bbdfc-581e-4bf2-ab65-979c0533dd4b.JPG)
 ![IMG_6919](https://user-images.githubusercontent.com/11488961/202174769-6164a88d-039d-4922-a501-51649a4a2da6.JPG)
 
-# Download
-- [Steam Workshop Stable](https://steamcommunity.com/sharedfiles/filedetails/?id=2942091593)
+# 🛠️ Download
+## Wallpaper
+[Wallpaper Engine](wpe.md) | [Lively Wallpaper](lively.md)
+
+## Plugin
+[Download Github](https://github.com/qiangqiang101/SignalRGB-Wallpaper-Engine/releases)
+
+# 🚧 Prerequisite
+- [OpenRGB by CalcProgrammer1](https://gitlab.com/CalcProgrammer1/OpenRGB)
+- [.NET 10.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+- [Wallpaper Engine](https://store.steampowered.com/app/431960/Wallpaper_Engine/) or [Lively Wallpaper](https://github.com/rocksdanister/lively/releases/latest)
+- Wallpaper Engine requires Windows 10/11 version 24H2 and above, Lively Wallpaper requires Windows 10/11 version 23H2 and below
+
+# 🔨 Build yourself
+## Wallpaper
+1. Open the OpenRGBWallpaperEngine2.slnx file with Visual Studio 2026
+2. Click the Build on menu, select Build Solution.
+
+## Plugin
+1. Open your terminal or developer command prompt in this directory:
+   ```bash
+   cd OpenRGB-Wallpaper-Engine-Plugin
+   ```
+2. Create and enter a build directory:
+   ```bash
+   mkdir build
+   cd build
+   ```
+3. Generate the build configuration:
+   * **For Qt6:**
+     ```bash
+     cmake -DCMAKE_PREFIX_PATH="C:/Qt/6.x/msvc2019_64" ..
+     ```
+   * **For Qt5:**
+     ```bash
+     cmake -DCMAKE_PREFIX_PATH="C:/Qt/5.15.x/msvc2019_64" ..
+     ```
+4. Build the plugin:
+   ```bash
+   cmake --build . --config Release
+   ```
+
+Upon completion, you will find `AnOpenRGBWallpaperPlugin.dll` (on Windows) or `AnOpenRGBWallpaperPlugin.so` (on Linux) in your build folder.
+
+# 🚀 Similar Projects
 - [OpenRGB Wallpaper](https://github.com/qiangqiang101/OpenRGB-Wallpaper)
-- [Cover Images Download](https://github.com/qiangqiang101/OpenRGB-Wallpaper/wiki/Wallpapers)
-
-# Prerequisite
-- [OpenRGB by CalcProgrammer1](https://gitlab.com/CalcProgrammer1/OpenRGB)
-- [.NET 6.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
-
-# About Virus
-From the latest release [test result](https://www.virustotal.com/gui/file/34a2b0d40e1ae37f1184a6c3e52a1a207f5456cbdc6ecfa9f0539e864461043b/detection) shows that 2 out of 70 vendors detected as Malicious, it's false positive, you're safe, if you have doubts, you can build the project by yourself, build instructions can be found below.
-
-# Build yourself
-You need Visual Studio 2022 or newer, run OpenRGBWallpaperEngine.sln to begin. Click the Build on menu, select Build Solution.
-
-# How To
-- [How to Setup Wallpaper](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/wiki/How-to-Setup-Wallpaper)
-
-# Special Thanks
-- [OpenRGB by CalcProgrammer1](https://gitlab.com/CalcProgrammer1/OpenRGB)
-- [OpenRGB.NET SDK by diogotr7](https://github.com/diogotr7/OpenRGB.NET)
-- [WindowsDisplayAPI by Soroush Falahati](https://github.com/falahati/WindowsDisplayAPI)
-- [Json.NET by newtonsoft](https://github.com/JamesNK/Newtonsoft.Json)
+- [SignalRGB Wallpaper Engine](https://github.com/qiangqiang101/SignalRGB-Wallpaper-Engine) 

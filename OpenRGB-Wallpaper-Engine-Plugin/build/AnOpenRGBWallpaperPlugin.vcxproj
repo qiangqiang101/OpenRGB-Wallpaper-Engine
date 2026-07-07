@@ -1,0 +1,522 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BF9C63AE-1253-3CEC-AA89-CC94A48CA740}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>AnOpenRGBWallpaperPlugin</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AnOpenRGBWallpaperPlugin.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AnOpenRGBWallpaperPlugin</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AnOpenRGBWallpaperPlugin.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AnOpenRGBWallpaperPlugin</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">AnOpenRGBWallpaperPlugin.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">AnOpenRGBWallpaperPlugin</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">AnOpenRGBWallpaperPlugin.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">AnOpenRGBWallpaperPlugin</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.dll</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Debug;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Qt/5.15.2/msvc2019_64/include" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtCore" /external:I "D:/Qt/5.15.2/msvc2019_64/./mkspecs/win32-msvc" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtWidgets" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtGui" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtANGLE"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;QT_NO_keywords;QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;CMAKE_INTDIR="Debug";AnOpenRGBWallpaperPlugin_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;QT_NO_keywords;QT_CORE_LIB;QT_WIDGETS_LIB;QT_GUI_LIB;CMAKE_INTDIR=\"Debug\";AnOpenRGBWallpaperPlugin_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Debug;D:\Qt\5.15.2\msvc2019_64\include;D:\Qt\5.15.2\msvc2019_64\include\QtCore;D:\Qt\5.15.2\msvc2019_64\.\mkspecs\win32-msvc;D:\Qt\5.15.2\msvc2019_64\include\QtWidgets;D:\Qt\5.15.2\msvc2019_64\include\QtGui;D:\Qt\5.15.2\msvc2019_64\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Debug;D:\Qt\5.15.2\msvc2019_64\include;D:\Qt\5.15.2\msvc2019_64\include\QtCore;D:\Qt\5.15.2\msvc2019_64\.\mkspecs\win32-msvc;D:\Qt\5.15.2\msvc2019_64\include\QtWidgets;D:\Qt\5.15.2\msvc2019_64\include\QtGui;D:\Qt\5.15.2\msvc2019_64\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.lib;ws2_32.lib;D:\Qt\5.15.2\msvc2019_64\lib\Qt5Guid.lib;D:\Qt\5.15.2\msvc2019_64\lib\Qt5Cored.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/Debug/AnOpenRGBWallpaperPlugin.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/Debug/AnOpenRGBWallpaperPlugin.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Release;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Qt/5.15.2/msvc2019_64/include" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtCore" /external:I "D:/Qt/5.15.2/msvc2019_64/./mkspecs/win32-msvc" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtWidgets" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtGui" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtANGLE"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;QT_NO_keywords;QT_CORE_LIB;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;CMAKE_INTDIR="Release";AnOpenRGBWallpaperPlugin_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;QT_NO_keywords;QT_CORE_LIB;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;CMAKE_INTDIR=\"Release\";AnOpenRGBWallpaperPlugin_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Release;D:\Qt\5.15.2\msvc2019_64\include;D:\Qt\5.15.2\msvc2019_64\include\QtCore;D:\Qt\5.15.2\msvc2019_64\.\mkspecs\win32-msvc;D:\Qt\5.15.2\msvc2019_64\include\QtWidgets;D:\Qt\5.15.2\msvc2019_64\include\QtGui;D:\Qt\5.15.2\msvc2019_64\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Release;D:\Qt\5.15.2\msvc2019_64\include;D:\Qt\5.15.2\msvc2019_64\include\QtCore;D:\Qt\5.15.2\msvc2019_64\.\mkspecs\win32-msvc;D:\Qt\5.15.2\msvc2019_64\include\QtWidgets;D:\Qt\5.15.2\msvc2019_64\include\QtGui;D:\Qt\5.15.2\msvc2019_64\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgets.lib;ws2_32.lib;D:\Qt\5.15.2\msvc2019_64\lib\Qt5Gui.lib;D:\Qt\5.15.2\msvc2019_64\lib\Qt5Core.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/Release/AnOpenRGBWallpaperPlugin.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/Release/AnOpenRGBWallpaperPlugin.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_MinSizeRel;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Qt/5.15.2/msvc2019_64/include" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtCore" /external:I "D:/Qt/5.15.2/msvc2019_64/./mkspecs/win32-msvc" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtWidgets" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtGui" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtANGLE"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;QT_NO_keywords;QT_CORE_LIB;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;CMAKE_INTDIR="MinSizeRel";AnOpenRGBWallpaperPlugin_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;QT_NO_keywords;QT_CORE_LIB;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;CMAKE_INTDIR=\"MinSizeRel\";AnOpenRGBWallpaperPlugin_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_MinSizeRel;D:\Qt\5.15.2\msvc2019_64\include;D:\Qt\5.15.2\msvc2019_64\include\QtCore;D:\Qt\5.15.2\msvc2019_64\.\mkspecs\win32-msvc;D:\Qt\5.15.2\msvc2019_64\include\QtWidgets;D:\Qt\5.15.2\msvc2019_64\include\QtGui;D:\Qt\5.15.2\msvc2019_64\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_MinSizeRel;D:\Qt\5.15.2\msvc2019_64\include;D:\Qt\5.15.2\msvc2019_64\include\QtCore;D:\Qt\5.15.2\msvc2019_64\.\mkspecs\win32-msvc;D:\Qt\5.15.2\msvc2019_64\include\QtWidgets;D:\Qt\5.15.2\msvc2019_64\include\QtGui;D:\Qt\5.15.2\msvc2019_64\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgets.lib;ws2_32.lib;D:\Qt\5.15.2\msvc2019_64\lib\Qt5Gui.lib;D:\Qt\5.15.2\msvc2019_64\lib\Qt5Core.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/MinSizeRel/AnOpenRGBWallpaperPlugin.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/MinSizeRel/AnOpenRGBWallpaperPlugin.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_RelWithDebInfo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "D:/Qt/5.15.2/msvc2019_64/include" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtCore" /external:I "D:/Qt/5.15.2/msvc2019_64/./mkspecs/win32-msvc" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtWidgets" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtGui" /external:I "D:/Qt/5.15.2/msvc2019_64/include/QtANGLE"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BufferSecurityCheck></BufferSecurityCheck>
+      <CallingConvention></CallingConvention>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FloatingPointModel></FloatingPointModel>
+      <ForceConformanceInForLoopScope></ForceConformanceInForLoopScope>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RemoveUnreferencedCodeData></RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <TreatWChar_tAsBuiltInType></TreatWChar_tAsBuiltInType>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;QT_NO_keywords;QT_CORE_LIB;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;CMAKE_INTDIR="RelWithDebInfo";AnOpenRGBWallpaperPlugin_EXPORTS</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;QT_NO_keywords;QT_CORE_LIB;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;CMAKE_INTDIR=\"RelWithDebInfo\";AnOpenRGBWallpaperPlugin_EXPORTS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_RelWithDebInfo;D:\Qt\5.15.2\msvc2019_64\include;D:\Qt\5.15.2\msvc2019_64\include\QtCore;D:\Qt\5.15.2\msvc2019_64\.\mkspecs\win32-msvc;D:\Qt\5.15.2\msvc2019_64\include\QtWidgets;D:\Qt\5.15.2\msvc2019_64\include\QtGui;D:\Qt\5.15.2\msvc2019_64\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_RelWithDebInfo;D:\Qt\5.15.2\msvc2019_64\include;D:\Qt\5.15.2\msvc2019_64\include\QtCore;D:\Qt\5.15.2\msvc2019_64\.\mkspecs\win32-msvc;D:\Qt\5.15.2\msvc2019_64\include\QtWidgets;D:\Qt\5.15.2\msvc2019_64\include\QtGui;D:\Qt\5.15.2\msvc2019_64\include\QtANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>D:\Qt\5.15.2\msvc2019_64\lib\Qt5Widgets.lib;ws2_32.lib;D:\Qt\5.15.2\msvc2019_64\lib\Qt5Gui.lib;D:\Qt\5.15.2\msvc2019_64\lib\Qt5Core.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <DataExecutionPrevention></DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImageHasSafeExceptionHandlers></ImageHasSafeExceptionHandlers>
+      <ImportLibrary>D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/RelWithDebInfo/AnOpenRGBWallpaperPlugin.lib</ImportLibrary>
+      <LinkErrorReporting></LinkErrorReporting>
+      <ProgramDataBaseFile>D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/RelWithDebInfo/AnOpenRGBWallpaperPlugin.pdb</ProgramDataBaseFile>
+      <RandomizedBaseAddress></RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\b86487495550f2377872ccee3bfe8938\qrc_OpenRGBWallpaperEnginePlugin.cpp.rule">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Automatic RCC for OpenRGBWallpaperEnginePlugin.qrc</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+cd D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"D:\Program Files\CMake\bin\cmake.exe" -E cmake_autorcc D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/AnOpenRGBWallpaperPlugin_autogen.dir/AutoRcc_OpenRGBWallpaperEnginePlugin_EWIEGA46WW_Info.json Debug
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\AnOpenRGBWallpaperPlugin_autogen.dir\AutoRcc_OpenRGBWallpaperEnginePlugin_EWIEGA46WW_Info.json;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.png;D:\Qt\5.15.2\msvc2019_64\bin\rcc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\EWIEGA46WW\qrc_OpenRGBWallpaperEnginePlugin.cpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Automatic RCC for OpenRGBWallpaperEnginePlugin.qrc</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+cd D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"D:\Program Files\CMake\bin\cmake.exe" -E cmake_autorcc D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/AnOpenRGBWallpaperPlugin_autogen.dir/AutoRcc_OpenRGBWallpaperEnginePlugin_EWIEGA46WW_Info.json Release
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\AnOpenRGBWallpaperPlugin_autogen.dir\AutoRcc_OpenRGBWallpaperEnginePlugin_EWIEGA46WW_Info.json;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.png;D:\Qt\5.15.2\msvc2019_64\bin\rcc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\EWIEGA46WW\qrc_OpenRGBWallpaperEnginePlugin.cpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Automatic RCC for OpenRGBWallpaperEnginePlugin.qrc</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+cd D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"D:\Program Files\CMake\bin\cmake.exe" -E cmake_autorcc D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/AnOpenRGBWallpaperPlugin_autogen.dir/AutoRcc_OpenRGBWallpaperEnginePlugin_EWIEGA46WW_Info.json MinSizeRel
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\AnOpenRGBWallpaperPlugin_autogen.dir\AutoRcc_OpenRGBWallpaperEnginePlugin_EWIEGA46WW_Info.json;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.png;D:\Qt\5.15.2\msvc2019_64\bin\rcc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\EWIEGA46WW\qrc_OpenRGBWallpaperEnginePlugin.cpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Automatic RCC for OpenRGBWallpaperEnginePlugin.qrc</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+cd D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build
+if %errorlevel% neq 0 goto :cmEnd
+D:
+if %errorlevel% neq 0 goto :cmEnd
+"D:\Program Files\CMake\bin\cmake.exe" -E cmake_autorcc D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/AnOpenRGBWallpaperPlugin_autogen.dir/AutoRcc_OpenRGBWallpaperEnginePlugin_EWIEGA46WW_Info.json RelWithDebInfo
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\AnOpenRGBWallpaperPlugin_autogen.dir\AutoRcc_OpenRGBWallpaperEnginePlugin_EWIEGA46WW_Info.json;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.png;D:\Qt\5.15.2\msvc2019_64\bin\rcc.exe;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\EWIEGA46WW\qrc_OpenRGBWallpaperEnginePlugin.cpp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin -BD:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build --check-stamp-file D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXCompiler.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXCompilerABI.cpp;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerSupport.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseArguments.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CrayClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Diab-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\OrangeC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PellesC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Renesas-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\TIClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeDetermineLinkerId.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeInspectCXXLinker.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Determine-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5Config.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5ConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5ModuleLocation.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreMacros.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QGifPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QICNSPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QICOPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QJpegPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QMinimalIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QOffscreenIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QSvgIconPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QSvgPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTgaPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTiffPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTuioTouchPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QVirtualKeyboardPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWbmpPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWebGLIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWebpPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsDirect2DIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QXdgDesktopPortalThemePlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsMacros.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5Widgets_QWindowsVistaStylePlugin.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin -BD:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build --check-stamp-file D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXCompiler.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXCompilerABI.cpp;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerSupport.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseArguments.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CrayClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Diab-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\OrangeC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PellesC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Renesas-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\TIClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeDetermineLinkerId.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeInspectCXXLinker.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Determine-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5Config.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5ConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5ModuleLocation.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreMacros.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QGifPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QICNSPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QICOPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QJpegPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QMinimalIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QOffscreenIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QSvgIconPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QSvgPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTgaPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTiffPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTuioTouchPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QVirtualKeyboardPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWbmpPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWebGLIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWebpPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsDirect2DIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QXdgDesktopPortalThemePlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsMacros.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5Widgets_QWindowsVistaStylePlugin.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin -BD:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build --check-stamp-file D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXCompiler.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXCompilerABI.cpp;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerSupport.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseArguments.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CrayClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Diab-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\OrangeC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PellesC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Renesas-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\TIClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeDetermineLinkerId.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeInspectCXXLinker.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Determine-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5Config.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5ConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5ModuleLocation.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreMacros.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QGifPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QICNSPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QICOPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QJpegPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QMinimalIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QOffscreenIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QSvgIconPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QSvgPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTgaPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTiffPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTuioTouchPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QVirtualKeyboardPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWbmpPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWebGLIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWebpPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsDirect2DIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QXdgDesktopPortalThemePlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsMacros.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5Widgets_QWindowsVistaStylePlugin.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" -SD:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin -BD:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build --check-stamp-file D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXCompiler.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXCompilerABI.cpp;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCXXInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineCompilerSupport.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseArguments.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestCXXCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\CrayClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Diab-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\HP-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\OrangeC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\PellesC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Renesas-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\TIClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\XL-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCXXLinkerInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeCommonLinkerInformation.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeDetermineLinkerId.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\CMakeInspectCXXLinker.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Linker\MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Linker\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Determine-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-Initialize.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC-CXX.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-4.4\Modules\Platform\WindowsPaths.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5Config.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5ConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5\Qt5ModuleLocation.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Core\Qt5CoreMacros.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5GuiConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QGifPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QICNSPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QICOPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QJpegPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QMinimalIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QOffscreenIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QSvgIconPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QSvgPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTgaPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTiffPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QTuioTouchPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QVirtualKeyboardPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWbmpPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWebGLIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWebpPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsDirect2DIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsIntegrationPlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Gui\Qt5Gui_QXdgDesktopPortalThemePlugin.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfig.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigExtras.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigVersion.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5WidgetsMacros.cmake;D:\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5Widgets\Qt5Widgets_QWindowsVistaStylePlugin.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeCXXCompiler.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeRCCompiler.cmake;D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\4.4.0-rc3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\mocs_compilation_Debug.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.cpp" />
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEngineWidget.cpp" />
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\RGBController.cpp" />
+    <None Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.qrc">
+    </None>
+    <None Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEngineWidget.ui">
+    </None>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEnginePlugin.h" />
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBWallpaperEngineWidget.h" />
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\OpenRGBPluginInterface.h" />
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\ResourceManagerInterface.h" />
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\RGBController.h" />
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\filesystem.h" />
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\i2c_smbus.h" />
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Debug\ui_OpenRGBWallpaperEngineWidget.h" />
+    <None Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\timestamp">
+    </None>
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\EWIEGA46WW\qrc_OpenRGBWallpaperEnginePlugin.cpp" />
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\mocs_compilation_Release.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_Release\ui_OpenRGBWallpaperEngineWidget.h" />
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\mocs_compilation_MinSizeRel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_MinSizeRel\ui_OpenRGBWallpaperEngineWidget.h" />
+    <ClCompile Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\mocs_compilation_RelWithDebInfo.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClInclude Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen\include_RelWithDebInfo\ui_OpenRGBWallpaperEngineWidget.h" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\ZERO_CHECK.vcxproj">
+      <Project>{8680066E-EA3A-3E96-88F2-178E96FC2F38}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen.vcxproj">
+      <Project>{7464856D-A7FA-3295-B4D6-288813BE8902}</Project>
+      <Name>AnOpenRGBWallpaperPlugin_autogen</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Users\WePro\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGB-Wallpaper-Engine-Plugin\build\AnOpenRGBWallpaperPlugin_autogen_timestamp_deps.vcxproj">
+      <Project>{268124C5-402B-3576-A0ED-CF023577E417}</Project>
+      <Name>AnOpenRGBWallpaperPlugin_autogen_timestamp_deps</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
