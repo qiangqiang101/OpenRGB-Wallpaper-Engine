@@ -20,6 +20,7 @@ set(SOURCES
     OpenRGBWallpaperEnginePlugin.cpp
     OpenRGBWallpaperEngineWidget.cpp
     RGBController.cpp
+    StringUtils.cpp
     OpenRGBWallpaperEnginePlugin.qrc
     OpenRGBWallpaperEngineWidget.ui
 )
@@ -31,6 +32,9 @@ set(HEADERS
     OpenRGBPluginInterface.h
     ResourceManagerInterface.h
     RGBController.h
+    RGBControllerInterface.h
+    LogManager.h
+    StringUtils.h
     filesystem.h
     i2c_smbus.h
 )
@@ -40,6 +44,9 @@ add_library(AnOpenRGBWallpaperPlugin MODULE
     ${SOURCES}
     ${HEADERS}
 )
+
+# Include directories
+target_include_directories(AnOpenRGBWallpaperPlugin PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Link against Qt libraries
 target_link_libraries(AnOpenRGBWallpaperPlugin PRIVATE

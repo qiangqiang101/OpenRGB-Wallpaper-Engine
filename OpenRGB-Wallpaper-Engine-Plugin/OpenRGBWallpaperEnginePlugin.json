@@ -1,0 +1,11 @@
+{
+    "Id" : "org.openrgb.openrgbwallpaperengineplugin",
+    "Name" : "OpenRGB Wallpaper Engine Plugin",
+    "VendorId" : "openrgb",
+    "Version" : 1,
+    "VersionStr" : "1.0.0",
+    "Url" : "https://github.com/WePro/OpenRGB-Wallpaper-Engine",
+    "Commit" : "unknown",
+    "Description" : "Connect Wallpaper Engine with OpenRGB",
+    "OpenRGBPluginAPIVersion" : 5
+}
