@@ -10,6 +10,7 @@
 Since this wallpaper cannot be downloaded via the Steam Workshop, you will need to add it manually to your local Wallpaper Engine directory:
 
 - [Download Github](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Download GitLab](https://gitlab.com/OpenRGBDevelopers/OpenRGBWallpaperEnginePlugin/-/releases)
 
 ## 🚀 How to Install (Step-by-Step)
 

@@ -1,6 +1,7 @@
 ## ⬇️ Download
 
-- [Download Github](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Download Github](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)\
+- [Download GitLab](https://gitlab.com/OpenRGBDevelopers/OpenRGBWallpaperEnginePlugin/-/releases)
 
 ## 📚 How to choose?
 
