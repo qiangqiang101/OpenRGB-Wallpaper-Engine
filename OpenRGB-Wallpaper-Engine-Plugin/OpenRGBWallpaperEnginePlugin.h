@@ -64,7 +64,7 @@ class OpenRGBWallpaperEnginePlugin : public QObject, public OpenRGBPluginInterfa
 {
     Q_OBJECT
     Q_INTERFACES(OpenRGBPluginInterface)
-    Q_PLUGIN_METADATA(IID "com.OpenRGBPluginInterface")
+    Q_PLUGIN_METADATA(IID "org.openrgb.OpenRGBPluginInterface" FILE "OpenRGBWallpaperEnginePlugin.json")
     
 public:
     OpenRGBWallpaperEnginePlugin();
@@ -74,10 +74,20 @@ public:
     virtual OpenRGBPluginInfo   GetPluginInfo() override;
     virtual unsigned int        GetPluginAPIVersion() override;
 
-    virtual void                Load(ResourceManagerInterface* resource_manager_ptr) override;
+    virtual void                Load(OpenRGBPluginAPIInterface* plugin_api_ptr) override;
     virtual QWidget*            GetWidget() override;
     virtual QMenu*              GetTrayMenu() override;
     virtual void                Unload() override;
+
+    // OpenRGBPluginInterface overrides for API Version 5
+    virtual void                OnProfileAboutToLoad() override {}
+    virtual void                OnProfileLoad(nlohmann::json profile_data) override {}
+    virtual nlohmann::json      OnProfileSave() override { return nlohmann::json(); }
+    virtual unsigned char*      OnSDKCommand(unsigned int pkt_id, unsigned char * pkt_data, unsigned int *pkt_size) override { return nullptr; }
+
+    virtual void                ProfileManagerUpdated(unsigned int update_reason) override {}
+    virtual void                ResourceManagerUpdated(unsigned int update_reason) override {}
+    virtual void                SettingsManagerUpdated(unsigned int update_reason) override {}
 
     // Helper functions for settings and config
     void                        LoadConfig();
@@ -85,7 +95,7 @@ public:
     void                        RecreateControllers();
 
 private:
-    ResourceManagerInterface*   resource_manager;
+    OpenRGBPluginAPIInterface*  plugin_api;
     OpenRGBWallpaperEngineWidget* widget;
     
     // Native UDP socket
@@ -116,11 +126,12 @@ public:
     WallpaperRGBController(const WallpaperDeviceConfig& config);
     virtual ~WallpaperRGBController();
 
-    virtual void SetupZones() override;
-    virtual void ResizeZone(int zone, int new_size) override;
+    std::vector<RGBColor> GetColors() const { return colors; }
+
+    void SetupZones();
     virtual void DeviceUpdateLEDs() override;
-    virtual void UpdateZoneLEDs(int zone) override;
-    virtual void UpdateSingleLED(int led) override;
+    virtual void DeviceUpdateZoneLEDs(int zone) override;
+    virtual void DeviceUpdateSingleLED(int led) override;
     virtual void DeviceUpdateMode() override;
 
     std::function<void(const std::vector<RGBColor>&)> update_callback;

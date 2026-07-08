@@ -20,6 +20,7 @@ set(SOURCES
     OpenRGBWallpaperEnginePlugin.cpp
     OpenRGBWallpaperEngineWidget.cpp
     RGBController.cpp
+    StringUtils.cpp
     OpenRGBWallpaperEnginePlugin.qrc
     OpenRGBWallpaperEngineWidget.ui
 )
@@ -31,6 +32,9 @@ set(HEADERS
     OpenRGBPluginInterface.h
     ResourceManagerInterface.h
     RGBController.h
+    RGBControllerInterface.h
+    LogManager.h
+    StringUtils.h
     filesystem.h
     i2c_smbus.h
 )

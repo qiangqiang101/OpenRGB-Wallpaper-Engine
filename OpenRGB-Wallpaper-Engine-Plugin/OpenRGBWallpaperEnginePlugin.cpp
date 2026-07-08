@@ -139,9 +139,9 @@ static SizeGrid GetGridSize(const QString& size_str, const QString& tier_str) {
 
 OpenRGBWallpaperEnginePlugin::OpenRGBWallpaperEnginePlugin()
 {
-    resource_manager = nullptr;
-    widget           = nullptr;
-    udp_socket       = INVALID_SOCKET;
+    plugin_api = nullptr;
+    widget     = nullptr;
+    udp_socket = INVALID_SOCKET;
 }
 
 OpenRGBWallpaperEnginePlugin::~OpenRGBWallpaperEnginePlugin()
@@ -168,9 +168,9 @@ unsigned int OpenRGBWallpaperEnginePlugin::GetPluginAPIVersion()
     return OPENRGB_PLUGIN_API_VERSION;
 }
 
-void OpenRGBWallpaperEnginePlugin::Load(ResourceManagerInterface* resource_manager_ptr)
+void OpenRGBWallpaperEnginePlugin::Load(OpenRGBPluginAPIInterface* plugin_api_ptr)
 {
-    resource_manager = resource_manager_ptr;
+    plugin_api = plugin_api_ptr;
     
     LoadConfig();
     InitSocket();
@@ -183,21 +183,21 @@ void OpenRGBWallpaperEnginePlugin::Load(ResourceManagerInterface* resource_manag
             SendRGBData(dev, colors);
         };
         controllers.push_back(controller);
-        resource_manager->RegisterRGBController(controller);
+        plugin_api->RegisterVirtualRGBController(controller);
         
         // Push initial/black frame to trigger connection
-        SendRGBData(dev, controller->colors);
+        SendRGBData(dev, controller->GetColors());
     }
 }
 
 void OpenRGBWallpaperEnginePlugin::Unload()
 {
     // Unregister and delete virtual controllers
-    if (resource_manager)
+    if (plugin_api)
     {
         for (auto* controller : controllers)
         {
-            resource_manager->UnregisterRGBController(controller);
+            plugin_api->UnregisterVirtualRGBController(controller);
             delete controller;
         }
     }
@@ -326,12 +326,12 @@ void OpenRGBWallpaperEnginePlugin::SaveConfig()
 
 void OpenRGBWallpaperEnginePlugin::RecreateControllers()
 {
-    if (!resource_manager) return;
+    if (!plugin_api) return;
     
     // Unregister and delete old ones
     for (auto* controller : controllers)
     {
-        resource_manager->UnregisterRGBController(controller);
+        plugin_api->UnregisterVirtualRGBController(controller);
         delete controller;
     }
     controllers.clear();
@@ -345,10 +345,10 @@ void OpenRGBWallpaperEnginePlugin::RecreateControllers()
             SendRGBData(dev, colors);
         };
         controllers.push_back(controller);
-        resource_manager->RegisterRGBController(controller);
+        plugin_api->RegisterVirtualRGBController(controller);
         
         // Push initial config settings
-        SendRGBData(dev, controller->colors);
+        SendRGBData(dev, controller->GetColors());
     }
 }
 
@@ -593,16 +593,6 @@ WallpaperRGBController::WallpaperRGBController(const WallpaperDeviceConfig& conf
 
 WallpaperRGBController::~WallpaperRGBController()
 {
-    // Clean up matrix map allocation
-    for (auto& wpe_zone : zones)
-    {
-        if (wpe_zone.matrix_map)
-        {
-            delete[] wpe_zone.matrix_map->map;
-            delete wpe_zone.matrix_map;
-            wpe_zone.matrix_map = nullptr;
-        }
-    }
 }
 
 void WallpaperRGBController::SetupZones()
@@ -619,15 +609,12 @@ void WallpaperRGBController::SetupZones()
     wpe_zone.leds_max = wpe_zone.leds_count;
     wpe_zone.start_idx = 0;
     
-    wpe_zone.matrix_map = new matrix_map_type();
-    wpe_zone.matrix_map->height = height;
-    wpe_zone.matrix_map->width = width;
-    wpe_zone.matrix_map->map = new unsigned int[width * height];
+    wpe_zone.matrix_map.Set(height, width, nullptr);
     for (unsigned int y = 0; y < height; ++y)
     {
         for (unsigned int x = 0; x < width; ++x)
         {
-            wpe_zone.matrix_map->map[y * width + x] = y * width + x;
+            wpe_zone.matrix_map.map[y * width + x] = y * width + x;
         }
     }
     
@@ -644,11 +631,6 @@ void WallpaperRGBController::SetupZones()
     colors.resize(width * height, 0);
 }
 
-void WallpaperRGBController::ResizeZone(int /*zone_idx*/, int /*new_size*/)
-{
-    // Size is fixed by aspects
-}
-
 void WallpaperRGBController::DeviceUpdateLEDs()
 {
     if (update_callback)
@@ -657,12 +639,12 @@ void WallpaperRGBController::DeviceUpdateLEDs()
     }
 }
 
-void WallpaperRGBController::UpdateZoneLEDs(int /*zone_idx*/)
+void WallpaperRGBController::DeviceUpdateZoneLEDs(int /*zone_idx*/)
 {
     DeviceUpdateLEDs();
 }
 
-void WallpaperRGBController::UpdateSingleLED(int /*led_idx*/)
+void WallpaperRGBController::DeviceUpdateSingleLED(int /*led_idx*/)
 {
     DeviceUpdateLEDs();
 }
