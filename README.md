@@ -27,8 +27,8 @@ Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting
 
 ## Plugin
 ### OpenRGB 0.9 - 1.0 RC3
-[Download Github](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
-[Download GitLab](https://gitlab.com/OpenRGBDevelopers/OpenRGBWallpaperEnginePlugin/-/releases)
+- [Download Github](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Download GitLab](https://gitlab.com/OpenRGBDevelopers/OpenRGBWallpaperEnginePlugin/-/releases)
 
 ### OpenRGB 1.0 (Next)
 Coming soon
