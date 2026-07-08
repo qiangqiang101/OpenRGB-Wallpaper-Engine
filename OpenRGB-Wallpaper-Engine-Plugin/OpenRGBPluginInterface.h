@@ -1,7 +1,7 @@
 /*---------------------------------------------------------*\
 | OpenRGBPluginInterface.h                                  |
 |                                                           |
-|   OpenRGB SDK network protocol                            |
+|   OpenRGB Plugin API                                      |
 |                                                           |
 |   herosilas12 (CoffeeIsLife)                  11 Dec 2020 |
 |   Adam Honse (CalcProgrammer1)                05 Jan 2021 |
@@ -15,9 +15,11 @@
 #include <QtPlugin>
 #include <QLabel>
 #include <QMenu>
-#include "ResourceManagerInterface.h"
+#include <nlohmann/json.hpp>
+#include "filesystem.h"
+#include "RGBControllerInterface.h"
 
-#define OpenRGBPluginInterface_IID  "com.OpenRGBPluginInterface"
+#define OpenRGBPluginInterface_IID  "org.openrgb.OpenRGBPluginInterface"
 
 /*-----------------------------------------------------------------------------------------------------*\
 | OpenRGB Plugin API Versions                                                                           |
@@ -25,13 +27,14 @@
 | 1:    OpenRGB 0.61    First versioned API, introduced with plugin settings changes                    |
 | 2:    OpenRGB 0.7     First released versioned API, callback unregister functions in ResourceManager  |
 | 3:    OpenRGB 0.9     Use filesystem::path for paths, Added segments                                  |
-| 4:    OpenRGB 1.0     Resizable effects-only zones, zone flags                                        |
+| 4:    OpenRGB 1.0rc2  Resizable effects-only zones, zone flags                                        |
+| 5:    OpenRGB 1.0     RGBController API overhaul, protected members, features TBD                     |
 \*-----------------------------------------------------------------------------------------------------*/
-#define OPENRGB_PLUGIN_API_VERSION  4
+#define OPENRGB_PLUGIN_API_VERSION  5
 
-/*-----------------------------------------------------------------------------------------------------*\
-| Plugin Tab Location Values                                                                            |
-\*-----------------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------*\
+| Plugin Tab Location Values                                |
+\*---------------------------------------------------------*/
 enum
 {
     OPENRGB_PLUGIN_LOCATION_TOP         = 0,    /* Top-level tab (no icon)                             */
@@ -42,9 +45,9 @@ enum
 
 struct OpenRGBPluginInfo
 {
-    /*-------------------------------------------------------------------------------------------------*\
-    | Plugin Details                                                                                    |
-    \*-------------------------------------------------------------------------------------------------*/
+    /*-----------------------------------------------------*\
+    | Plugin Details                                        |
+    \*-----------------------------------------------------*/
     std::string                 Name;           /* Plugin name string                                  */
     std::string                 Description;    /* Plugin description string                           */
     std::string                 Version;        /* Plugin version string                               */
@@ -52,35 +55,96 @@ struct OpenRGBPluginInfo
     std::string                 URL;            /* Plugin project URL string                           */
     QImage                      Icon;           /* Icon image (displayed 64x64)                        */
 
-    /*-------------------------------------------------------------------------------------------------*\
-    | Plugin Tab Configuration                                                                          |
-    \*-------------------------------------------------------------------------------------------------*/
+    /*-----------------------------------------------------*\
+    | Plugin Tab Configuration                              |
+    \*-----------------------------------------------------*/
     unsigned int                Location;       /* Plugin tab location from Plugin Tab Location enum   */
                                                 /* This field is mandatory, an invalid value will      */
                                                 /* prevent plugin tab from being displayed             */
     std::string                 Label;          /* Plugin tab label string                             */
     std::string                 TabIconString;  /* Plugin tab icon string, leave empty to use custom   */
     QImage                      TabIcon;        /* Custom tab icon image (displayed 16x16)             */
+
+    /*-----------------------------------------------------*\
+    | Plugin SDK Details                                    |
+    \*-----------------------------------------------------*/
+    unsigned int                ProtocolVersion;/* Plugin SDK protocol version                         */
+};
+
+class OpenRGBPluginAPIInterface
+{
+public:
+    /*-----------------------------------------------------*\
+    | LogManager APIs                                       |
+    \*-----------------------------------------------------*/
+    virtual void                                    LogEntry(const char* filename, int line, unsigned int level, const char* fmt, ...)  = 0;
+
+    /*-----------------------------------------------------*\
+    | PluginManager APIs                                    |
+    \*-----------------------------------------------------*/
+    virtual RGBControllerInterface*                 CreateVirtualRGBController(RGBController_Setup* setup)                                          = 0;
+    virtual void                                    DeleteVirtualRGBController(RGBControllerInterface* rgb_controller)                              = 0;
+    virtual void                                    RegisterVirtualRGBController(RGBControllerInterface* rgb_controller)                            = 0;
+    virtual void                                    RegisterVirtualRGBControllerInThread(RGBControllerInterface* rgb_controller)                    = 0;
+    virtual void                                    UnregisterVirtualRGBController(RGBControllerInterface* rgb_controller)                          = 0;
+    virtual void                                    UpdateVirtualRGBController(RGBControllerInterface* rgb_controller, RGBController_Setup* setup)  = 0;
+    virtual void                                    UnregisterVirtualRGBControllerInThread(RGBControllerInterface* rgb_controller)                  = 0;
+
+    /*-----------------------------------------------------*\
+    | ProfileManager APIs                                   |
+    \*-----------------------------------------------------*/
+    virtual void                                    ClearActiveProfile()                                                                = 0;
+    virtual std::vector<std::string>                GetProfileList()                                                                    = 0;
+    virtual bool                                    LoadProfile(std::string profile_name)                                               = 0;
+
+    /*-----------------------------------------------------*\
+    | ResourceManager APIs                                  |
+    \*-----------------------------------------------------*/
+    virtual filesystem::path                        GetConfigurationDirectory()                                                         = 0;
+    virtual bool                                    GetDetectionEnabled()                                                               = 0;
+    virtual unsigned int                            GetDetectionPercent()                                                               = 0;
+    virtual std::string                             GetDetectionString()                                                                = 0;
+    virtual void                                    RescanDevices()                                                                     = 0;
+    virtual void                                    WaitForDetection()                                                                  = 0;
+    virtual std::vector<RGBControllerInterface*>    GetRGBControllers()                                                                 = 0;
+
+    /*-----------------------------------------------------*\
+    | SettingsManager APIs                                  |
+    \*-----------------------------------------------------*/
+    virtual nlohmann::json                          GetSettings(std::string settings_key)                                               = 0;
+    virtual void                                    SaveSettings()                                                                      = 0;
+    virtual void                                    SetSettings(std::string settings_key, nlohmann::json new_settings)                  = 0;
 };
 
 class OpenRGBPluginInterface
 {
 public:
-    virtual                    ~OpenRGBPluginInterface() {}
+    virtual                                        ~OpenRGBPluginInterface() {}
 
-    /*-------------------------------------------------------------------------------------------------*\
-    | Plugin Information                                                                                |
-    \*-------------------------------------------------------------------------------------------------*/
-    virtual OpenRGBPluginInfo   GetPluginInfo()                                                     = 0;
-    virtual unsigned int        GetPluginAPIVersion()                                               = 0;
+    /*-----------------------------------------------------*\
+    | Plugin Information                                    |
+    \*-----------------------------------------------------*/
+    virtual OpenRGBPluginInfo                       GetPluginInfo()                                                                     = 0;
+    virtual unsigned int                            GetPluginAPIVersion()                                                               = 0;
 
-    /*-------------------------------------------------------------------------------------------------*\
-    | Plugin Functionality                                                                              |
-    \*-------------------------------------------------------------------------------------------------*/
-    virtual void                Load(ResourceManagerInterface* resource_manager_ptr)                = 0;
-    virtual QWidget*            GetWidget()                                                         = 0;
-    virtual QMenu*              GetTrayMenu()                                                       = 0;
-    virtual void                Unload()                                                            = 0;
+    /*-----------------------------------------------------*\
+    | Plugin Functionality                                  |
+    \*-----------------------------------------------------*/
+    virtual void                                    Load(OpenRGBPluginAPIInterface* plugin_api_ptr)                                     = 0;
+    virtual QWidget*                                GetWidget()                                                                         = 0;
+    virtual QMenu*                                  GetTrayMenu()                                                                       = 0;
+    virtual void                                    Unload()                                                                            = 0;
+    virtual void                                    OnProfileAboutToLoad()                                                              = 0;
+    virtual void                                    OnProfileLoad(nlohmann::json profile_data)                                          = 0;
+    virtual nlohmann::json                          OnProfileSave()                                                                     = 0;
+    virtual unsigned char*                          OnSDKCommand(unsigned int pkt_id, unsigned char * pkt_data, unsigned int *pkt_size) = 0;
+
+    /*-----------------------------------------------------*\
+    | Update Signals                                        |
+    \*-----------------------------------------------------*/
+    virtual void                                    ProfileManagerUpdated(unsigned int update_reason)                                   = 0;
+    virtual void                                    ResourceManagerUpdated(unsigned int update_reason)                                  = 0;
+    virtual void                                    SettingsManagerUpdated(unsigned int update_reason)                                  = 0;
 };
 
 Q_DECLARE_INTERFACE(OpenRGBPluginInterface, OpenRGBPluginInterface_IID)

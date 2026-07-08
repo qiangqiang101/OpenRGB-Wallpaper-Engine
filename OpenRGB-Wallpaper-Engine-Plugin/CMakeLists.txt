@@ -41,6 +41,9 @@ add_library(AnOpenRGBWallpaperPlugin MODULE
     ${HEADERS}
 )
 
+# Include directories
+target_include_directories(AnOpenRGBWallpaperPlugin PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 # Link against Qt libraries
 target_link_libraries(AnOpenRGBWallpaperPlugin PRIVATE
     Qt${QT_VERSION_MAJOR}::Core

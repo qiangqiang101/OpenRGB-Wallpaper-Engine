@@ -100,7 +100,7 @@ CMAKE_MT:FILEPATH=CMAKE_MT-NOTFOUND
 // find_package(), find_program(), find_library(), find_file(),
 // and find_path(). Empty by default; intended to be set by the
 // project or the user.
-CMAKE_PREFIX_PATH:UNINITIALIZED=D:\Qt\5.15.2\msvc2019_64
+CMAKE_PREFIX_PATH:UNINITIALIZED=D:/Qt/5.15.2/msvc2019_64
 
 //Value Computed by CMake
 CMAKE_PROJECT_COMPAT_VERSION:STATIC=
