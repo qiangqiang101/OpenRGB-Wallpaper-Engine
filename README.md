@@ -26,7 +26,7 @@ Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting
 [Wallpaper Engine](wpe.md) | [Lively Wallpaper](lively.md)
 
 ## Plugin
-[Download Github](https://github.com/qiangqiang101/SignalRGB-Wallpaper-Engine/releases)
+[Download Github](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
 
 # 🚧 Prerequisite
 - [OpenRGB by CalcProgrammer1](https://gitlab.com/CalcProgrammer1/OpenRGB)
