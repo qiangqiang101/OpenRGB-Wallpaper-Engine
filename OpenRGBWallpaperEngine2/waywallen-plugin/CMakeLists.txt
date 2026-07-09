@@ -6,12 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL2 REQUIRED sdl2)
-pkg_check_modules(CAIRO REQUIRED cairo)
-pkg_check_modules(PNG REQUIRED libpng)
-pkg_check_modules(EGL REQUIRED egl)
+pkg_check_modules(VULKAN REQUIRED vulkan)
 pkg_check_modules(GBM REQUIRED gbm)
-pkg_check_modules(GLESV2 REQUIRED glesv2)
 
 add_executable(openrgb-waywallen-plugin
     src/main.cpp
@@ -26,9 +22,9 @@ add_executable(openrgb-waywallen-plugin
     /tmp/waywallen/bridge/src/pool_vulkan.c
 )
 
-target_include_directories(openrgb-waywallen-plugin PRIVATE ${SDL2_INCLUDE_DIRS} ${CAIRO_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS} /tmp/waywallen/bridge/include)
+target_include_directories(openrgb-waywallen-plugin PRIVATE ${VULKAN_INCLUDE_DIRS} ${GBM_INCLUDE_DIRS} /tmp/waywallen/bridge/include)
 target_compile_options(openrgb-waywallen-plugin PRIVATE -Wall -Wextra -Wpedantic)
-target_link_libraries(openrgb-waywallen-plugin PRIVATE ${SDL2_LIBRARIES} ${CAIRO_LIBRARIES} ${PNG_LIBRARIES} ${EGL_LIBRARIES} ${GBM_LIBRARIES} ${GLESV2_LIBRARIES} pthread)
+target_link_libraries(openrgb-waywallen-plugin PRIVATE ${VULKAN_LIBRARIES} ${GBM_LIBRARIES} pthread)
 
 install(TARGETS openrgb-waywallen-plugin RUNTIME DESTINATION bin)
 
