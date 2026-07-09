@@ -1,0 +1,17 @@
+[plugin]
+id = "org.openrgb.waywallen"
+name = "OpenRGB"
+version = "0.1.0"
+entry = "main.lua"
+entry_version = 2
+
+[renderers.openrgb-waywallen-plugin]
+bin = "bin/openrgb-waywallen-plugin"
+types = ["image"]
+priority = 80
+spawn_version = 1
+
+[renderers.openrgb-waywallen-plugin.settings]
+udp_port = { type = "u32", default = 8133, min = 1, max = 65535, step = 1, identity = true }
+background_image = { type = "string", default = "", identity = true }
+background_color = { type = "string", default = "1,1,1,1", identity = true }
