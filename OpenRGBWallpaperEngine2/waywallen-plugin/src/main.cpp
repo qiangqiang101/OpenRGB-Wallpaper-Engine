@@ -88,12 +88,22 @@ public:
         settings_ = settings;
     }
 
+    Settings getSettings() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return settings_;
+    }
+
     std::optional<RGBFrame> popFrame() {
         std::lock_guard<std::mutex> lock(mutex_);
         if (frames_.empty()) return std::nullopt;
         RGBFrame frame = std::move(frames_.front());
         frames_.pop();
         return frame;
+    }
+
+    bool hasSettingsPacket() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return settingsReceived_;
     }
 
 private:
@@ -137,7 +147,7 @@ private:
             case 1: return portrait(8, 2, tier);     /* Portrait4_1 */
             case 2: return landscape(8, 6, tier);    /* Landscape4_3 */
             case 3: return portrait(8, 6, tier);     /* Portrait4_3 */
-            case 4: return landscape(10, 8, tier);   /* Landscape5_4 */
+            case 4: return landscape(48, 27, 2);   /* Landscape5_4 */
             case 5: return portrait(10, 8, tier);    /* Portrait5_4 */
             case 6: return landscape(32, 18, tier);  /* Landscape16_9 */
             case 7: return portrait(32, 18, tier);   /* Portrait16_9 */
@@ -180,6 +190,7 @@ private:
             nextSettings.backgroundImage = std::string(reinterpret_cast<const char*>(data + 19), len - 19);
             nextSettings.backgroundImage.erase(nextSettings.backgroundImage.find_last_not_of('\0') + 1);
             setSettings(nextSettings);
+            settingsReceived_ = true;
             std::cerr << "[openrgb] settings: matrixType=" << matrixType
                       << " tier=" << matrixTier << " -> " << w << "x" << h << std::endl;
         }
@@ -201,9 +212,10 @@ private:
     int socket_ = -1;
     bool running_ = false;
     std::thread receiverThread_;
-    std::mutex mutex_;
+    mutable std::mutex mutex_;
     std::queue<RGBFrame> frames_;
     Settings settings_{};
+    bool settingsReceived_ = false;
 };
 
 /* Minimal Vulkan context for uploading RGB frames to DMA-BUF slots. */
@@ -944,15 +956,8 @@ int main(int argc, char** argv) {
             std::cout << "Waiting for OpenRGB settings packet to determine matrix size..." << std::endl;
             bool gotSettings = false;
             for (int i = 0; i < 300; ++i) {  // up to 30s
-                /* Peek at current settings via a dummy frame pop attempt */
-                if (receiver.popFrame()) {
-                    /* Got a frame — settings were already applied by the
-                     * receiver when the settings packet arrived. */
-                    gotSettings = true;
-                    break;
-                }
                 /* Check if settings were updated by inspecting the receiver */
-                if (settings.width != 32 || settings.height != 32) {
+                if (receiver.hasSettingsPacket()) {
                     gotSettings = true;
                     break;
                 }
@@ -962,10 +967,10 @@ int main(int argc, char** argv) {
                 std::cout << "No settings packet received; using default 32x32" << std::endl;
             }
 
-            /* Re-read the latest settings from the receiver */
-            /* The receiver applies settings internally; we need to expose
-             * the current width/height. For simplicity, query via a frame. */
-            bridge.emplace(settings.ipcPath, settings.width, settings.height);
+            /* Get the actual matrix dimensions from the receiver */
+            Settings actualSettings = receiver.getSettings();
+            std::cout << "Using matrix size: " << actualSettings.width << "x" << actualSettings.height << std::endl;
+            bridge.emplace(settings.ipcPath, actualSettings.width, actualSettings.height);
             bridge->connectAndHandshake();
         }
 
