@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(openrgb_waywallen_plugin LANGUAGES CXX)
+project(openrgb_waywallen_plugin LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,14 +9,26 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(CAIRO REQUIRED cairo)
 pkg_check_modules(PNG REQUIRED libpng)
+pkg_check_modules(EGL REQUIRED egl)
+pkg_check_modules(GBM REQUIRED gbm)
+pkg_check_modules(GLESV2 REQUIRED glesv2)
 
 add_executable(openrgb-waywallen-plugin
     src/main.cpp
+    /tmp/waywallen/bridge/src/bridge.c
+    /tmp/waywallen/bridge/src/drm_fourcc.c
+    /tmp/waywallen/bridge/src/ipc_v1.c
+    /tmp/waywallen/bridge/src/probe_egl.c
+    /tmp/waywallen/bridge/src/probe_vk.c
+    /tmp/waywallen/bridge/src/sync_release.c
+    /tmp/waywallen/bridge/src/pool.c
+    /tmp/waywallen/bridge/src/pool_egl_gbm.c
+    /tmp/waywallen/bridge/src/pool_vulkan.c
 )
 
-target_include_directories(openrgb-waywallen-plugin PRIVATE ${SDL2_INCLUDE_DIRS} ${CAIRO_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS})
+target_include_directories(openrgb-waywallen-plugin PRIVATE ${SDL2_INCLUDE_DIRS} ${CAIRO_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS} /tmp/waywallen/bridge/include)
 target_compile_options(openrgb-waywallen-plugin PRIVATE -Wall -Wextra -Wpedantic)
-target_link_libraries(openrgb-waywallen-plugin PRIVATE ${SDL2_LIBRARIES} ${CAIRO_LIBRARIES} ${PNG_LIBRARIES} pthread)
+target_link_libraries(openrgb-waywallen-plugin PRIVATE ${SDL2_LIBRARIES} ${CAIRO_LIBRARIES} ${PNG_LIBRARIES} ${EGL_LIBRARIES} ${GBM_LIBRARIES} ${GLESV2_LIBRARIES} pthread)
 
 install(TARGETS openrgb-waywallen-plugin RUNTIME DESTINATION bin)
 

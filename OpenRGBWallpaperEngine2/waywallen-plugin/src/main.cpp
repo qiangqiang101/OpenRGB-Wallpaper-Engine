@@ -4,7 +4,9 @@
 #include <chrono>
 #include <cstdint>
 #include <cerrno>
+#include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <iostream>
 #include <mutex>
 #include <netinet/in.h>
@@ -15,10 +17,19 @@
 #include <thread>
 #include <unistd.h>
 #include <vector>
-#include <sys/eventfd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
+#include <fcntl.h>
+
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+
+#include <waywallen-bridge/bridge.h>
+#include <waywallen-bridge/ipc_v1.h>
+#include <waywallen-bridge/pool.h>
 
 namespace {
 
@@ -153,17 +164,92 @@ private:
     Settings settings_{};
 };
 
+class EGLRenderContext {
+public:
+    EGLRenderContext(std::size_t width, std::size_t height) {
+        display_ = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        if (display_ == EGL_NO_DISPLAY) {
+            throw std::runtime_error("eglGetDisplay failed");
+        }
+
+        EGLint major = 0;
+        EGLint minor = 0;
+        if (!eglInitialize(display_, &major, &minor)) {
+            throw std::runtime_error("eglInitialize failed");
+        }
+
+        if (!eglBindAPI(EGL_OPENGL_ES_API)) {
+            throw std::runtime_error("eglBindAPI failed");
+        }
+
+        const EGLint configAttribs[] = {
+            EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+            EGL_RED_SIZE, 8,
+            EGL_GREEN_SIZE, 8,
+            EGL_BLUE_SIZE, 8,
+            EGL_ALPHA_SIZE, 8,
+            EGL_NONE,
+        };
+
+        EGLConfig config = nullptr;
+        EGLint configCount = 0;
+        if (!eglChooseConfig(display_, configAttribs, &config, 1, &configCount) || configCount == 0) {
+            throw std::runtime_error("eglChooseConfig failed");
+        }
+
+        const EGLint pbufferAttribs[] = {
+            EGL_WIDTH, static_cast<EGLint>(width),
+            EGL_HEIGHT, static_cast<EGLint>(height),
+            EGL_NONE,
+        };
+        surface_ = eglCreatePbufferSurface(display_, config, pbufferAttribs);
+        if (surface_ == EGL_NO_SURFACE) {
+            throw std::runtime_error("eglCreatePbufferSurface failed");
+        }
+
+        const EGLint contextAttribs[] = {
+            EGL_CONTEXT_CLIENT_VERSION, 2,
+            EGL_NONE,
+        };
+        context_ = eglCreateContext(display_, config, EGL_NO_CONTEXT, contextAttribs);
+        if (context_ == EGL_NO_CONTEXT) {
+            throw std::runtime_error("eglCreateContext failed");
+        }
+
+        if (!eglMakeCurrent(display_, surface_, surface_, context_)) {
+            throw std::runtime_error("eglMakeCurrent failed");
+        }
+    }
+
+    ~EGLRenderContext() {
+        if (display_ != EGL_NO_DISPLAY) {
+            eglMakeCurrent(display_, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+            if (context_ != EGL_NO_CONTEXT) {
+                eglDestroyContext(display_, context_);
+            }
+            if (surface_ != EGL_NO_SURFACE) {
+                eglDestroySurface(display_, surface_);
+            }
+            eglTerminate(display_);
+        }
+    }
+
+    EGLDisplay display() const { return display_; }
+
+private:
+    EGLDisplay display_ = EGL_NO_DISPLAY;
+    EGLSurface surface_ = EGL_NO_SURFACE;
+    EGLContext context_ = EGL_NO_CONTEXT;
+};
+
 class WaywallenBridge {
 public:
-    explicit WaywallenBridge(std::string ipcPath) : ipcPath_(std::move(ipcPath)) {}
+    WaywallenBridge(std::string ipcPath, std::size_t width, std::size_t height)
+        : ipcPath_(std::move(ipcPath)), width_(width), height_(height), eglContext_(width, height) {}
 
     ~WaywallenBridge() {
-        running_ = false;
-        if (frameThread_.joinable()) frameThread_.join();
-        if (fd_ >= 0) {
-            ::close(fd_);
-            fd_ = -1;
-        }
+        stop();
     }
 
     void connectAndHandshake() {
@@ -181,61 +267,60 @@ public:
         }
 
         readInitMessage();
-        sendReady();
         running_ = true;
-        frameThread_ = std::thread([this] { frameLoop(); });
+        eventThread_ = std::thread([this] { eventLoop(); });
     }
 
-private:
-    static void sendAll(int fd, const void* data, std::size_t size) {
-        const auto* ptr = static_cast<const char*>(data);
-        std::size_t sent = 0;
-        while (sent < size) {
-            const ssize_t chunk = ::send(fd, ptr + sent, size - sent, MSG_NOSIGNAL);
-            if (chunk <= 0) throw std::runtime_error("send failed");
-            sent += static_cast<std::size_t>(chunk);
+    void stop() {
+        running_ = false;
+        if (eventThread_.joinable()) {
+            eventThread_.join();
+        }
+        if (fd_ >= 0) {
+            ::close(fd_);
+            fd_ = -1;
+        }
+        if (pool_ != nullptr) {
+            ww_bridge_pool_destroy(pool_);
+            pool_ = nullptr;
         }
     }
 
-    static void sendEvent(int fd, std::uint16_t opcode, const std::vector<std::uint8_t>& body, int fdToPass = -1) {
-        std::vector<std::uint8_t> frame(4 + body.size());
-        frame[0] = static_cast<std::uint8_t>(opcode & 0xff);
-        frame[1] = static_cast<std::uint8_t>((opcode >> 8) & 0xff);
-        const std::uint16_t total = static_cast<std::uint16_t>(4 + body.size());
-        frame[2] = static_cast<std::uint8_t>(total & 0xff);
-        frame[3] = static_cast<std::uint8_t>((total >> 8) & 0xff);
-        std::copy(body.begin(), body.end(), frame.begin() + 4);
+    void renderFrame(const RGBFrame& frame) {
+        if (!running_ || pool_ == nullptr) return;
 
-        if (fdToPass >= 0) {
-            msghdr msg{};
-            iovec iov{};
-            iov.iov_base = frame.data();
-            iov.iov_len = frame.size();
-            msg.msg_iov = &iov;
-            msg.msg_iovlen = 1;
-            std::array<unsigned char, CMSG_SPACE(sizeof(int))> control{};
-            msg.msg_control = control.data();
-            msg.msg_controllen = CMSG_SPACE(sizeof(int));
-
-            cmsghdr* cmsg = CMSG_FIRSTHDR(&msg);
-            cmsg->cmsg_level = SOL_SOCKET;
-            cmsg->cmsg_type = SCM_RIGHTS;
-            cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-            *reinterpret_cast<int*>(CMSG_DATA(cmsg)) = fdToPass;
-
-            const ssize_t sent = ::sendmsg(fd, &msg, MSG_NOSIGNAL);
-            if (sent < 0) throw std::runtime_error("sendmsg failed");
+        const auto slotIndex = nextSlot_++ % std::max<std::uint32_t>(1u, slotCount_);
+        ww_pool_slot_t slot{};
+        if (ww_bridge_pool_acquire_slot(pool_, slotIndex, &slot) != 0) {
             return;
         }
 
-        sendAll(fd, frame.data(), frame.size());
+        renderRgbFrame(frame, slot);
+        ww_bridge_pool_submit_slot(pool_, fd_, slotIndex, -1);
+        ww_bridge_pool_wait_slot_release(pool_, slotIndex, 50);
     }
 
-    static std::vector<std::uint8_t> readExact(int fd, std::size_t size) {
+private:
+    static int openRenderNode() {
+        const std::filesystem::path driPath("/dev/dri");
+        std::error_code ec;
+        if (std::filesystem::exists(driPath, ec)) {
+            for (const auto& entry : std::filesystem::directory_iterator(driPath, ec)) {
+                const std::string name = entry.path().filename().string();
+                if (name.rfind("renderD", 0) == 0) {
+                    const int fd = ::open(entry.path().c_str(), O_RDWR | O_CLOEXEC);
+                    if (fd >= 0) return fd;
+                }
+            }
+        }
+        return ::open("/dev/dri/renderD128", O_RDWR | O_CLOEXEC);
+    }
+
+    static std::vector<std::uint8_t> readExact(int socketFd, std::size_t size) {
         std::vector<std::uint8_t> buffer(size);
         std::size_t offset = 0;
         while (offset < size) {
-            const ssize_t chunk = ::recv(fd, buffer.data() + offset, size - offset, 0);
+            const ssize_t chunk = ::recv(socketFd, buffer.data() + offset, size - offset, 0);
             if (chunk <= 0) throw std::runtime_error("recv failed");
             offset += static_cast<std::size_t>(chunk);
         }
@@ -251,52 +336,283 @@ private:
         if (bodyLen > 0) {
             readExact(fd_, bodyLen);
         }
-        if (opcode != 1) {
+        if (opcode != WW_EVT_IN_INIT) {
             throw std::runtime_error("unexpected control opcode");
         }
     }
 
-    void sendReady() {
-        std::vector<std::uint8_t> body(8, 0);
-        sendEvent(fd_, 1, body);
-    }
-
-    void frameLoop() {
-        std::uint64_t seq = 0;
+    void eventLoop() {
         while (running_) {
-            std::vector<std::uint8_t> body(28, 0);
-            std::uint32_t imageIndex = 0;
-            std::uint64_t tsNs = static_cast<std::uint64_t>(
-                std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::system_clock::now().time_since_epoch()).count());
-            std::memcpy(body.data(), &imageIndex, sizeof(imageIndex));
-            std::memcpy(body.data() + 4, &seq, sizeof(seq));
-            std::memcpy(body.data() + 12, &tsNs, sizeof(tsNs));
-            std::uint64_t releasePoint = 0;
-            std::memcpy(body.data() + 20, &releasePoint, sizeof(releasePoint));
-            const int syncFd = ::eventfd(0, 0);
-            if (syncFd < 0) {
-                std::cerr << "eventfd failed" << std::endl;
-                break;
+            uint16_t opcode = 0;
+            uint8_t* body = nullptr;
+            size_t bodyLen = 0;
+            int fds[8] = {};
+            size_t nFds = 0;
+            const int rc = ww_bridge_recv_frame(fd_, &opcode, &body, &bodyLen, fds, 8, &nFds);
+            if (rc != 0) {
+                if (!running_) break;
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                continue;
             }
-            try {
-                sendEvent(fd_, 3, body, syncFd);
-            } catch (const std::exception& ex) {
-                std::cerr << "frame emit failed: " << ex.what() << std::endl;
-                ::close(syncFd);
-                break;
+
+            processIncomingMessage(opcode, body, bodyLen, fds, nFds);
+            if (body != nullptr) {
+                std::free(body);
+                body = nullptr;
             }
-            ::close(syncFd);
-            ++seq;
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            for (size_t i = 0; i < nFds; ++i) {
+                if (fds[i] >= 0) ::close(fds[i]);
+            }
         }
     }
 
+    void processIncomingMessage(uint16_t opcode, const uint8_t* body, size_t bodyLen, const int* fds, size_t nFds) {
+        (void)fds;
+        (void)nFds;
+        switch (opcode) {
+            case WW_EVT_IN_INIT: {
+                ww_evt_in_init_t init{};
+                if (ww_evt_in_init_decode(body, bodyLen, &init) == 0) {
+                    ww_evt_in_init_free(&init);
+                }
+                break;
+            }
+            case WW_EVT_IN_NEGOTIATE_BUFFERS: {
+                ww_evt_in_negotiate_buffers_t directive{};
+                if (ww_evt_in_negotiate_buffers_decode(body, bodyLen, &directive) == 0) {
+                    handleNegotiateBuffers(directive);
+                    ww_evt_in_negotiate_buffers_free(&directive);
+                }
+                break;
+            }
+            case WW_EVT_IN_PLAY: {
+                ww_evt_in_play_t play{};
+                if (ww_evt_in_play_decode(body, bodyLen, &play) == 0) {
+                    ww_evt_in_play_free(&play);
+                }
+                break;
+            }
+            case WW_EVT_IN_SHUTDOWN: {
+                running_ = false;
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    void handleNegotiateBuffers(const ww_evt_in_negotiate_buffers_t& directive) {
+        if (pool_ != nullptr) {
+            ww_bridge_pool_destroy(pool_);
+            pool_ = nullptr;
+        }
+
+        const int drmFd = openRenderNode();
+        if (drmFd < 0) {
+            std::cerr << "Failed to open DRM render node: " << std::strerror(errno) << std::endl;
+            return;
+        }
+
+        ww_pool_egl_gbm_init_t init{};
+        init.egl_display = eglContext_.display();
+        init.drm_render_fd = drmFd;
+        init.get_proc_address = reinterpret_cast<void* (*)(const char*)>(eglGetProcAddress);
+        init.drm_render_major = 0;
+        init.drm_render_minor = 0;
+
+        if (ww_bridge_pool_create(WW_POOL_BACKEND_EGL_GBM, &init, &pool_) != 0) {
+            ::close(drmFd);
+            std::cerr << "ww_bridge_pool_create failed" << std::endl;
+            return;
+        }
+
+        if (ww_bridge_pool_advertise_caps(pool_, fd_, width_, height_, 0) != 0) {
+            std::cerr << "ww_bridge_pool_advertise_caps failed" << std::endl;
+        }
+
+        slotCount_ = std::max<std::uint32_t>(1u, directive.count);
+        std::cout << "waywallen buffer negotiation active with " << slotCount_ << " slots" << std::endl;
+
+        ww_pool_directive_t apply{};
+        apply.category = directive.path;
+        apply.mem_source = directive.mem_source;
+        apply.fourcc = directive.fourcc;
+        apply.modifier = directive.modifier;
+        apply.plane_count = directive.plane_count;
+        apply.sync_mode = directive.sync_mode;
+        apply.color = directive.color;
+        apply.mem_hint = directive.mem_hint;
+        apply.width = static_cast<std::uint32_t>(width_);
+        apply.height = static_cast<std::uint32_t>(height_);
+        apply.count = slotCount_;
+        if (ww_bridge_pool_apply_directive(pool_, fd_, &apply) != 0) {
+            std::cerr << "ww_bridge_pool_apply_directive failed" << std::endl;
+        }
+    }
+
+    void renderRgbFrame(const RGBFrame& frame, const ww_pool_slot_t& slot) {
+        if (frame.pixels.empty()) return;
+
+        if (!shaderProgram_) {
+            shaderProgram_ = compileShaderProgram();
+            if (!shaderProgram_) {
+                return;
+            }
+            positionLocation_ = glGetAttribLocation(shaderProgram_, "aPosition");
+            textureLocation_ = glGetUniformLocation(shaderProgram_, "uTexture");
+        }
+        if (!shaderProgram_) {
+            return;
+        }
+
+        if (texture_ == 0) {
+            glGenTextures(1, &texture_);
+            glBindTexture(GL_TEXTURE_2D, texture_);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        }
+
+        glBindTexture(GL_TEXTURE_2D, texture_);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        std::vector<std::uint8_t> rgba(frame.pixels.size() / 3 * 4);
+        for (std::size_t i = 0; i < frame.pixels.size() / 3; ++i) {
+            const std::size_t inputOffset = i * 3;
+            const std::size_t outputOffset = i * 4;
+            rgba[outputOffset + 0] = frame.pixels[inputOffset + 0];
+            rgba[outputOffset + 1] = frame.pixels[inputOffset + 1];
+            rgba[outputOffset + 2] = frame.pixels[inputOffset + 2];
+            rgba[outputOffset + 3] = 255;
+        }
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(frame.width), static_cast<GLsizei>(frame.height), 0,
+                     GL_RGBA, GL_UNSIGNED_BYTE, rgba.data());
+
+        glBindFramebuffer(GL_FRAMEBUFFER, slot.gl_export_fbo);
+        glViewport(0, 0, static_cast<GLsizei>(slot.width), static_cast<GLsizei>(slot.height));
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shaderProgram_);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture_);
+        glUniform1i(textureLocation_, 0);
+
+        const GLfloat vertices[] = {
+            -1.0f, -1.0f,
+             1.0f, -1.0f,
+            -1.0f,  1.0f,
+             1.0f,  1.0f,
+        };
+        const GLfloat texCoords[] = {
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+        };
+
+        glEnableVertexAttribArray(positionLocation_);
+        glVertexAttribPointer(positionLocation_, 2, GL_FLOAT, GL_FALSE, 0, vertices);
+        glEnableVertexAttribArray(texCoordLocation_);
+        glVertexAttribPointer(texCoordLocation_, 2, GL_FLOAT, GL_FALSE, 0, texCoords);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glDisableVertexAttribArray(positionLocation_);
+        glDisableVertexAttribArray(texCoordLocation_);
+        glFlush();
+    }
+
+    static GLuint compileShaderProgram() {
+        constexpr char kVertexShader[] = R"(
+attribute vec2 aPosition;
+varying vec2 vTexCoord;
+void main() {
+    gl_Position = vec4(aPosition, 0.0, 1.0);
+    vTexCoord = vec2((aPosition.x + 1.0) * 0.5, (1.0 - aPosition.y) * 0.5);
+}
+)";
+
+        constexpr char kFragmentShader[] = R"(
+precision mediump float;
+uniform sampler2D uTexture;
+varying vec2 vTexCoord;
+void main() {
+    gl_FragColor = texture2D(uTexture, vTexCoord);
+}
+)";
+
+        const GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        const GLchar* vertexSource = reinterpret_cast<const GLchar*>(kVertexShader);
+        glShaderSource(vertexShader, 1, &vertexSource, nullptr);
+        glCompileShader(vertexShader);
+
+        GLint compiled = 0;
+        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &compiled);
+        if (!compiled) {
+            GLint infoLen = 0;
+            glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &infoLen);
+            std::vector<GLchar> infoLog(infoLen);
+            glGetShaderInfoLog(vertexShader, infoLen, nullptr, infoLog.data());
+            std::cerr << "vertex shader failed: " << infoLog.data() << std::endl;
+            glDeleteShader(vertexShader);
+            return 0;
+        }
+
+        const GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        const GLchar* fragmentSource = reinterpret_cast<const GLchar*>(kFragmentShader);
+        glShaderSource(fragmentShader, 1, &fragmentSource, nullptr);
+        glCompileShader(fragmentShader);
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &compiled);
+        if (!compiled) {
+            GLint infoLen = 0;
+            glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &infoLen);
+            std::vector<GLchar> infoLog(infoLen);
+            glGetShaderInfoLog(fragmentShader, infoLen, nullptr, infoLog.data());
+            std::cerr << "fragment shader failed: " << infoLog.data() << std::endl;
+            glDeleteShader(vertexShader);
+            glDeleteShader(fragmentShader);
+            return 0;
+        }
+
+        const GLuint program = glCreateProgram();
+        glAttachShader(program, vertexShader);
+        glAttachShader(program, fragmentShader);
+        glBindAttribLocation(program, 0, "aPosition");
+        glLinkProgram(program);
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+
+        GLint linked = 0;
+        glGetProgramiv(program, GL_LINK_STATUS, &linked);
+        if (!linked) {
+            GLint infoLen = 0;
+            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLen);
+            std::vector<GLchar> infoLog(infoLen);
+            glGetProgramInfoLog(program, infoLen, nullptr, infoLog.data());
+            std::cerr << "program link failed: " << infoLog.data() << std::endl;
+            glDeleteProgram(program);
+            return 0;
+        }
+
+        return program;
+    }
+
     std::string ipcPath_;
+    std::size_t width_ = 0;
+    std::size_t height_ = 0;
     int fd_ = -1;
     bool running_ = false;
-    std::thread frameThread_;
-    std::uint64_t frameSeq_ = 0;
+    std::thread eventThread_;
+    EGLRenderContext eglContext_{1, 1};
+    ww_pool_t* pool_ = nullptr;
+    std::uint32_t slotCount_ = 1;
+    std::uint32_t nextSlot_ = 0;
+    GLuint shaderProgram_ = 0;
+    GLint positionLocation_ = 0;
+    GLint texCoordLocation_ = 1;
+    GLint textureLocation_ = -1;
+    GLuint texture_ = 0;
 };
 
 } // namespace
@@ -336,12 +652,17 @@ int main(int argc, char** argv) {
 
         std::optional<WaywallenBridge> bridge;
         if (!settings.ipcPath.empty()) {
-            bridge.emplace(settings.ipcPath);
+            bridge.emplace(settings.ipcPath, settings.width, settings.height);
             bridge->connectAndHandshake();
         }
 
         while (true) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            if (bridge.has_value()) {
+                if (const auto frame = receiver.popFrame()) {
+                    bridge->renderFrame(*frame);
+                }
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     } catch (const std::exception& ex) {
         std::cerr << ex.what() << std::endl;
