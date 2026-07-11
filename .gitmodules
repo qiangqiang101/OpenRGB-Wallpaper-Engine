@@ -1,0 +1,3 @@
+[submodule "waywallen-plugin/dependencies/waywallen"]
+	path = waywallen-plugin/dependencies/waywallen
+	url = https://github.com/waywallen/waywallen
