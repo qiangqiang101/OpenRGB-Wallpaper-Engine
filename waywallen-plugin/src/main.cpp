@@ -119,6 +119,16 @@ public:
         frames_.pop();
         return frame;
     }
+    
+    /* Drain all frames and return only the latest */
+    std::optional<RGBFrame> popLatestFrame()
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if(frames_.empty()) return std::nullopt;
+        RGBFrame frame = std::move(frames_.back());
+        while(!frames_.empty()) frames_.pop();
+        return frame;
+    }
 
     bool hasSettingsPacket() const
     {
@@ -192,7 +202,10 @@ private:
 
     void processPacket(const unsigned char* data, std::size_t len)
     {
-        if(len < 1) return;
+        if(len < 1)
+        {
+            return;
+        }
 
         if(data[0] == 0)
         {
@@ -233,8 +246,12 @@ private:
     }
 
     void parseRgbPacket(const unsigned char* data, std::size_t len)
-    {
-        if(len < 3) return;
+    {        
+        if(len < 3)
+        {
+            return;
+        }
+
         std::lock_guard<std::mutex> lock(mutex_);
         std::size_t pixelCount = len / 3;
         RGBFrame frame;
@@ -353,6 +370,21 @@ public:
         std::memcpy(mapped, rgbaData, std::min(rgbaSize, stagingSize_));
         vkUnmapMemory(device_, stagingMemory_);
 
+        /* Create semaphore for sync fd BEFORE submitting */
+        VkSemaphore sem = VK_NULL_HANDLE;
+        VkExportSemaphoreCreateInfo exportInfo{};
+        exportInfo.sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO;
+        exportInfo.handleTypes = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
+
+        VkSemaphoreCreateInfo semInfo{};
+        semInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        semInfo.pNext = &exportInfo;
+
+        if(vkCreateSemaphore(device_, &semInfo, nullptr, &sem) != VK_SUCCESS)
+        {
+            return true; /* proceed without sync fd */
+        }
+
         /* Record copy command */
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -360,6 +392,7 @@ public:
 
         if(vkBeginCommandBuffer(cmdBuffer_, &beginInfo) != VK_SUCCESS)
         {
+            vkDestroySemaphore(device_, sem, nullptr);
             return false;
         }
 
@@ -409,49 +442,11 @@ public:
 
         if(vkEndCommandBuffer(cmdBuffer_) != VK_SUCCESS)
         {
+            vkDestroySemaphore(device_, sem, nullptr);
             return false;
         }
 
-        /* Submit */
-        VkSubmitInfo submitInfo{};
-        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &cmdBuffer_;
-
-        VkFenceCreateInfo fenceInfo{};
-        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-        VkFence fence = VK_NULL_HANDLE;
-        if(vkCreateFence(device_, &fenceInfo, nullptr, &fence) != VK_SUCCESS)
-        {
-            return false;
-        }
-
-        if(vkQueueSubmit(queue_, 1, &submitInfo, fence) != VK_SUCCESS)
-        {
-            vkDestroyFence(device_, fence, nullptr);
-            return false;
-        }
-
-        /* Wait for completion */
-        vkWaitForFences(device_, 1, &fence, VK_TRUE, UINT64_MAX);
-        vkDestroyFence(device_, fence, nullptr);
-
-        /* Create a binary semaphore and export as SYNC_FD for the bridge */
-        VkSemaphoreCreateInfo semInfo{};
-        semInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-        VkExportSemaphoreCreateInfo exportInfo{};
-        exportInfo.sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO;
-        exportInfo.handleTypes = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
-        semInfo.pNext = &exportInfo;
-
-        VkSemaphore sem = VK_NULL_HANDLE;
-        if(vkCreateSemaphore(device_, &semInfo, nullptr, &sem) != VK_SUCCESS)
-        {
-            return true; /* proceed without sync fd */
-        }
-
-        /* Submit again with the semaphore to get a SYNC_FD */
+        /* Submit with semaphore - NON-BLOCKING */
         VkTimelineSemaphoreSubmitInfo timelineInfo{};
         timelineInfo.sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
         timelineInfo.signalSemaphoreValueCount = 1;
@@ -467,19 +462,30 @@ public:
         VkSubmitInfo2 submit2{};
         submit2.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2;
         submit2.pNext = &timelineInfo;
+        submit2.commandBufferInfoCount = 1;
+        
+        VkCommandBufferSubmitInfo cmdInfo{};
+        cmdInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO;
+        cmdInfo.commandBuffer = cmdBuffer_;
+        submit2.pCommandBufferInfos = &cmdInfo;
+        
         submit2.signalSemaphoreInfoCount = 1;
         submit2.pSignalSemaphoreInfos = &signalInfo;
 
-        if(vkQueueSubmit2(queue_, 1, &submit2, VK_NULL_HANDLE) == VK_SUCCESS)
+        if(vkQueueSubmit2(queue_, 1, &submit2, VK_NULL_HANDLE) != VK_SUCCESS)
         {
-            VkSemaphoreGetFdInfoKHR fdInfo{};
-            fdInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR;
-            fdInfo.semaphore = sem;
-            fdInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
-            if(vkGetSemaphoreFdKHR(device_, &fdInfo, outSyncFd) != VK_SUCCESS)
-            {
-                *outSyncFd = -1;
-            }
+            vkDestroySemaphore(device_, sem, nullptr);
+            return false;
+        }
+
+        /* Get sync fd immediately - NO WAITING */
+        VkSemaphoreGetFdInfoKHR fdInfo{};
+        fdInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR;
+        fdInfo.semaphore = sem;
+        fdInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
+        if(vkGetSemaphoreFdKHR(device_, &fdInfo, outSyncFd) != VK_SUCCESS)
+        {
+            *outSyncFd = -1;
         }
 
         vkDestroySemaphore(device_, sem, nullptr);
@@ -610,10 +616,8 @@ private:
         vkGetDeviceQueue(device_, queueFamily_, 0, &queue_);
 
         /* Load function pointers */
-        vkGetSemaphoreFdKHR = reinterpret_cast<PFN_vkGetSemaphoreFdKHR>(
-            vkGetDeviceProcAddr(device_, "vkGetSemaphoreFdKHR"));
-        vkQueueSubmit2 = reinterpret_cast<PFN_vkQueueSubmit2>(
-            vkGetDeviceProcAddr(device_, "vkQueueSubmit2"));
+        vkGetSemaphoreFdKHR = reinterpret_cast<PFN_vkGetSemaphoreFdKHR>(vkGetDeviceProcAddr(device_, "vkGetSemaphoreFdKHR"));
+        vkQueueSubmit2 = reinterpret_cast<PFN_vkQueueSubmit2>(vkGetDeviceProcAddr(device_, "vkQueueSubmit2"));
     }
 
     void createStagingBuffer()
@@ -694,37 +698,37 @@ private:
         }
     }
 
-    std::uint32_t width_ = 0;
-    std::uint32_t height_ = 0;
-    VkInstance instance_ = VK_NULL_HANDLE;
-    VkPhysicalDevice physDevice_ = VK_NULL_HANDLE;
-    VkDevice device_ = VK_NULL_HANDLE;
-    VkQueue queue_ = VK_NULL_HANDLE;
-    std::uint32_t queueFamily_ = 0;
-    int drmFd_ = -1;
-    std::uint32_t drmMajor_ = 0;
-    std::uint32_t drmMinor_ = 0;
-    std::uint8_t deviceUUID_[VK_UUID_SIZE]{};
-    std::uint8_t driverUUID_[VK_UUID_SIZE]{};
-    VkBuffer stagingBuffer_ = VK_NULL_HANDLE;
-    VkDeviceMemory stagingMemory_ = VK_NULL_HANDLE;
-    VkDeviceSize stagingSize_ = 0;
-    VkCommandPool cmdPool_ = VK_NULL_HANDLE;
-    VkCommandBuffer cmdBuffer_ = VK_NULL_HANDLE;
+    std::uint32_t           width_              = 0;
+    std::uint32_t           height_             = 0;
+    VkInstance              instance_           = VK_NULL_HANDLE;
+    VkPhysicalDevice        physDevice_         = VK_NULL_HANDLE;
+    VkDevice                device_             = VK_NULL_HANDLE;
+    VkQueue                 queue_              = VK_NULL_HANDLE;
+    std::uint32_t           queueFamily_        = 0;
+    int                     drmFd_              = -1;
+    std::uint32_t           drmMajor_           = 0;
+    std::uint32_t           drmMinor_           = 0;
+    std::uint8_t            deviceUUID_[VK_UUID_SIZE]{};
+    std::uint8_t            driverUUID_[VK_UUID_SIZE]{};
+    VkBuffer                stagingBuffer_      = VK_NULL_HANDLE;
+    VkDeviceMemory          stagingMemory_      = VK_NULL_HANDLE;
+    VkDeviceSize            stagingSize_        = 0;
+    VkCommandPool           cmdPool_            = VK_NULL_HANDLE;
+    VkCommandBuffer         cmdBuffer_          = VK_NULL_HANDLE;
 
     /* Loaded function pointers */
     PFN_vkGetSemaphoreFdKHR vkGetSemaphoreFdKHR = nullptr;
-    PFN_vkQueueSubmit2 vkQueueSubmit2 = nullptr;
+    PFN_vkQueueSubmit2      vkQueueSubmit2      = nullptr;
 };
 
 /* Render the RGB matrix as a grid of circles on a black background.
+ * Optimized using horizontal line fills instead of per-pixel distance checks.
  * The output image is at display resolution, with circles arranged in a grid
  * matching the matrix dimensions. */
-static std::vector<std::uint8_t> renderCirclesOnBlack(
-    const RGBFrame& matrix, std::uint32_t displayW, std::uint32_t displayH)
+static std::vector<std::uint8_t> renderCirclesOnBlack(const RGBFrame& matrix, std::uint32_t displayW, std::uint32_t displayH)
 {
-    const std::size_t matrixW = matrix.width;
-    const std::size_t matrixH = matrix.height;
+    const std::size_t       matrixW             = matrix.width;
+    const std::size_t       matrixH             = matrix.height;
 
     // Create output buffer at display resolution (RGBA8)
     std::vector<std::uint8_t> output(displayW * displayH * 4, 0); // Black background
@@ -735,13 +739,16 @@ static std::vector<std::uint8_t> renderCirclesOnBlack(
     }
 
     // Calculate cell size for the grid
-    const float cellW = static_cast<float>(displayW) / static_cast<float>(matrixW);
-    const float cellH = static_cast<float>(displayH) / static_cast<float>(matrixH);
+    const std::uint32_t     cellW               = displayW / static_cast<std::uint32_t>(matrixW);
+    const std::uint32_t     cellH               = displayH / static_cast<std::uint32_t>(matrixH);
+    
+    // Circle radius (40% of cell size)
+    const float             radiusX             = cellW * 0.4f;
+    const float             radiusY             = cellH * 0.4f;
+    const float             radiusXSq           = radiusX * radiusX;
+    const float             radiusYSq           = radiusY * radiusY;
 
-    // Use the smaller dimension to ensure circles fit in cells
-    const float radius = std::min(cellW, cellH) * 0.4f; // 40% of cell size
-
-    // For each LED in the matrix, draw a circle
+    // For each LED in the matrix, draw a circle using horizontal lines
     for(std::size_t y = 0; y < matrixH; ++y)
     {
         for(std::size_t x = 0; x < matrixW; ++x)
@@ -758,26 +765,33 @@ static std::vector<std::uint8_t> renderCirclesOnBlack(
             const float cx = (static_cast<float>(x) + 0.5f) * cellW;
             const float cy = (static_cast<float>(y) + 0.5f) * cellH;
 
-            // Draw circle by setting pixels within radius
-            const int rInt = static_cast<int>(std::ceil(radius));
-            for(int dy = -rInt; dy <= rInt; ++dy)
+            // Calculate bounding box
+            const int minX = std::max(0, static_cast<int>(std::floor(cx - radiusX)));
+            const int maxX = std::min(static_cast<int>(displayW) - 1, static_cast<int>(std::ceil(cx + radiusX)));
+            const int minY = std::max(0, static_cast<int>(std::floor(cy - radiusY)));
+            const int maxY = std::min(static_cast<int>(displayH) - 1, static_cast<int>(std::ceil(cy + radiusY)));
+
+            // Draw horizontal lines for each y in the bounding box
+            for(int py = minY; py <= maxY; ++py)
             {
-                for(int dx = -rInt; dx <= rInt; ++dx)
+                const float dy      = static_cast<float>(py) - cy;
+                const float dySq    = dy * dy;
+                
+                // Calculate x extent at this y using ellipse equation
+                if(dySq <= radiusYSq)
                 {
-                    const float distSq = static_cast<float>(dx * dx + dy * dy);
-                    if(distSq <= radius * radius)
+                    const float dx = radiusX * std::sqrt(1.0f - dySq / radiusYSq);
+                    const int lineMinX = std::max(minX, static_cast<int>(std::floor(cx - dx)));
+                    const int lineMaxX = std::min(maxX, static_cast<int>(std::ceil(cx + dx)));
+                    
+                    // Fill the horizontal line
+                    for(int px = lineMinX; px <= lineMaxX; ++px)
                     {
-                        const int px = static_cast<int>(cx) + dx;
-                        const int py = static_cast<int>(cy) + dy;
-                        if(px >= 0 && px < static_cast<int>(displayW) &&
-                            py >= 0 && py < static_cast<int>(displayH))
-                        {
-                            const std::size_t outIdx = (static_cast<std::size_t>(py) * displayW + px) * 4;
-                            output[outIdx + 0] = r;
-                            output[outIdx + 1] = g;
-                            output[outIdx + 2] = b;
-                            output[outIdx + 3] = 255;
-                        }
+                        const std::size_t outIdx = (static_cast<std::size_t>(py) * displayW + px) * 4;
+                        output[outIdx + 0] = r;
+                        output[outIdx + 1] = g;
+                        output[outIdx + 2] = b;
+                        output[outIdx + 3] = 255;
                     }
                 }
             }
@@ -803,10 +817,18 @@ public:
 
     void connectAndHandshake()
     {
-        if(ipcPath_.empty()) return;
+        if(ipcPath_.empty())
+        {
+            return;
+        }
+
         std::cerr << "[openrgb] connecting to waywallen IPC at " << ipcPath_ << std::endl;
         fd_ = ::socket(AF_UNIX, SOCK_STREAM, 0);
-        if(fd_ < 0) throw std::runtime_error("socketpair failed");
+        
+        if(fd_ < 0)
+        {
+            throw std::runtime_error("socketpair failed");
+        }
 
         sockaddr_un addr{};
         addr.sun_family = AF_UNIX;
@@ -866,6 +888,11 @@ public:
     void stop()
     {
         running_ = false;
+        if(renderThread_.joinable())
+        {
+            frameCv_.notify_one();
+            renderThread_.join();
+        }
         if(eventThread_.joinable())
         {
             eventThread_.join();
@@ -887,6 +914,7 @@ public:
         std::lock_guard<std::mutex> lock(frameMutex_);
         latestFrame_ = std::move(frame);
         haveFrame_ = true;
+        frameCv_.notify_one();
     }
 
     bool isReady() const
@@ -894,9 +922,33 @@ public:
         return poolReady_;
     }
 
-    void renderFrame()
+    void startRenderThread()
     {
-        if(!running_ || pool_ == nullptr || !poolReady_) return;
+        renderThread_ = std::thread([this] { renderLoop(); });
+    }
+
+    void renderLoop()
+    {
+        while(running_)
+        {
+            std::unique_lock<std::mutex> lock(frameMutex_);
+            frameCv_.wait(lock, [this] { return !running_ || haveFrame_; });
+            if(!running_) break;
+            
+            RGBFrame frame = std::move(latestFrame_);
+            haveFrame_ = false;
+            lock.unlock();
+            
+            renderFrame(std::move(frame));
+        }
+    }
+
+    void renderFrame(RGBFrame frame)
+    {
+        if(!running_ || pool_ == nullptr || !poolReady_)
+        {
+            return;
+        }
 
         const std::uint32_t slotIndex = nextSlot_++ % std::max<std::uint32_t>(1u, slotCount_);
         ww_pool_slot_t slot{};
@@ -905,43 +957,22 @@ public:
             return;
         }
 
-        std::cerr << "[openrgb] renderFrame: slot " << slotIndex
-                  << " dimensions: " << slot.width << "x" << slot.height << std::endl;
-
         /* Ensure staging buffer is large enough for the display resolution */
         vkContext_.ensureStagingBuffer(slot.width, slot.height);
 
-        /* Grab the latest RGB frame */
-        RGBFrame renderTarget;
-        bool haveData = false;
-        {
-            std::lock_guard<std::mutex> lock(frameMutex_);
-            if(haveFrame_)
-            {
-                renderTarget = latestFrame_;
-                haveData = true;
-            }
-            else
-            {
-                renderTarget.width = width_;
-                renderTarget.height = height_;
-            }
-        }
-
         int syncFd = -1;
-        if(haveData && !renderTarget.pixels.empty())
+        if(!frame.pixels.empty())
         {
-            /* Render the RGB matrix as circles on a black background at display resolution */
+            /* Render at display resolution (native) for proper scaling */
             std::vector<std::uint8_t> rgba = renderCirclesOnBlack(
-                renderTarget, slot.width, slot.height);
+                frame, slot.width, slot.height);
             vkContext_.uploadToImage(reinterpret_cast<VkImage>(slot.vk_image),
                                      slot.width, slot.height,
                                      rgba.data(), rgba.size(), &syncFd);
         }
         else
         {
-            /* No data yet — still need a valid sync fd for the daemon to
-             * wait on. Upload a black frame to get one. */
+            /* No data — upload a black frame */
             std::vector<std::uint8_t> black(slot.width * slot.height * 4, 0);
             vkContext_.uploadToImage(reinterpret_cast<VkImage>(slot.vk_image),
                                      slot.width, slot.height,
@@ -954,7 +985,7 @@ public:
             std::cerr << "[openrgb] submit_slot failed: " << rc << std::endl;
         }
 
-        ww_bridge_pool_wait_slot_release(pool_, slotIndex, 50);
+        /* Don't wait for slot release - non-blocking to maintain throughput */
     }
 
 private:
@@ -1132,12 +1163,14 @@ private:
     bool running_ = false;
     bool poolReady_ = false;
     std::thread eventThread_;
+    std::thread renderThread_;
     VulkanContext vkContext_{3840, 2160};  // 4K for display resolution
     ww_pool_t* pool_ = nullptr;
     std::uint32_t slotCount_ = 1;
     std::uint32_t nextSlot_ = 0;
     /* Latest RGB frame from UDP, protected by frameMutex_ */
     std::mutex frameMutex_;
+    std::condition_variable frameCv_;
     RGBFrame latestFrame_;
     bool haveFrame_ = false;
 };
@@ -1221,40 +1254,31 @@ int main(int argc, char** argv)
             std::cout << "Using matrix size: " << actualSettings.width << "x" << actualSettings.height << std::endl;
             bridge.emplace(settings.ipcPath, actualSettings.width, actualSettings.height);
             bridge->connectAndHandshake();
+            bridge->startRenderThread();
         }
 
-        constexpr std::chrono::milliseconds kWaitTimeout(100); // Check for frames at 10Hz when idle
+        constexpr std::chrono::milliseconds new_frame_timeout(1000);
+
         while(true)
         {
             if(bridge.has_value())
             {
                 /* Wait for new UDP frames to arrive */
-                if(receiver.waitForFrame(kWaitTimeout))
+                if(receiver.waitForFrame(new_frame_timeout))
                 {
-                    /* Drain all pending frames, keeping only the latest */
-                    std::optional<RGBFrame> latestFrame;
-                    while(const std::optional<RGBFrame> frame = receiver.popFrame())
-                    {
-                        latestFrame = std::move(frame);
-                    }
-                    /* Push the latest frame to the bridge and render it */
+                    /* Get only the latest frame (avoids queue overhead) */
+                    std::optional<RGBFrame> latestFrame = receiver.popLatestFrame();
+                    /* Push the latest frame to the bridge - render thread handles it */
                     if(latestFrame.has_value())
                     {
-                        bridge->pushFrame(*latestFrame);
-                        bridge->renderFrame();
+                        bridge->pushFrame(std::move(*latestFrame));
                     }
-                }
-                else
-                {
-                    /* Timeout - no new frames arrived. Render a black frame
-                     * to keep waywallen happy and prevent timeout. */
-                    bridge->renderFrame();
                 }
             }
             else
             {
                 /* No bridge yet, just wait a bit */
-                std::this_thread::sleep_for(kWaitTimeout);
+                std::this_thread::sleep_for(new_frame_timeout);
             }
         }
     }
