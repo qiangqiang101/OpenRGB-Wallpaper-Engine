@@ -19,8 +19,6 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets REQUIRED)
 set(SOURCES
     OpenRGBWallpaperEnginePlugin.cpp
     OpenRGBWallpaperEngineWidget.cpp
-    RGBController.cpp
-    StringUtils.cpp
     OpenRGBWallpaperEnginePlugin.qrc
     OpenRGBWallpaperEngineWidget.ui
 )
@@ -30,13 +28,9 @@ set(HEADERS
     OpenRGBWallpaperEnginePlugin.h
     OpenRGBWallpaperEngineWidget.h
     OpenRGBPluginInterface.h
-    ResourceManagerInterface.h
-    RGBController.h
     RGBControllerInterface.h
     LogManager.h
-    StringUtils.h
     filesystem.h
-    i2c_smbus.h
 )
 
 # Build the plugin as a shared module (.dll or .so)

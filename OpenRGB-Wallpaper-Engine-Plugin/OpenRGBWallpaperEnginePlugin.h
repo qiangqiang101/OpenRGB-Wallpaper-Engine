@@ -21,7 +21,6 @@
 #include <vector>
 #include <functional>
 #include "OpenRGBPluginInterface.h"
-#include "RGBController.h"
 
 // Define platform-specific socket types
 #ifdef _WIN32
@@ -40,6 +39,9 @@
 // Configuration structure for a single wallpaper device
 struct WallpaperDeviceConfig
 {
+    void* parent;
+    RGBControllerInterface* controller;
+    RGBController_Setup setup;
     QString name;
     QString host;
     int port;
@@ -92,7 +94,10 @@ public:
     // Helper functions for settings and config
     void                        LoadConfig();
     void                        SaveConfig();
+    void                        CreateController(WallpaperDeviceConfig& dev);
     void                        RecreateControllers();
+
+    void                        SendRGBData(const WallpaperDeviceConfig& dev);
 
 private:
     OpenRGBPluginAPIInterface*  plugin_api;
@@ -103,7 +108,6 @@ private:
     
     // Configured devices and virtual controllers
     std::vector<WallpaperDeviceConfig> devices;
-    std::vector<WallpaperRGBController*> controllers;
     
     std::map<int, QByteArray>   last_settings_map;
     
@@ -112,31 +116,8 @@ private:
     void                        InitSocket();
     void                        CloseSocket();
     void                        SendDatagram(const WallpaperDeviceConfig& dev, const QByteArray& data);
-    void                        SendRGBData(const WallpaperDeviceConfig& dev, const std::vector<RGBColor>& colors);
     
     QByteArray                  CreateSettingsPacket(const WallpaperDeviceConfig& dev);
     std::vector<QByteArray>     CreateColorPackets(const std::vector<unsigned char>& rgb_data);
     std::vector<unsigned char>  InterpolateColors(const std::vector<unsigned char>& source_colors, int target_count);
-};
-
-// Custom virtual device class in OpenRGB
-class WallpaperRGBController : public RGBController
-{
-public:
-    WallpaperRGBController(const WallpaperDeviceConfig& config);
-    virtual ~WallpaperRGBController();
-
-    std::vector<RGBColor> GetColors() const { return colors; }
-
-    void SetupZones();
-    virtual void DeviceUpdateLEDs() override;
-    virtual void DeviceUpdateZoneLEDs(int zone) override;
-    virtual void DeviceUpdateSingleLED(int led) override;
-    virtual void DeviceUpdateMode() override;
-
-    std::function<void(const std::vector<RGBColor>&)> update_callback;
-
-private:
-    int width;
-    int height;
 };

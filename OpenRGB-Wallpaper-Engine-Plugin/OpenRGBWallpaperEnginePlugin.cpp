@@ -9,7 +9,6 @@
 
 #include "OpenRGBWallpaperEnginePlugin.h"
 #include "OpenRGBWallpaperEngineWidget.h"
-#include "RGBController.h"
 #include <cmath>
 #include <algorithm>
 #include <cstring>
@@ -137,6 +136,14 @@ static SizeGrid GetGridSize(const QString& size_str, const QString& tier_str) {
     return {w, h};
 }
 
+static void DeviceUpdateLEDs(void* obj_ptr)
+{
+    WallpaperDeviceConfig*          dev_ptr     = (WallpaperDeviceConfig*)obj_ptr;
+    OpenRGBWallpaperEnginePlugin*   this_ptr    = (OpenRGBWallpaperEnginePlugin*)dev_ptr->parent;
+
+    this_ptr->SendRGBData(*dev_ptr);
+}
+
 OpenRGBWallpaperEnginePlugin::OpenRGBWallpaperEnginePlugin()
 {
     plugin_api = nullptr;
@@ -168,6 +175,72 @@ unsigned int OpenRGBWallpaperEnginePlugin::GetPluginAPIVersion()
     return OPENRGB_PLUGIN_API_VERSION;
 }
 
+void OpenRGBWallpaperEnginePlugin::CreateController(WallpaperDeviceConfig& dev)
+{
+    dev.setup.object_ptr                                    = (void *)&dev;
+
+    dev.setup.name                                          = dev.name.toStdString();
+    dev.setup.vendor                                        = "SignalRGB-WPE";
+    dev.setup.description                                   = "Virtual Wallpaper Engine Device";
+    dev.setup.version                                       = "2.0.0";
+    dev.setup.type                                          = DEVICE_TYPE_VIRTUAL;
+
+    // Add Direct Mode
+    mode direct_mode;
+    direct_mode.name                                        = "Direct";
+    direct_mode.value                                       = 0;
+    direct_mode.flags                                       = MODE_FLAG_HAS_PER_LED_COLOR;
+    direct_mode.color_mode                                  = MODE_COLORS_PER_LED;
+    dev.setup.modes.resize(1);
+    dev.setup.modes[0]                                      = direct_mode;
+    dev.setup.active_mode                                   = 0;
+
+    SizeGrid grid                                           = GetGridSize(dev.size, dev.tier);
+    
+    zone wpe_zone;
+    wpe_zone.name                                           = "Wallpaper Matrix";
+    wpe_zone.type                                           = ZONE_TYPE_MATRIX;
+    wpe_zone.leds_count                                     = grid.w * grid.h;
+    wpe_zone.leds_min                                       = wpe_zone.leds_count;
+    wpe_zone.leds_max                                       = wpe_zone.leds_count;
+    wpe_zone.start_idx                                      = 0;
+    
+    wpe_zone.matrix_map.Set(grid.h, grid.w, nullptr);
+
+    for (unsigned int y = 0; y < grid.h; ++y)
+    {
+        for (unsigned int x = 0; x < grid.w; ++x)
+        {
+            wpe_zone.matrix_map.map[y * grid.w + x] = y * grid.w + x;
+        }
+    }
+    
+    dev.setup.zones.resize(1);
+    dev.setup.zones[0]                                      = wpe_zone;
+    
+    dev.setup.leds.clear();
+    for (int i = 0; i < grid.w * grid.h; ++i)
+    {
+        led new_led;
+        new_led.name                                        = "LED " + std::to_string(i + 1);
+        new_led.value                                       = i;
+        dev.setup.leds.push_back(new_led);
+    }
+
+    dev.setup.DeviceConfigureZone                           = nullptr;
+    dev.setup.DeviceUpdateLEDs                              = DeviceUpdateLEDs;
+    dev.setup.DeviceUpdateZoneLEDs                          = nullptr;
+    dev.setup.DeviceUpdateSingleLED                         = nullptr;
+    dev.setup.DeviceUpdateMode                              = nullptr;
+    dev.setup.DeviceSaveMode                                = nullptr;
+    dev.setup.DeviceUpdateZoneMode                          = nullptr;
+    dev.setup.DeviceUpdateDeviceSpecificConfiguration       = nullptr;
+    dev.setup.DeviceUpdateDeviceSpecificZoneConfiguration   = nullptr;
+
+    dev.controller                                          = plugin_api->CreateVirtualRGBController(&dev.setup);
+    plugin_api->RegisterVirtualRGBController(dev.controller);
+}
+
 void OpenRGBWallpaperEnginePlugin::Load(OpenRGBPluginAPIInterface* plugin_api_ptr)
 {
     plugin_api = plugin_api_ptr;
@@ -176,17 +249,12 @@ void OpenRGBWallpaperEnginePlugin::Load(OpenRGBPluginAPIInterface* plugin_api_pt
     InitSocket();
     
     // Register controllers
-    for (const auto& dev : devices)
+    for (WallpaperDeviceConfig& dev : devices)
     {
-        WallpaperRGBController* controller = new WallpaperRGBController(dev);
-        controller->update_callback = [this, dev](const std::vector<RGBColor>& colors) {
-            SendRGBData(dev, colors);
-        };
-        controllers.push_back(controller);
-        plugin_api->RegisterVirtualRGBController(controller);
-        
+        CreateController(dev);
+
         // Push initial/black frame to trigger connection
-        SendRGBData(dev, controller->GetColors());
+        SendRGBData(dev);
     }
 }
 
@@ -195,14 +263,13 @@ void OpenRGBWallpaperEnginePlugin::Unload()
     // Unregister and delete virtual controllers
     if (plugin_api)
     {
-        for (auto* controller : controllers)
+        for (WallpaperDeviceConfig& dev : devices)
         {
-            plugin_api->UnregisterVirtualRGBController(controller);
-            delete controller;
+            plugin_api->UnregisterVirtualRGBController(dev.controller);
+            plugin_api->DeleteVirtualRGBController(dev.controller);
         }
     }
-    controllers.clear();
-    
+
     CloseSocket();
     
     if (widget)
@@ -236,6 +303,7 @@ void OpenRGBWallpaperEnginePlugin::LoadConfig()
     {
         // Add a default device
         WallpaperDeviceConfig def;
+        def.parent = this;
         def.name = "Primary Display";
         def.host = "127.0.0.1";
         def.port = 8133;
@@ -263,6 +331,7 @@ void OpenRGBWallpaperEnginePlugin::LoadConfig()
     {
         QJsonObject obj = arr[i].toObject();
         WallpaperDeviceConfig dev;
+        dev.parent = this;
         dev.name = obj["name"].toString();
         dev.host = obj["host"].toString();
         dev.port = obj["port"].toInt();
@@ -329,26 +398,20 @@ void OpenRGBWallpaperEnginePlugin::RecreateControllers()
     if (!plugin_api) return;
     
     // Unregister and delete old ones
-    for (auto* controller : controllers)
+    for (WallpaperDeviceConfig& dev : devices)
     {
-        plugin_api->UnregisterVirtualRGBController(controller);
-        delete controller;
+        plugin_api->UnregisterVirtualRGBController(dev.controller);
+        plugin_api->DeleteVirtualRGBController(dev.controller);
     }
-    controllers.clear();
     last_settings_map.clear();
     
     // Register new ones
-    for (const auto& dev : devices)
+    for (WallpaperDeviceConfig& dev : devices)
     {
-        WallpaperRGBController* controller = new WallpaperRGBController(dev);
-        controller->update_callback = [this, dev](const std::vector<RGBColor>& colors) {
-            SendRGBData(dev, colors);
-        };
-        controllers.push_back(controller);
-        plugin_api->RegisterVirtualRGBController(controller);
-        
+        CreateController(dev);
+
         // Push initial config settings
-        SendRGBData(dev, controller->GetColors());
+        SendRGBData(dev);
     }
 }
 
@@ -391,7 +454,7 @@ void OpenRGBWallpaperEnginePlugin::SendDatagram(const WallpaperDeviceConfig& dev
     sendto(udp_socket, data.constData(), data.size(), 0, (struct sockaddr*)&dest, sizeof(dest));
 }
 
-void OpenRGBWallpaperEnginePlugin::SendRGBData(const WallpaperDeviceConfig& dev, const std::vector<RGBColor>& colors)
+void OpenRGBWallpaperEnginePlugin::SendRGBData(const WallpaperDeviceConfig& dev)
 {
     if (udp_socket == INVALID_SOCKET) return;
     
@@ -409,12 +472,12 @@ void OpenRGBWallpaperEnginePlugin::SendRGBData(const WallpaperDeviceConfig& dev,
     
     // Convert current RGBColor buffer to R, G, B bytes
     std::vector<unsigned char> source_colors;
-    source_colors.reserve(colors.size() * 3);
-    for (RGBColor col : colors)
+    source_colors.reserve(dev.controller->GetLEDCount() * 3);
+    for (unsigned int color_idx = 0; color_idx < dev.controller->GetLEDCount(); color_idx++)
     {
-        source_colors.push_back(RGBGetRValue(col));
-        source_colors.push_back(RGBGetGValue(col));
-        source_colors.push_back(RGBGetBValue(col));
+        source_colors.push_back(RGBGetRValue(dev.controller->GetColor(color_idx)));
+        source_colors.push_back(RGBGetGValue(dev.controller->GetColor(color_idx)));
+        source_colors.push_back(RGBGetBValue(dev.controller->GetColor(color_idx)));
     }
     
     // Interpolate the colors to fit the grid matrix
@@ -563,93 +626,4 @@ std::vector<unsigned char> OpenRGBWallpaperEnginePlugin::InterpolateColors(const
     }
     
     return output;
-}
-
-// WallpaperRGBController Implementation
-WallpaperRGBController::WallpaperRGBController(const WallpaperDeviceConfig& config)
-{
-    name        = config.name.toStdString();
-    vendor      = "SignalRGB-WPE";
-    description = "Virtual Wallpaper Engine Device";
-    version     = "2.0.0";
-    type        = DEVICE_TYPE_VIRTUAL;
-    
-    SizeGrid grid = GetGridSize(config.size, config.tier);
-    width  = grid.w;
-    height = grid.h;
-    
-    // Add Direct Mode
-    mode direct_mode;
-    direct_mode.name = "Direct";
-    direct_mode.value = 0;
-    direct_mode.flags = MODE_FLAG_HAS_PER_LED_COLOR;
-    direct_mode.color_mode = MODE_COLORS_PER_LED;
-    modes.push_back(direct_mode);
-    active_mode = 0;
-    
-    SetupZones();
-    SetupColors();
-}
-
-WallpaperRGBController::~WallpaperRGBController()
-{
-}
-
-void WallpaperRGBController::SetupZones()
-{
-    zones.clear();
-    leds.clear();
-    colors.clear();
-
-    zone wpe_zone;
-    wpe_zone.name = "Wallpaper Matrix";
-    wpe_zone.type = ZONE_TYPE_MATRIX;
-    wpe_zone.leds_count = width * height;
-    wpe_zone.leds_min = wpe_zone.leds_count;
-    wpe_zone.leds_max = wpe_zone.leds_count;
-    wpe_zone.start_idx = 0;
-    
-    wpe_zone.matrix_map.Set(height, width, nullptr);
-    for (unsigned int y = 0; y < height; ++y)
-    {
-        for (unsigned int x = 0; x < width; ++x)
-        {
-            wpe_zone.matrix_map.map[y * width + x] = y * width + x;
-        }
-    }
-    
-    zones.push_back(wpe_zone);
-    
-    for (int i = 0; i < width * height; ++i)
-    {
-        led new_led;
-        new_led.name = "LED " + std::to_string(i + 1);
-        new_led.value = i;
-        leds.push_back(new_led);
-    }
-    
-    colors.resize(width * height, 0);
-}
-
-void WallpaperRGBController::DeviceUpdateLEDs()
-{
-    if (update_callback)
-    {
-        update_callback(colors);
-    }
-}
-
-void WallpaperRGBController::DeviceUpdateZoneLEDs(int /*zone_idx*/)
-{
-    DeviceUpdateLEDs();
-}
-
-void WallpaperRGBController::DeviceUpdateSingleLED(int /*led_idx*/)
-{
-    DeviceUpdateLEDs();
-}
-
-void WallpaperRGBController::DeviceUpdateMode()
-{
-    // Direct mode by default
 }
