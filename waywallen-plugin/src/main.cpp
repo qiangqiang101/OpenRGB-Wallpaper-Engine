@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <string>
 #include <thread>
+#include <unordered_map>
 #include <unistd.h>
 #include <vector>
 #include <sys/socket.h>
@@ -721,10 +722,92 @@ private:
     PFN_vkQueueSubmit2      vkQueueSubmit2      = nullptr;
 };
 
+/* Precomputed circle mask for fast rendering.
+ * Uses a lookup table to avoid repeated sqrt() calculations. */
+class CircleMaskCache
+{
+public:
+    struct Mask
+    {
+        std::vector<int> xOffsets;  // X offsets for each scanline
+        std::vector<int> widths;    // Width of each scanline
+        int height = 0;
+        int radius = 0;
+    };
+
+    const Mask& getMask(int radius)
+    {
+        auto it = cache_.find(radius);
+        if(it != cache_.end())
+        {
+            return it->second;
+        }
+
+        Mask mask;
+        mask.radius = radius;
+        mask.height = radius * 2 + 1;
+        
+        // Precompute x-extent for each y using integer arithmetic
+        // Use squared radius to avoid sqrt in the hot loop
+        const int radiusSq = radius * radius;
+        
+        for(int dy = -radius; dy <= radius; ++dy)
+        {
+            const int dySq = dy * dy;
+            const int remaining = radiusSq - dySq;
+            
+            if(remaining >= 0)
+            {
+                // Use integer sqrt approximation: dx = sqrt(remaining)
+                // For better performance, use lookup table or fast approximation
+                const int dx = fastSqrt(remaining);
+                mask.xOffsets.push_back(-dx);
+                mask.widths.push_back(dx * 2 + 1);
+            }
+            else
+            {
+                mask.xOffsets.push_back(0);
+                mask.widths.push_back(0);
+            }
+        }
+
+        cache_[radius] = std::move(mask);
+        return cache_[radius];
+    }
+
+private:
+    // Fast integer square root using binary approximation
+    static int fastSqrt(int n)
+    {
+        if(n <= 0) return 0;
+        if(n < 2) return 1;
+        
+        // Binary search for sqrt
+        int low = 0, high = n;
+        while(low < high)
+        {
+            const int mid = (low + high + 1) / 2;
+            if(mid <= n / mid)
+            {
+                low = mid;
+            }
+            else
+            {
+                high = mid - 1;
+            }
+        }
+        return low;
+    }
+
+    std::unordered_map<int, Mask> cache_;
+};
+
 /* Render the RGB matrix as a grid of circles on a black background.
- * Optimized using horizontal line fills instead of per-pixel distance checks.
- * The output image is at display resolution, with circles arranged in a grid
- * matching the matrix dimensions. */
+ * Optimized with:
+ * 1. Precomputed circle masks (no per-frame sqrt)
+ * 2. Integer arithmetic instead of floating-point
+ * 3. Cached circle geometry
+ * 4. Direct memory writes with minimal operations */
 static std::vector<std::uint8_t> renderCirclesOnBlack(const RGBFrame& matrix, std::uint32_t displayW, std::uint32_t displayH)
 {
     const std::size_t       matrixW             = matrix.width;
@@ -742,13 +825,16 @@ static std::vector<std::uint8_t> renderCirclesOnBlack(const RGBFrame& matrix, st
     const std::uint32_t     cellW               = displayW / static_cast<std::uint32_t>(matrixW);
     const std::uint32_t     cellH               = displayH / static_cast<std::uint32_t>(matrixH);
     
-    // Circle radius (40% of cell size)
-    const float             radiusX             = cellW * 0.4f;
-    const float             radiusY             = cellH * 0.4f;
-    const float             radiusXSq           = radiusX * radiusX;
-    const float             radiusYSq           = radiusY * radiusY;
+    // Circle radius (40% of cell size) - use integer radius
+    const int radiusX = static_cast<int>(cellW * 0.4f);
+    const int radiusY = static_cast<int>(cellH * 0.4f);
+    
+    // Get precomputed masks for both radii
+    static thread_local CircleMaskCache cache;
+    const auto& maskX = cache.getMask(radiusX);
+    const auto& maskY = cache.getMask(radiusY);
 
-    // For each LED in the matrix, draw a circle using horizontal lines
+    // For each LED in the matrix, draw a circle using precomputed masks
     for(std::size_t y = 0; y < matrixH; ++y)
     {
         for(std::size_t x = 0; x < matrixW; ++x)
@@ -761,38 +847,52 @@ static std::vector<std::uint8_t> renderCirclesOnBlack(const RGBFrame& matrix, st
             const std::uint8_t g = matrix.pixels[idx * 3 + 1];
             const std::uint8_t b = matrix.pixels[idx * 3 + 2];
 
-            // Center of the circle in display coordinates
-            const float cx = (static_cast<float>(x) + 0.5f) * cellW;
-            const float cy = (static_cast<float>(y) + 0.5f) * cellH;
+            // Center of the circle in display coordinates (integer)
+            const int cx = (static_cast<int>(x) * static_cast<int>(cellW)) + (cellW / 2);
+            const int cy = (static_cast<int>(y) * static_cast<int>(cellH)) + (cellH / 2);
 
-            // Calculate bounding box
-            const int minX = std::max(0, static_cast<int>(std::floor(cx - radiusX)));
-            const int maxX = std::min(static_cast<int>(displayW) - 1, static_cast<int>(std::ceil(cx + radiusX)));
-            const int minY = std::max(0, static_cast<int>(std::floor(cy - radiusY)));
-            const int maxY = std::min(static_cast<int>(displayH) - 1, static_cast<int>(std::ceil(cy + radiusY)));
+            // Calculate bounding box in integer coordinates
+            const int minX = std::max(0, cx - radiusX);
+            const int maxX = std::min(static_cast<int>(displayW) - 1, cx + radiusX);
+            const int minY = std::max(0, cy - radiusY);
+            const int maxY = std::min(static_cast<int>(displayH) - 1, cy + radiusY);
 
-            // Draw horizontal lines for each y in the bounding box
+            // Draw horizontal lines using precomputed mask
+            // Use the larger mask and clip to bounding box
+            const int maskHeight = maskX.height;
+            const int maskCenterY = maskHeight / 2;
+            
             for(int py = minY; py <= maxY; ++py)
             {
-                const float dy      = static_cast<float>(py) - cy;
-                const float dySq    = dy * dy;
+                const int maskYIdx = (py - cy) + maskCenterY;
+                if(maskYIdx < 0 || maskYIdx >= maskY.height) continue;
+                if(maskY.widths[maskYIdx] == 0) continue;
+
+                // Get x-extent from mask
+                const int dx = maskX.xOffsets[maskYIdx];
+                const int lineWidth = maskX.widths[maskYIdx];
                 
-                // Calculate x extent at this y using ellipse equation
-                if(dySq <= radiusYSq)
+                // Calculate line bounds
+                int lineMinX = cx + dx;
+                int lineMaxX = lineMinX + lineWidth - 1;
+                
+                // Clip to bounding box
+                lineMinX = std::max(minX, lineMinX);
+                lineMaxX = std::min(maxX, lineMaxX);
+                
+                if(lineMinX > lineMaxX) continue;
+
+                // Fill the horizontal line - optimized write
+                std::uint8_t* rowPtr = &output[(static_cast<std::size_t>(py) * displayW + lineMinX) * 4];
+                const int pixelCount = lineMaxX - lineMinX + 1;
+                
+                // Write RGBA for each pixel in the line
+                for(int i = 0; i < pixelCount; ++i)
                 {
-                    const float dx = radiusX * std::sqrt(1.0f - dySq / radiusYSq);
-                    const int lineMinX = std::max(minX, static_cast<int>(std::floor(cx - dx)));
-                    const int lineMaxX = std::min(maxX, static_cast<int>(std::ceil(cx + dx)));
-                    
-                    // Fill the horizontal line
-                    for(int px = lineMinX; px <= lineMaxX; ++px)
-                    {
-                        const std::size_t outIdx = (static_cast<std::size_t>(py) * displayW + px) * 4;
-                        output[outIdx + 0] = r;
-                        output[outIdx + 1] = g;
-                        output[outIdx + 2] = b;
-                        output[outIdx + 3] = 255;
-                    }
+                    rowPtr[i * 4 + 0] = r;
+                    rowPtr[i * 4 + 1] = g;
+                    rowPtr[i * 4 + 2] = b;
+                    rowPtr[i * 4 + 3] = 255;
                 }
             }
         }
