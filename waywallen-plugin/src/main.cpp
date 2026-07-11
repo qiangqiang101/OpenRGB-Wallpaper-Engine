@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <condition_variable>
 #include <cstdint>
 #include <cerrno>
 #include <cstdlib>
@@ -52,6 +53,13 @@ public:
     explicit OpenRGBReceiver(std::uint16_t port)
         : port_(port)
     {
+    }
+
+    /* Wait for a new frame to arrive, with timeout */
+    bool waitForFrame(std::chrono::milliseconds timeout)
+    {
+        std::unique_lock<std::mutex> lock(mutex_);
+        return frameCv_.wait_for(lock, timeout, [this] { return !frames_.empty(); });
     }
 
     void start()
@@ -235,6 +243,7 @@ private:
         frame.width = settings_.width;
         frame.height = settings_.height;
         frames_.push(std::move(frame));
+        frameCv_.notify_one();
     }
 
     std::uint16_t port_;
@@ -242,6 +251,7 @@ private:
     bool running_ = false;
     std::thread receiverThread_;
     mutable std::mutex mutex_;
+    std::condition_variable frameCv_;
     std::queue<RGBFrame> frames_;
     Settings settings_{};
     bool settingsReceived_ = false;
@@ -1213,22 +1223,39 @@ int main(int argc, char** argv)
             bridge->connectAndHandshake();
         }
 
-        constexpr std::chrono::milliseconds kFrameInterval(15); // ~60 fps
+        constexpr std::chrono::milliseconds kWaitTimeout(100); // Check for frames at 10Hz when idle
         while(true)
         {
             if(bridge.has_value())
             {
-                /* Drain any pending UDP frames into the bridge */
-                while(const std::optional<RGBFrame> frame = receiver.popFrame())
+                /* Wait for new UDP frames to arrive */
+                if(receiver.waitForFrame(kWaitTimeout))
                 {
-                    bridge->pushFrame(*frame);
+                    /* Drain all pending frames, keeping only the latest */
+                    std::optional<RGBFrame> latestFrame;
+                    while(const std::optional<RGBFrame> frame = receiver.popFrame())
+                    {
+                        latestFrame = std::move(frame);
+                    }
+                    /* Push the latest frame to the bridge and render it */
+                    if(latestFrame.has_value())
+                    {
+                        bridge->pushFrame(*latestFrame);
+                        bridge->renderFrame();
+                    }
                 }
-                /* Render a frame at a steady rate so waywallen never
-                 * times out waiting for FrameReady. If no UDP data has
-                 * arrived yet, this renders a black (empty) frame. */
-                bridge->renderFrame();
+                else
+                {
+                    /* Timeout - no new frames arrived. Render a black frame
+                     * to keep waywallen happy and prevent timeout. */
+                    bridge->renderFrame();
+                }
             }
-            std::this_thread::sleep_for(kFrameInterval);
+            else
+            {
+                /* No bridge yet, just wait a bit */
+                std::this_thread::sleep_for(kWaitTimeout);
+            }
         }
     }
     catch(const std::exception& ex)
