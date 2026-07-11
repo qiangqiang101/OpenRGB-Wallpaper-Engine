@@ -28,6 +28,7 @@
 #include <waywallen-bridge/probe_vk.h>
 
 #include <vulkan/vulkan.h>
+#include <cmath>
 
 namespace {
 
@@ -221,6 +222,8 @@ private:
 /* Minimal Vulkan context for uploading RGB frames to DMA-BUF slots. */
 class VulkanContext {
 public:
+    /* Create with a large enough size to handle any display resolution.
+     * The staging buffer will be sized for this width/height. */
     VulkanContext(std::size_t width, std::size_t height)
         : width_(static_cast<std::uint32_t>(width)),
           height_(static_cast<std::uint32_t>(height)) {
@@ -230,6 +233,25 @@ public:
         createStagingBuffer();
         createCommandPool();
         createCommandBuffer();
+    }
+
+    /* Recreate staging buffer with a new size if needed. */
+    void ensureStagingBuffer(std::uint32_t requiredWidth, std::uint32_t requiredHeight) {
+        const VkDeviceSize requiredSize = static_cast<VkDeviceSize>(requiredWidth) * requiredHeight * 4;
+        if (requiredSize > stagingSize_) {
+            if (stagingBuffer_ != VK_NULL_HANDLE) {
+                vkDestroyBuffer(device_, stagingBuffer_, nullptr);
+                stagingBuffer_ = VK_NULL_HANDLE;
+            }
+            if (stagingMemory_ != VK_NULL_HANDLE) {
+                vkFreeMemory(device_, stagingMemory_, nullptr);
+                stagingMemory_ = VK_NULL_HANDLE;
+            }
+            width_ = requiredWidth;
+            height_ = requiredHeight;
+            stagingSize_ = requiredSize;
+            createStagingBuffer();
+        }
     }
 
     ~VulkanContext() {
@@ -617,11 +639,74 @@ private:
     PFN_vkQueueSubmit2 vkQueueSubmit2 = nullptr;
 };
 
+/* Render the RGB matrix as a grid of circles on a black background.
+ * The output image is at display resolution, with circles arranged in a grid
+ * matching the matrix dimensions. */
+static std::vector<std::uint8_t> renderCirclesOnBlack(
+    const RGBFrame& matrix, std::uint32_t displayW, std::uint32_t displayH) {
+    const std::size_t matrixW = matrix.width;
+    const std::size_t matrixH = matrix.height;
+    
+    // Create output buffer at display resolution (RGBA8)
+    std::vector<std::uint8_t> output(displayW * displayH * 4, 0); // Black background
+    
+    if (matrix.pixels.empty() || matrixW == 0 || matrixH == 0) {
+        return output;
+    }
+    
+    // Calculate cell size for the grid
+    const float cellW = static_cast<float>(displayW) / static_cast<float>(matrixW);
+    const float cellH = static_cast<float>(displayH) / static_cast<float>(matrixH);
+    
+    // Use the smaller dimension to ensure circles fit in cells
+    const float radius = std::min(cellW, cellH) * 0.4f; // 40% of cell size
+    
+    // For each LED in the matrix, draw a circle
+    for (std::size_t y = 0; y < matrixH; ++y) {
+        for (std::size_t x = 0; x < matrixW; ++x) {
+            const std::size_t idx = y * matrixW + x;
+            if (idx * 3 + 2 >= matrix.pixels.size()) break;
+            
+            // Get RGB color for this LED
+            const std::uint8_t r = matrix.pixels[idx * 3 + 0];
+            const std::uint8_t g = matrix.pixels[idx * 3 + 1];
+            const std::uint8_t b = matrix.pixels[idx * 3 + 2];
+            
+            // Center of the circle in display coordinates
+            const float cx = (static_cast<float>(x) + 0.5f) * cellW;
+            const float cy = (static_cast<float>(y) + 0.5f) * cellH;
+            
+            // Draw circle by setting pixels within radius
+            const int rInt = static_cast<int>(std::ceil(radius));
+            for (int dy = -rInt; dy <= rInt; ++dy) {
+                for (int dx = -rInt; dx <= rInt; ++dx) {
+                    const float distSq = static_cast<float>(dx * dx + dy * dy);
+                    if (distSq <= radius * radius) {
+                        const int px = static_cast<int>(cx) + dx;
+                        const int py = static_cast<int>(cy) + dy;
+                        if (px >= 0 && px < static_cast<int>(displayW) &&
+                            py >= 0 && py < static_cast<int>(displayH)) {
+                            const std::size_t outIdx = (static_cast<std::size_t>(py) * displayW + px) * 4;
+                            output[outIdx + 0] = r;
+                            output[outIdx + 1] = g;
+                            output[outIdx + 2] = b;
+                            output[outIdx + 3] = 255;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return output;
+}
+
 class WaywallenBridge {
 public:
-    WaywallenBridge(std::string ipcPath, std::size_t width, std::size_t height)
-        : ipcPath_(std::move(ipcPath)), width_(width), height_(height),
-          vkContext_(width, height) {}
+    /* Create with a large enough Vulkan context to handle any display resolution.
+     * The width/height parameters are the matrix dimensions, not the display resolution. */
+    WaywallenBridge(std::string ipcPath, std::size_t matrixW, std::size_t matrixH)
+        : ipcPath_(std::move(ipcPath)), width_(matrixW), height_(matrixH) {}
 
     ~WaywallenBridge() {
         stop();
@@ -667,9 +752,12 @@ public:
         }
         std::cerr << "[openrgb] Vulkan pool created" << std::endl;
 
+        /* Advertise a large enough resolution to accommodate any display.
+         * The actual display resolution will be used when we acquire slots. */
+        constexpr std::uint32_t kMaxWidth = 3840;  // 4K width
+        constexpr std::uint32_t kMaxHeight = 2160; // 4K height
         const int capsRet = ww_bridge_pool_advertise_caps(pool_, fd_,
-                                          static_cast<std::uint32_t>(width_),
-                                          static_cast<std::uint32_t>(height_),
+                                          kMaxWidth, kMaxHeight,
                                           WW_MEM_HINT_DEVICE_LOCAL | WW_MEM_HINT_HOST_VISIBLE);
         if (capsRet != 0) {
             std::cerr << "[openrgb] ww_bridge_pool_advertise_caps returned " << capsRet << std::endl;
@@ -716,6 +804,12 @@ public:
             return;
         }
 
+        std::cerr << "[openrgb] renderFrame: slot " << slotIndex
+                  << " dimensions: " << slot.width << "x" << slot.height << std::endl;
+
+        /* Ensure staging buffer is large enough for the display resolution */
+        vkContext_.ensureStagingBuffer(slot.width, slot.height);
+
         /* Grab the latest RGB frame */
         RGBFrame renderTarget;
         bool haveData = false;
@@ -732,15 +826,9 @@ public:
 
         int syncFd = -1;
         if (haveData && !renderTarget.pixels.empty()) {
-            /* Convert RGB to RGBA */
-            std::vector<std::uint8_t> rgba(renderTarget.pixels.size() / 3 * 4);
-            for (std::size_t i = 0; i < renderTarget.pixels.size() / 3; ++i) {
-                rgba[i * 4 + 0] = renderTarget.pixels[i * 3 + 0];
-                rgba[i * 4 + 1] = renderTarget.pixels[i * 3 + 1];
-                rgba[i * 4 + 2] = renderTarget.pixels[i * 3 + 2];
-                rgba[i * 4 + 3] = 255;
-            }
-
+            /* Render the RGB matrix as circles on a black background at display resolution */
+            std::vector<std::uint8_t> rgba = renderCirclesOnBlack(
+                renderTarget, slot.width, slot.height);
             vkContext_.uploadToImage(reinterpret_cast<VkImage>(slot.vk_image),
                                      slot.width, slot.height,
                                      rgba.data(), rgba.size(), &syncFd);
@@ -875,6 +963,12 @@ private:
                   << " path=" << directive.path
                   << " mem_source=" << directive.mem_source << std::endl;
 
+        /* Use a large enough resolution to accommodate any display.
+         * The actual display resolution will be provided in the slot
+         * when we acquire it, and we'll render to that size. */
+        constexpr std::uint32_t kMaxWidth = 3840;  // 4K width
+        constexpr std::uint32_t kMaxHeight = 2160; // 4K height
+
         ww_pool_directive_t apply{};
         apply.category = directive.path;
         apply.mem_source = directive.mem_source;
@@ -884,8 +978,8 @@ private:
         apply.sync_mode = directive.sync_mode;
         apply.color = directive.color;
         apply.mem_hint = directive.mem_hint;
-        apply.width = static_cast<std::uint32_t>(width_);
-        apply.height = static_cast<std::uint32_t>(height_);
+        apply.width = kMaxWidth;
+        apply.height = kMaxHeight;
         apply.count = slotCount_;
         if (ww_bridge_pool_apply_directive(pool_, fd_, &apply) == 0) {
             poolReady_ = true;
@@ -902,7 +996,7 @@ private:
     bool running_ = false;
     bool poolReady_ = false;
     std::thread eventThread_;
-    VulkanContext vkContext_{1, 1};
+    VulkanContext vkContext_{3840, 2160};  // 4K for display resolution
     ww_pool_t* pool_ = nullptr;
     std::uint32_t slotCount_ = 1;
     std::uint32_t nextSlot_ = 0;
@@ -974,7 +1068,7 @@ int main(int argc, char** argv) {
             bridge->connectAndHandshake();
         }
 
-        constexpr auto kFrameInterval = std::chrono::milliseconds(33); // ~30 fps
+        constexpr auto kFrameInterval = std::chrono::milliseconds(15); // ~60 fps
         while (true) {
             if (bridge.has_value()) {
                 /* Drain any pending UDP frames into the bridge */
