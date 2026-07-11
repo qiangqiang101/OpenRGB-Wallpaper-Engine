@@ -11,6 +11,7 @@ pkg_check_modules(GBM REQUIRED gbm)
 
 add_executable(openrgb-waywallen-plugin
     src/main.cpp
+    src/stb_image.h
     dependencies/waywallen/bridge/src/bridge.c
     dependencies/waywallen/bridge/src/drm_fourcc.c
     dependencies/waywallen/bridge/src/ipc_v1.c
@@ -22,7 +23,7 @@ add_executable(openrgb-waywallen-plugin
     dependencies/waywallen/bridge/src/pool_vulkan.c
 )
 
-target_include_directories(openrgb-waywallen-plugin PRIVATE ${VULKAN_INCLUDE_DIRS} ${GBM_INCLUDE_DIRS} dependencies/waywallen/bridge/include)
+target_include_directories(openrgb-waywallen-plugin PRIVATE ${VULKAN_INCLUDE_DIRS} ${GBM_INCLUDE_DIRS} dependencies/waywallen/bridge/include src)
 target_compile_options(openrgb-waywallen-plugin PRIVATE -Wall -Wextra -Wpedantic)
 target_link_libraries(openrgb-waywallen-plugin PRIVATE ${VULKAN_LIBRARIES} ${GBM_LIBRARIES} pthread)
 

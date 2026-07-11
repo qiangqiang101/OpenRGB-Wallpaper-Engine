@@ -1,0 +1,70 @@
+CMakeFiles/openrgb-waywallen-plugin.dir/dependencies/waywallen/bridge/src/pool_vulkan.c.o: \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/src/pool_vulkan.c \
+ /usr/include/stdc-predef.h \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/include/waywallen-bridge/pool.h \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/include/waywallen-bridge/ipc_v1.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stdint.h \
+ /usr/include/stdint.h /usr/include/bits/libc-header-start.h \
+ /usr/include/features.h /usr/include/features-time64.h \
+ /usr/include/bits/wordsize.h /usr/include/bits/timesize.h \
+ /usr/include/sys/cdefs.h /usr/include/bits/long-double.h \
+ /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
+ /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+ /usr/include/bits/time64.h /usr/include/bits/wchar.h \
+ /usr/include/bits/stdint-intn.h /usr/include/bits/stdint-uintn.h \
+ /usr/include/bits/stdint-least.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stddef.h \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/include/waywallen-bridge/protocol_bits.h \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/include/waywallen-bridge/probe_vk.h \
+ /usr/include/vulkan/vulkan.h /usr/include/vulkan/vk_platform.h \
+ /usr/include/vulkan/vulkan_core.h \
+ /usr/include/vk_video/vulkan_video_codec_h264std.h \
+ /usr/include/vk_video/vulkan_video_codecs_common.h \
+ /usr/include/vk_video/vulkan_video_codec_h264std_encode.h \
+ /usr/include/vk_video/vulkan_video_codec_h264std.h \
+ /usr/include/vk_video/vulkan_video_codec_h265std.h \
+ /usr/include/vk_video/vulkan_video_codec_h265std_encode.h \
+ /usr/include/vk_video/vulkan_video_codec_h265std.h \
+ /usr/include/vk_video/vulkan_video_codec_h264std_decode.h \
+ /usr/include/vk_video/vulkan_video_codec_h265std_decode.h \
+ /usr/include/vk_video/vulkan_video_codec_av1std.h \
+ /usr/include/vk_video/vulkan_video_codec_av1std_decode.h \
+ /usr/include/vk_video/vulkan_video_codec_av1std.h \
+ /usr/include/vk_video/vulkan_video_codec_av1std_encode.h \
+ /usr/include/vk_video/vulkan_video_codec_vp9std.h \
+ /usr/include/vk_video/vulkan_video_codec_vp9std_decode.h \
+ /usr/include/vk_video/vulkan_video_codec_vp9std.h \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/include/waywallen-bridge/drm_fourcc.h \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/src/log_internal.h \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/include/waywallen-bridge/bridge.h \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/src/pool_internal.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/16/include/stdbool.h \
+ /home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/dependencies/waywallen/bridge/src/sync_release.h \
+ /usr/include/errno.h /usr/include/bits/errno.h \
+ /usr/include/linux/errno.h /usr/include/asm/errno.h \
+ /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
+ /usr/include/fcntl.h /usr/include/bits/fcntl.h \
+ /usr/include/bits/fcntl-linux.h /usr/include/bits/cloexec.h \
+ /usr/include/bits/types/struct_timespec.h /usr/include/bits/endian.h \
+ /usr/include/bits/endianness.h /usr/include/bits/types/time_t.h \
+ /usr/include/bits/stat.h /usr/include/bits/struct_stat.h \
+ /usr/include/stdlib.h /usr/include/bits/waitflags.h \
+ /usr/include/bits/waitstatus.h /usr/include/bits/floatn.h \
+ /usr/include/bits/floatn-common.h /usr/include/sys/types.h \
+ /usr/include/bits/types/clock_t.h /usr/include/bits/types/clockid_t.h \
+ /usr/include/bits/types/timer_t.h /usr/include/endian.h \
+ /usr/include/bits/byteswap.h /usr/include/bits/uintn-identity.h \
+ /usr/include/sys/select.h /usr/include/bits/select.h \
+ /usr/include/bits/types/sigset_t.h /usr/include/bits/types/__sigset_t.h \
+ /usr/include/bits/types/struct_timeval.h \
+ /usr/include/bits/pthreadtypes.h /usr/include/bits/thread-shared-types.h \
+ /usr/include/bits/pthreadtypes-arch.h \
+ /usr/include/bits/atomic_wide_counter.h /usr/include/bits/struct_mutex.h \
+ /usr/include/bits/struct_rwlock.h /usr/include/alloca.h \
+ /usr/include/bits/types/once_flag.h /usr/include/bits/stdlib-float.h \
+ /usr/include/string.h /usr/include/bits/types/locale_t.h \
+ /usr/include/bits/types/__locale_t.h /usr/include/strings.h \
+ /usr/include/unistd.h /usr/include/bits/posix_opt.h \
+ /usr/include/bits/environments.h /usr/include/bits/confname.h \
+ /usr/include/bits/getopt_posix.h /usr/include/bits/getopt_core.h \
+ /usr/include/bits/unistd_ext.h

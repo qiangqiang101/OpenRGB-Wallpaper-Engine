@@ -32,6 +32,9 @@
 #include <vulkan/vulkan.h>
 #include <cmath>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 namespace {
 
 struct RGBFrame {
@@ -56,7 +59,6 @@ public:
     {
     }
 
-    /* Wait for a new frame to arrive, with timeout */
     bool waitForFrame(std::chrono::milliseconds timeout)
     {
         std::unique_lock<std::mutex> lock(mutex_);
@@ -121,7 +123,6 @@ public:
         return frame;
     }
     
-    /* Drain all frames and return only the latest */
     std::optional<RGBFrame> popLatestFrame()
     {
         std::lock_guard<std::mutex> lock(mutex_);
@@ -157,10 +158,8 @@ private:
         }
     }
 
-    /* Replicate the VB.NET MatrixSize logic from OpenRGBClient.vb */
     static std::pair<std::size_t, std::size_t> matrixSizeFromType(int type, int tier)
     {
-        /* tier: 0=Small, 1=Normal, 2=Large, 3=XLarge */
         std::pair<std::size_t, std::size_t> (*landscape)(int, int, int) = [](int w, int h, int tier) -> std::pair<std::size_t, std::size_t>
         {
             switch(tier)
@@ -183,30 +182,27 @@ private:
         };
         switch(type)
         {
-            case 0: return landscape(8, 2, tier);    /* Landscape4_1 */
-            case 1: return portrait(8, 2, tier);     /* Portrait4_1 */
-            case 2: return landscape(8, 6, tier);    /* Landscape4_3 */
-            case 3: return portrait(8, 6, tier);     /* Portrait4_3 */
-            case 4: return landscape(48, 27, 2);   /* Landscape5_4 */
-            case 5: return portrait(10, 8, tier);    /* Portrait5_4 */
-            case 6: return landscape(32, 18, tier);  /* Landscape16_9 */
-            case 7: return portrait(32, 18, tier);   /* Portrait16_9 */
-            case 8: return landscape(32, 20, tier);  /* Landscape16_10 */
-            case 9: return portrait(32, 20, tier);   /* Portrait16_10 */
-            case 10: return landscape(42, 18, tier); /* Landscape21_9 */
-            case 11: return portrait(42, 18, tier);  /* Portrait21_9 */
-            case 12: return landscape(64, 18, tier); /* Landscape32_9 */
-            case 13: return portrait(64, 18, tier);  /* Portrait32_9 */
+            case 0: return landscape(8, 2, tier);
+            case 1: return portrait(8, 2, tier);
+            case 2: return landscape(8, 6, tier);
+            case 3: return portrait(8, 6, tier);
+            case 4: return landscape(48, 27, 2);
+            case 5: return portrait(10, 8, tier);
+            case 6: return landscape(32, 18, tier);
+            case 7: return portrait(32, 18, tier);
+            case 8: return landscape(32, 20, tier);
+            case 9: return portrait(32, 20, tier);
+            case 10: return landscape(42, 18, tier);
+            case 11: return portrait(42, 18, tier);
+            case 12: return landscape(64, 18, tier);
+            case 13: return portrait(64, 18, tier);
             default: return {32, 32};
         }
     }
 
     void processPacket(const unsigned char* data, std::size_t len)
     {
-        if(len < 1)
-        {
-            return;
-        }
+        if(len < 1) return;
 
         if(data[0] == 0)
         {
@@ -248,10 +244,7 @@ private:
 
     void parseRgbPacket(const unsigned char* data, std::size_t len)
     {        
-        if(len < 3)
-        {
-            return;
-        }
+        if(len < 3) return;
 
         std::lock_guard<std::mutex> lock(mutex_);
         std::size_t pixelCount = len / 3;
@@ -279,8 +272,6 @@ private:
 class VulkanContext
 {
 public:
-    /* Create with a large enough size to handle any display resolution.
-     * The staging buffer will be sized for this width/height. */
     VulkanContext(std::size_t width, std::size_t height)
         : width_(static_cast<std::uint32_t>(width)),
           height_(static_cast<std::uint32_t>(height))
@@ -293,7 +284,6 @@ public:
         createCommandBuffer();
     }
 
-    /* Recreate staging buffer with a new size if needed. */
     void ensureStagingBuffer(std::uint32_t requiredWidth, std::uint32_t requiredHeight)
     {
         const VkDeviceSize requiredSize = static_cast<VkDeviceSize>(requiredWidth) * requiredHeight * 4;
@@ -355,14 +345,12 @@ public:
     const std::uint8_t* deviceUUID() const { return deviceUUID_; }
     const std::uint8_t* driverUUID() const { return driverUUID_; }
 
-    /* Upload RGBA data into a Vulkan image via staging buffer + copy. */
     bool uploadToImage(VkImage image, std::uint32_t imgW, std::uint32_t imgH,
                        const std::uint8_t* rgbaData, std::size_t rgbaSize,
                        int* outSyncFd)
     {
         *outSyncFd = -1;
 
-        /* Map staging buffer and copy data */
         void* mapped = nullptr;
         if(vkMapMemory(device_, stagingMemory_, 0, VK_WHOLE_SIZE, 0, &mapped) != VK_SUCCESS)
         {
@@ -371,7 +359,6 @@ public:
         std::memcpy(mapped, rgbaData, std::min(rgbaSize, stagingSize_));
         vkUnmapMemory(device_, stagingMemory_);
 
-        /* Create semaphore for sync fd BEFORE submitting */
         VkSemaphore sem = VK_NULL_HANDLE;
         VkExportSemaphoreCreateInfo exportInfo{};
         exportInfo.sType = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO;
@@ -383,10 +370,9 @@ public:
 
         if(vkCreateSemaphore(device_, &semInfo, nullptr, &sem) != VK_SUCCESS)
         {
-            return true; /* proceed without sync fd */
+            return true;
         }
 
-        /* Record copy command */
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -397,7 +383,6 @@ public:
             return false;
         }
 
-        /* Transition image to TRANSFER_DST_OPTIMAL */
         VkImageMemoryBarrier barrier{};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
         barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -416,7 +401,6 @@ public:
                              VK_PIPELINE_STAGE_TRANSFER_BIT,
                              0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        /* Copy staging buffer to image */
         VkBufferImageCopy region{};
         region.bufferOffset = 0;
         region.bufferRowLength = 0;
@@ -430,7 +414,6 @@ public:
         vkCmdCopyBufferToImage(cmdBuffer_, stagingBuffer_, image,
                                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-        /* Transition to GENERAL for presentation/export */
         barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
         barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
         barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -447,7 +430,6 @@ public:
             return false;
         }
 
-        /* Submit with semaphore - NON-BLOCKING */
         VkTimelineSemaphoreSubmitInfo timelineInfo{};
         timelineInfo.sType = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
         timelineInfo.signalSemaphoreValueCount = 1;
@@ -479,7 +461,6 @@ public:
             return false;
         }
 
-        /* Get sync fd immediately - NO WAITING */
         VkSemaphoreGetFdInfoKHR fdInfo{};
         fdInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR;
         fdInfo.semaphore = sem;
@@ -530,7 +511,6 @@ private:
         vkEnumeratePhysicalDevices(instance_, &count, devices.data());
         physDevice_ = devices[0];
 
-        /* Query device UUIDs */
         VkPhysicalDeviceIDProperties idProps{};
         idProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ID_PROPERTIES;
 
@@ -542,7 +522,6 @@ private:
         std::memcpy(deviceUUID_, idProps.deviceUUID, VK_UUID_SIZE);
         std::memcpy(driverUUID_, idProps.driverUUID, VK_UUID_SIZE);
 
-        /* Query DRM render node info */
         VkPhysicalDeviceDrmPropertiesEXT drmProps{};
         drmProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRM_PROPERTIES_EXT;
 
@@ -557,7 +536,6 @@ private:
             drmMinor_ = drmProps.renderMinor;
         }
 
-        /* Find queue family with transfer bit */
         std::uint32_t qCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(physDevice_, &qCount, nullptr);
         std::vector<VkQueueFamilyProperties> queues(qCount);
@@ -616,14 +594,13 @@ private:
 
         vkGetDeviceQueue(device_, queueFamily_, 0, &queue_);
 
-        /* Load function pointers */
         vkGetSemaphoreFdKHR = reinterpret_cast<PFN_vkGetSemaphoreFdKHR>(vkGetDeviceProcAddr(device_, "vkGetSemaphoreFdKHR"));
         vkQueueSubmit2 = reinterpret_cast<PFN_vkQueueSubmit2>(vkGetDeviceProcAddr(device_, "vkQueueSubmit2"));
     }
 
     void createStagingBuffer()
     {
-        stagingSize_ = width_ * height_ * 4; /* RGBA8 */
+        stagingSize_ = width_ * height_ * 4;
 
         VkBufferCreateInfo bufferInfo{};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -717,20 +694,18 @@ private:
     VkCommandPool           cmdPool_            = VK_NULL_HANDLE;
     VkCommandBuffer         cmdBuffer_          = VK_NULL_HANDLE;
 
-    /* Loaded function pointers */
     PFN_vkGetSemaphoreFdKHR vkGetSemaphoreFdKHR = nullptr;
     PFN_vkQueueSubmit2      vkQueueSubmit2      = nullptr;
 };
 
-/* Precomputed circle mask for fast rendering.
- * Uses a lookup table to avoid repeated sqrt() calculations. */
+/* Precomputed circle mask for fast rendering. */
 class CircleMaskCache
 {
 public:
     struct Mask
     {
-        std::vector<int> xOffsets;  // X offsets for each scanline
-        std::vector<int> widths;    // Width of each scanline
+        std::vector<int> xOffsets;
+        std::vector<int> widths;
         int height = 0;
         int radius = 0;
     };
@@ -747,8 +722,6 @@ public:
         mask.radius = radius;
         mask.height = radius * 2 + 1;
         
-        // Precompute x-extent for each y using integer arithmetic
-        // Use squared radius to avoid sqrt in the hot loop
         const int radiusSq = radius * radius;
         
         for(int dy = -radius; dy <= radius; ++dy)
@@ -758,8 +731,6 @@ public:
             
             if(remaining >= 0)
             {
-                // Use integer sqrt approximation: dx = sqrt(remaining)
-                // For better performance, use lookup table or fast approximation
                 const int dx = fastSqrt(remaining);
                 mask.xOffsets.push_back(-dx);
                 mask.widths.push_back(dx * 2 + 1);
@@ -776,13 +747,11 @@ public:
     }
 
 private:
-    // Fast integer square root using binary approximation
     static int fastSqrt(int n)
     {
         if(n <= 0) return 0;
         if(n < 2) return 1;
         
-        // Binary search for sqrt
         int low = 0, high = n;
         while(low < high)
         {
@@ -802,39 +771,108 @@ private:
     std::unordered_map<int, Mask> cache_;
 };
 
-/* Render the RGB matrix as a grid of circles on a black background.
- * Optimized with:
- * 1. Precomputed circle masks (no per-frame sqrt)
- * 2. Integer arithmetic instead of floating-point
- * 3. Cached circle geometry
- * 4. Direct memory writes with minimal operations */
-static std::vector<std::uint8_t> renderCirclesOnBlack(const RGBFrame& matrix, std::uint32_t displayW, std::uint32_t displayH)
+/* Load an image from file or HTTP URL. */
+static std::pair<std::vector<std::uint8_t>, std::pair<int, int>> loadBackgroundImage(const std::string& path)
 {
-    const std::size_t       matrixW             = matrix.width;
-    const std::size_t       matrixH             = matrix.height;
+    std::pair<std::vector<std::uint8_t>, std::pair<int, int>> result;
+    
+    if(path.empty())
+    {
+        return result;
+    }
 
-    // Create output buffer at display resolution (RGBA8)
-    std::vector<std::uint8_t> output(displayW * displayH * 4, 0); // Black background
+    int width = 0, height = 0, channels = 0;
+    unsigned char* data = nullptr;
+    
+    if(path.find("http://") == 0 || path.find("https://") == 0)
+    {
+        std::string tmpPath = "/tmp/openrgb_bg_" + std::to_string(getpid()) + ".tmp";
+        std::string cmd = "curl -sL --max-time 10 --connect-timeout 5 \"" + path + "\" -o \"" + tmpPath + "\"";
+        int ret = system(cmd.c_str());
+        if(ret != 0 || access(tmpPath.c_str(), R_OK) != 0)
+        {
+            std::cerr << "[openrgb] failed to download background image from " << path << std::endl;
+            return result;
+        }
+        
+        data = stbi_load(tmpPath.c_str(), &width, &height, &channels, 4);
+        std::remove(tmpPath.c_str());
+    }
+    else
+    {
+        data = stbi_load(path.c_str(), &width, &height, &channels, 4);
+    }
+
+    if(!data || width <= 0 || height <= 0)
+    {
+        std::cerr << "[openrgb] failed to load background image: " << path << std::endl;
+        if(data) stbi_image_free(data);
+        return result;
+    }
+
+    result.first.resize(width * height * 4);
+    std::memcpy(result.first.data(), data, width * height * 4);
+    result.second = {width, height};
+    
+    stbi_image_free(data);
+    std::cout << "[openrgb] loaded background image: " << path << " (" << width << "x" << height << ")" << std::endl;
+    
+    return result;
+}
+
+/* Render circles on a background image. */
+static std::vector<std::uint8_t> renderCirclesOnImage(const RGBFrame& matrix, 
+                                                       std::uint32_t displayW, std::uint32_t displayH,
+                                                       const std::vector<std::uint8_t>& bgImage,
+                                                       int bgW, int bgH)
+{
+    const std::size_t matrixW = matrix.width;
+    const std::size_t matrixH = matrix.height;
+
+    std::vector<std::uint8_t> output(displayW * displayH * 4, 0);
+
+    if(!bgImage.empty() && bgW > 0 && bgH > 0)
+    {
+        for(std::uint32_t y = 0; y < displayH; ++y)
+        {
+            const int srcY = static_cast<int>(static_cast<float>(y) * bgH / displayH);
+            const int srcYClamped = std::max(0, std::min(bgH - 1, srcY));
+            
+            for(std::uint32_t x = 0; x < displayW; ++x)
+            {
+                const int srcX = static_cast<int>(static_cast<float>(x) * bgW / displayW);
+                const int srcXClamped = std::max(0, std::min(bgW - 1, srcX));
+                
+                const std::size_t srcIdx = (static_cast<std::size_t>(srcYClamped) * bgW + srcXClamped) * 4;
+                const std::size_t dstIdx = (y * displayW + x) * 4;
+                
+                output[dstIdx + 0] = bgImage[srcIdx + 0];
+                output[dstIdx + 1] = bgImage[srcIdx + 1];
+                output[dstIdx + 2] = bgImage[srcIdx + 2];
+                output[dstIdx + 3] = 255;
+            }
+        }
+    }
+    else
+    {
+        std::memset(output.data(), 0, output.size());
+    }
 
     if(matrix.pixels.empty() || matrixW == 0 || matrixH == 0)
     {
         return output;
     }
 
-    // Calculate cell size for the grid
-    const std::uint32_t     cellW               = displayW / static_cast<std::uint32_t>(matrixW);
-    const std::uint32_t     cellH               = displayH / static_cast<std::uint32_t>(matrixH);
+    const std::uint32_t cellW = displayW / static_cast<std::uint32_t>(matrixW);
+    const std::uint32_t cellH = displayH / static_cast<std::uint32_t>(matrixH);
     
-    // Circle radius (40% of cell size) - use integer radius
     const int radiusX = static_cast<int>(cellW * 0.4f);
     const int radiusY = static_cast<int>(cellH * 0.4f);
     
-    // Get precomputed masks for both radii
     static thread_local CircleMaskCache cache;
     const auto& maskX = cache.getMask(radiusX);
     const auto& maskY = cache.getMask(radiusY);
 
-    // For each LED in the matrix, draw a circle using precomputed masks
     for(std::size_t y = 0; y < matrixH; ++y)
     {
         for(std::size_t x = 0; x < matrixW; ++x)
@@ -842,23 +880,18 @@ static std::vector<std::uint8_t> renderCirclesOnBlack(const RGBFrame& matrix, st
             const std::size_t idx = y * matrixW + x;
             if(idx * 3 + 2 >= matrix.pixels.size()) break;
 
-            // Get RGB color for this LED
             const std::uint8_t r = matrix.pixels[idx * 3 + 0];
             const std::uint8_t g = matrix.pixels[idx * 3 + 1];
             const std::uint8_t b = matrix.pixels[idx * 3 + 2];
 
-            // Center of the circle in display coordinates (integer)
             const int cx = (static_cast<int>(x) * static_cast<int>(cellW)) + (cellW / 2);
             const int cy = (static_cast<int>(y) * static_cast<int>(cellH)) + (cellH / 2);
 
-            // Calculate bounding box in integer coordinates
             const int minX = std::max(0, cx - radiusX);
             const int maxX = std::min(static_cast<int>(displayW) - 1, cx + radiusX);
             const int minY = std::max(0, cy - radiusY);
             const int maxY = std::min(static_cast<int>(displayH) - 1, cy + radiusY);
 
-            // Draw horizontal lines using precomputed mask
-            // Use the larger mask and clip to bounding box
             const int maskHeight = maskX.height;
             const int maskCenterY = maskHeight / 2;
             
@@ -868,25 +901,99 @@ static std::vector<std::uint8_t> renderCirclesOnBlack(const RGBFrame& matrix, st
                 if(maskYIdx < 0 || maskYIdx >= maskY.height) continue;
                 if(maskY.widths[maskYIdx] == 0) continue;
 
-                // Get x-extent from mask
                 const int dx = maskX.xOffsets[maskYIdx];
                 const int lineWidth = maskX.widths[maskYIdx];
                 
-                // Calculate line bounds
                 int lineMinX = cx + dx;
                 int lineMaxX = lineMinX + lineWidth - 1;
                 
-                // Clip to bounding box
                 lineMinX = std::max(minX, lineMinX);
                 lineMaxX = std::min(maxX, lineMaxX);
                 
                 if(lineMinX > lineMaxX) continue;
 
-                // Fill the horizontal line - optimized write
                 std::uint8_t* rowPtr = &output[(static_cast<std::size_t>(py) * displayW + lineMinX) * 4];
                 const int pixelCount = lineMaxX - lineMinX + 1;
                 
-                // Write RGBA for each pixel in the line
+                for(int i = 0; i < pixelCount; ++i)
+                {
+                    rowPtr[i * 4 + 0] = r;
+                    rowPtr[i * 4 + 1] = g;
+                    rowPtr[i * 4 + 2] = b;
+                    rowPtr[i * 4 + 3] = 255;
+                }
+            }
+        }
+    }
+
+    return output;
+}
+
+/* Render circles on black background (fallback). */
+static std::vector<std::uint8_t> renderCirclesOnBlack(const RGBFrame& matrix, std::uint32_t displayW, std::uint32_t displayH)
+{
+    const std::size_t matrixW = matrix.width;
+    const std::size_t matrixH = matrix.height;
+
+    std::vector<std::uint8_t> output(displayW * displayH * 4, 0);
+
+    if(matrix.pixels.empty() || matrixW == 0 || matrixH == 0)
+    {
+        return output;
+    }
+
+    const std::uint32_t cellW = displayW / static_cast<std::uint32_t>(matrixW);
+    const std::uint32_t cellH = displayH / static_cast<std::uint32_t>(matrixH);
+    
+    const int radiusX = static_cast<int>(cellW * 0.4f);
+    const int radiusY = static_cast<int>(cellH * 0.4f);
+    
+    static thread_local CircleMaskCache cache;
+    const auto& maskX = cache.getMask(radiusX);
+    const auto& maskY = cache.getMask(radiusY);
+
+    for(std::size_t y = 0; y < matrixH; ++y)
+    {
+        for(std::size_t x = 0; x < matrixW; ++x)
+        {
+            const std::size_t idx = y * matrixW + x;
+            if(idx * 3 + 2 >= matrix.pixels.size()) break;
+
+            const std::uint8_t r = matrix.pixels[idx * 3 + 0];
+            const std::uint8_t g = matrix.pixels[idx * 3 + 1];
+            const std::uint8_t b = matrix.pixels[idx * 3 + 2];
+
+            const int cx = (static_cast<int>(x) * static_cast<int>(cellW)) + (cellW / 2);
+            const int cy = (static_cast<int>(y) * static_cast<int>(cellH)) + (cellH / 2);
+
+            const int minX = std::max(0, cx - radiusX);
+            const int maxX = std::min(static_cast<int>(displayW) - 1, cx + radiusX);
+            const int minY = std::max(0, cy - radiusY);
+            const int maxY = std::min(static_cast<int>(displayH) - 1, cy + radiusY);
+
+            const int maskHeight = maskX.height;
+            const int maskCenterY = maskHeight / 2;
+            
+            for(int py = minY; py <= maxY; ++py)
+            {
+                const int maskYIdx = (py - cy) + maskCenterY;
+                if(maskYIdx < 0 || maskYIdx >= maskY.height) continue;
+                if(maskY.widths[maskYIdx] == 0) continue;
+
+                const int dx = maskX.xOffsets[maskYIdx];
+                const int lineWidth = maskX.widths[maskYIdx];
+                
+                int lineMinX = cx + dx;
+                int lineMaxX = lineMinX + lineWidth - 1;
+                
+                lineMinX = std::max(minX, lineMinX);
+                lineMaxX = std::min(maxX, lineMaxX);
+                
+                if(lineMinX > lineMaxX) continue;
+
+                std::uint8_t* rowPtr = &output[(static_cast<std::size_t>(py) * displayW + lineMinX) * 4];
+                const int pixelCount = lineMaxX - lineMinX + 1;
+                
                 for(int i = 0; i < pixelCount; ++i)
                 {
                     rowPtr[i * 4 + 0] = r;
@@ -903,8 +1010,6 @@ static std::vector<std::uint8_t> renderCirclesOnBlack(const RGBFrame& matrix, st
 
 class WaywallenBridge {
 public:
-    /* Create with a large enough Vulkan context to handle any display resolution.
-     * The width/height parameters are the matrix dimensions, not the display resolution. */
     WaywallenBridge(std::string ipcPath, std::size_t matrixW, std::size_t matrixH)
         : ipcPath_(std::move(ipcPath)), width_(matrixW), height_(matrixH)
     {
@@ -917,10 +1022,7 @@ public:
 
     void connectAndHandshake()
     {
-        if(ipcPath_.empty())
-        {
-            return;
-        }
+        if(ipcPath_.empty()) return;
 
         std::cerr << "[openrgb] connecting to waywallen IPC at " << ipcPath_ << std::endl;
         fd_ = ::socket(AF_UNIX, SOCK_STREAM, 0);
@@ -944,7 +1046,6 @@ public:
         readInitMessage();
         std::cerr << "[openrgb] received Init from daemon" << std::endl;
 
-        /* Create the buffer pool with Vulkan backend and advertise caps. */
         ww_pool_vulkan_init_t init{};
         init.instance = vkContext_.instance();
         init.physical_device = vkContext_.physicalDevice();
@@ -956,7 +1057,7 @@ public:
         init.driver_uuid = vkContext_.driverUUID();
         init.drm_render_major = vkContext_.drmRenderMajor();
         init.drm_render_minor = vkContext_.drmRenderMinor();
-        init.drm_render_fd = -1; /* bridge will open its own */
+        init.drm_render_fd = -1;
         init.image_usage_flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
         init.format_feature_flags = VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 
@@ -966,10 +1067,8 @@ public:
         }
         std::cerr << "[openrgb] Vulkan pool created" << std::endl;
 
-        /* Advertise a large enough resolution to accommodate any display.
-         * The actual display resolution will be used when we acquire slots. */
-        constexpr std::uint32_t kMaxWidth = 3840;  // 4K width
-        constexpr std::uint32_t kMaxHeight = 2160; // 4K height
+        constexpr std::uint32_t kMaxWidth = 3840;
+        constexpr std::uint32_t kMaxHeight = 2160;
         const int capsRet = ww_bridge_pool_advertise_caps(pool_, fd_,
                                           kMaxWidth, kMaxHeight,
                                           WW_MEM_HINT_DEVICE_LOCAL | WW_MEM_HINT_HOST_VISIBLE);
@@ -1007,6 +1106,14 @@ public:
             ww_bridge_pool_destroy(pool_);
             pool_ = nullptr;
         }
+    }
+
+    void setBackgroundImage(std::vector<std::uint8_t> image, int w, int h)
+    {
+        std::lock_guard<std::mutex> lock(bgMutex_);
+        bgImage_ = std::move(image);
+        bgWidth_ = w;
+        bgHeight_ = h;
     }
 
     void pushFrame(RGBFrame frame)
@@ -1057,22 +1164,38 @@ public:
             return;
         }
 
-        /* Ensure staging buffer is large enough for the display resolution */
         vkContext_.ensureStagingBuffer(slot.width, slot.height);
 
         int syncFd = -1;
         if(!frame.pixels.empty())
         {
-            /* Render at display resolution (native) for proper scaling */
-            std::vector<std::uint8_t> rgba = renderCirclesOnBlack(
-                frame, slot.width, slot.height);
+            std::vector<std::uint8_t> rgba;
+            
+            // Check if we have a background image
+            std::vector<std::uint8_t> bgImage;
+            int bgW = 0, bgH = 0;
+            {
+                std::lock_guard<std::mutex> lock(bgMutex_);
+                bgImage = bgImage_;
+                bgW = bgWidth_;
+                bgH = bgHeight_;
+            }
+            
+            if(!bgImage.empty())
+            {
+                rgba = renderCirclesOnImage(frame, slot.width, slot.height, bgImage, bgW, bgH);
+            }
+            else
+            {
+                rgba = renderCirclesOnBlack(frame, slot.width, slot.height);
+            }
+            
             vkContext_.uploadToImage(reinterpret_cast<VkImage>(slot.vk_image),
                                      slot.width, slot.height,
                                      rgba.data(), rgba.size(), &syncFd);
         }
         else
         {
-            /* No data — upload a black frame */
             std::vector<std::uint8_t> black(slot.width * slot.height * 4, 0);
             vkContext_.uploadToImage(reinterpret_cast<VkImage>(slot.vk_image),
                                      slot.width, slot.height,
@@ -1084,8 +1207,6 @@ public:
         {
             std::cerr << "[openrgb] submit_slot failed: " << rc << std::endl;
         }
-
-        /* Don't wait for slot release - non-blocking to maintain throughput */
     }
 
 private:
@@ -1227,11 +1348,8 @@ private:
                   << " path=" << directive.path
                   << " mem_source=" << directive.mem_source << std::endl;
 
-        /* Use a large enough resolution to accommodate any display.
-         * The actual display resolution will be provided in the slot
-         * when we acquire it, and we'll render to that size. */
-        constexpr std::uint32_t kMaxWidth = 3840;  // 4K width
-        constexpr std::uint32_t kMaxHeight = 2160; // 4K height
+        constexpr std::uint32_t kMaxWidth = 3840;
+        constexpr std::uint32_t kMaxHeight = 2160;
 
         ww_pool_directive_t apply{};
         apply.category = directive.path;
@@ -1264,15 +1382,20 @@ private:
     bool poolReady_ = false;
     std::thread eventThread_;
     std::thread renderThread_;
-    VulkanContext vkContext_{3840, 2160};  // 4K for display resolution
+    VulkanContext vkContext_{3840, 2160};
     ww_pool_t* pool_ = nullptr;
     std::uint32_t slotCount_ = 1;
     std::uint32_t nextSlot_ = 0;
-    /* Latest RGB frame from UDP, protected by frameMutex_ */
+    
     std::mutex frameMutex_;
     std::condition_variable frameCv_;
     RGBFrame latestFrame_;
     bool haveFrame_ = false;
+    
+    std::mutex bgMutex_;
+    std::vector<std::uint8_t> bgImage_;
+    int bgWidth_ = 0;
+    int bgHeight_ = 0;
 };
 
 } // namespace
@@ -1326,17 +1449,20 @@ int main(int argc, char** argv)
         receiver.start();
 
         std::optional<WaywallenBridge> bridge;
+        std::optional<std::pair<std::vector<std::uint8_t>, std::pair<int, int>>> bgImage;
+        
+        // Load background image if specified
+        if(!settings.backgroundImage.empty())
+        {
+            bgImage = loadBackgroundImage(settings.backgroundImage);
+        }
+
         if(!settings.ipcPath.empty())
         {
-            /* Wait for the OpenRGB settings packet to determine the actual
-             * matrix resolution before creating the Vulkan context and
-             * connecting to waywallen. The settings packet (type 1) carries
-             * the matrix size type/tier which maps to the real WxH. */
             std::cout << "Waiting for OpenRGB settings packet to determine matrix size..." << std::endl;
             bool gotSettings = false;
-            for(int i = 0; i < 300; ++i)  // up to 30s
+            for(int i = 0; i < 300; ++i)
             {
-                /* Check if settings were updated by inspecting the receiver */
                 if(receiver.hasSettingsPacket())
                 {
                     gotSettings = true;
@@ -1349,10 +1475,16 @@ int main(int argc, char** argv)
                 std::cout << "No settings packet received; using default 32x32" << std::endl;
             }
 
-            /* Get the actual matrix dimensions from the receiver */
             Settings actualSettings = receiver.getSettings();
             std::cout << "Using matrix size: " << actualSettings.width << "x" << actualSettings.height << std::endl;
             bridge.emplace(settings.ipcPath, actualSettings.width, actualSettings.height);
+            
+            // Set background image if loaded
+            if(bgImage.has_value())
+            {
+                bridge->setBackgroundImage(std::move(bgImage->first), bgImage->second.first, bgImage->second.second);
+            }
+            
             bridge->connectAndHandshake();
             bridge->startRenderThread();
         }
@@ -1363,12 +1495,9 @@ int main(int argc, char** argv)
         {
             if(bridge.has_value())
             {
-                /* Wait for new UDP frames to arrive */
                 if(receiver.waitForFrame(new_frame_timeout))
                 {
-                    /* Get only the latest frame (avoids queue overhead) */
                     std::optional<RGBFrame> latestFrame = receiver.popLatestFrame();
-                    /* Push the latest frame to the bridge - render thread handles it */
                     if(latestFrame.has_value())
                     {
                         bridge->pushFrame(std::move(*latestFrame));
@@ -1377,7 +1506,6 @@ int main(int argc, char** argv)
             }
             else
             {
-                /* No bridge yet, just wait a bit */
                 std::this_thread::sleep_for(new_frame_timeout);
             }
         }

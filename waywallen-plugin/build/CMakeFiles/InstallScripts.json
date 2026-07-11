@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/adam/OpenRGBPlugins/OpenRGBWallpaperEnginePlugin/waywallen-plugin/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

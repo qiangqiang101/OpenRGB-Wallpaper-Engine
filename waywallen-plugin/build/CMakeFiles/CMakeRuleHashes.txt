@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+3e29ad870b38c9a67ffaf84bf0134e73 CMakeFiles/package-plugin
+1cc5e80cdba5a41f318de0fcfb3f3576 org.openrgb.waywallen.zip
