@@ -34,6 +34,9 @@ Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting
 - [Download Github](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.1.0.1/OpenRGBWallpaperPlugin_api4_win64.zip)
 - [Download GitLab](https://gitlab.com/-/project/84234272/uploads/57079f30de92122f1e62a03c0fa07811/OpenRGBWallpaperPlugin_win64.zip)
 
+### Cover Images
+[Cover Images][coverimages.md]
+
 # 🚧 Prerequisite
 - [OpenRGB by CalcProgrammer1](https://gitlab.com/CalcProgrammer1/OpenRGB)
 - [.NET 10.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
