@@ -49,18 +49,23 @@ struct Settings {
 
 class OpenRGBReceiver {
 public:
-    explicit OpenRGBReceiver(std::uint16_t port) : port_(port) {}
+    explicit OpenRGBReceiver(std::uint16_t port)
+        : port_(port)
+    {
+    }
 
-    void start() {
+    void start()
+    {
         socket_ = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        if (socket_ < 0) throw std::runtime_error("socket failed");
+        if(socket_ < 0) throw std::runtime_error("socket failed");
 
         sockaddr_in addr{};
         addr.sin_family = AF_INET;
         addr.sin_addr.s_addr = htonl(INADDR_ANY);
         addr.sin_port = htons(port_);
 
-        if (::bind(socket_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
+        if(::bind(socket_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0)
+        {
             const int err = errno;
             ::close(socket_);
             socket_ = -1;
@@ -74,44 +79,53 @@ public:
         receiverThread_ = std::thread([this] { receiveLoop(); });
     }
 
-    void stop() {
+    void stop()
+    {
         running_ = false;
-        if (socket_ >= 0) {
+        if(socket_ >= 0)
+        {
             ::shutdown(socket_, SHUT_RDWR);
             ::close(socket_);
             socket_ = -1;
         }
-        if (receiverThread_.joinable()) receiverThread_.join();
+        if(receiverThread_.joinable()) receiverThread_.join();
     }
 
-    void setSettings(const Settings& settings) {
+    void setSettings(const Settings& settings)
+    {
         std::lock_guard<std::mutex> lock(mutex_);
         settings_ = settings;
     }
 
-    Settings getSettings() const {
+    Settings getSettings() const
+    {
         std::lock_guard<std::mutex> lock(mutex_);
         return settings_;
     }
 
-    std::optional<RGBFrame> popFrame() {
+    std::optional<RGBFrame> popFrame()
+    {
         std::lock_guard<std::mutex> lock(mutex_);
-        if (frames_.empty()) return std::nullopt;
+        if(frames_.empty()) return std::nullopt;
         RGBFrame frame = std::move(frames_.front());
         frames_.pop();
         return frame;
     }
 
-    bool hasSettingsPacket() const {
+    bool hasSettingsPacket() const
+    {
         std::lock_guard<std::mutex> lock(mutex_);
         return settingsReceived_;
     }
 
 private:
-    void receiveLoop() {
+    void receiveLoop()
+    {
         std::array<unsigned char, 65535> buffer{};
-        while (running_) {
-            if (socket_ < 0) {
+        while(running_)
+        {
+            if(socket_ < 0)
+            {
                 std::this_thread::sleep_for(std::chrono::milliseconds(50));
                 continue;
             }
@@ -119,31 +133,37 @@ private:
             socklen_t senderSize = sizeof(sender);
             ssize_t len = ::recvfrom(socket_, buffer.data(), buffer.size(), 0,
                                      reinterpret_cast<sockaddr*>(&sender), &senderSize);
-            if (len <= 0) continue;
+            if(len <= 0) continue;
             processPacket(buffer.data(), static_cast<std::size_t>(len));
         }
     }
 
     /* Replicate the VB.NET MatrixSize logic from OpenRGBClient.vb */
-    static std::pair<std::size_t, std::size_t> matrixSizeFromType(int type, int tier) {
+    static std::pair<std::size_t, std::size_t> matrixSizeFromType(int type, int tier)
+    {
         /* tier: 0=Small, 1=Normal, 2=Large, 3=XLarge */
-        auto landscape = [](int w, int h, int tier) -> std::pair<std::size_t, std::size_t> {
-            switch (tier) {
+        std::pair<std::size_t, std::size_t> (*landscape)(int, int, int) = [](int w, int h, int tier) -> std::pair<std::size_t, std::size_t>
+        {
+            switch(tier)
+            {
                 case 0: return {w / 4, h / 4};
                 case 1: return {w / 2, h / 2};
                 case 2: return {w, h};
                 default: return {w * 2, h * 2};
             }
         };
-        auto portrait = [](int w, int h, int tier) -> std::pair<std::size_t, std::size_t> {
-            switch (tier) {
+        std::pair<std::size_t, std::size_t> (*portrait)(int, int, int) = [](int w, int h, int tier) -> std::pair<std::size_t, std::size_t>
+        {
+            switch(tier)
+            {
                 case 0: return {h / 4, w / 4};
                 case 1: return {h / 2, w / 2};
                 case 2: return {h, w};
                 default: return {h * 2, w * 2};
             }
         };
-        switch (type) {
+        switch(type)
+        {
             case 0: return landscape(8, 2, tier);    /* Landscape4_1 */
             case 1: return portrait(8, 2, tier);     /* Portrait4_1 */
             case 2: return landscape(8, 6, tier);    /* Landscape4_3 */
@@ -162,15 +182,19 @@ private:
         }
     }
 
-    void processPacket(const unsigned char* data, std::size_t len) {
-        if (len < 1) return;
+    void processPacket(const unsigned char* data, std::size_t len)
+    {
+        if(len < 1) return;
 
-        if (data[0] == 0) {
+        if(data[0] == 0)
+        {
             static std::vector<unsigned char> combined;
-            if (len >= 3) {
+            if(len >= 3)
+            {
                 const std::size_t payloadOffset = 3;
                 combined.insert(combined.end(), data + payloadOffset, data + len);
-                if (data[1] == data[2] - 1) {
+                if(data[1] == data[2] - 1)
+                {
                     parseRgbPacket(combined.data(), combined.size());
                     combined.clear();
                 }
@@ -178,10 +202,13 @@ private:
             return;
         }
 
-        if (data[0] == 1 && len >= 19) {
+        if(data[0] == 1 && len >= 19)
+        {
             const int matrixType = data[1];
             const int matrixTier = data[2];
-            auto [w, h] = matrixSizeFromType(matrixType, matrixTier);
+            std::pair<std::size_t, std::size_t> sizePair = matrixSizeFromType(matrixType, matrixTier);
+            std::size_t w = sizePair.first;
+            std::size_t h = sizePair.second;
 
             Settings nextSettings;
             nextSettings.width = w;
@@ -197,8 +224,9 @@ private:
         }
     }
 
-    void parseRgbPacket(const unsigned char* data, std::size_t len) {
-        if (len < 3) return;
+    void parseRgbPacket(const unsigned char* data, std::size_t len)
+    {
+        if(len < 3) return;
         std::lock_guard<std::mutex> lock(mutex_);
         std::size_t pixelCount = len / 3;
         RGBFrame frame;
@@ -220,13 +248,15 @@ private:
 };
 
 /* Minimal Vulkan context for uploading RGB frames to DMA-BUF slots. */
-class VulkanContext {
+class VulkanContext
+{
 public:
     /* Create with a large enough size to handle any display resolution.
      * The staging buffer will be sized for this width/height. */
     VulkanContext(std::size_t width, std::size_t height)
         : width_(static_cast<std::uint32_t>(width)),
-          height_(static_cast<std::uint32_t>(height)) {
+          height_(static_cast<std::uint32_t>(height))
+    {
         createInstance();
         pickPhysicalDevice();
         createDevice();
@@ -236,14 +266,18 @@ public:
     }
 
     /* Recreate staging buffer with a new size if needed. */
-    void ensureStagingBuffer(std::uint32_t requiredWidth, std::uint32_t requiredHeight) {
+    void ensureStagingBuffer(std::uint32_t requiredWidth, std::uint32_t requiredHeight)
+    {
         const VkDeviceSize requiredSize = static_cast<VkDeviceSize>(requiredWidth) * requiredHeight * 4;
-        if (requiredSize > stagingSize_) {
-            if (stagingBuffer_ != VK_NULL_HANDLE) {
+        if(requiredSize > stagingSize_)
+        {
+            if(stagingBuffer_ != VK_NULL_HANDLE)
+            {
                 vkDestroyBuffer(device_, stagingBuffer_, nullptr);
                 stagingBuffer_ = VK_NULL_HANDLE;
             }
-            if (stagingMemory_ != VK_NULL_HANDLE) {
+            if(stagingMemory_ != VK_NULL_HANDLE)
+            {
                 vkFreeMemory(device_, stagingMemory_, nullptr);
                 stagingMemory_ = VK_NULL_HANDLE;
             }
@@ -254,23 +288,30 @@ public:
         }
     }
 
-    ~VulkanContext() {
-        if (device_ != VK_NULL_HANDLE) {
-            if (cmdBuffer_ != VK_NULL_HANDLE) {
+    ~VulkanContext()
+    {
+        if(device_ != VK_NULL_HANDLE)
+        {
+            if(cmdBuffer_ != VK_NULL_HANDLE)
+            {
                 vkFreeCommandBuffers(device_, cmdPool_, 1, &cmdBuffer_);
             }
-            if (cmdPool_ != VK_NULL_HANDLE) {
+            if(cmdPool_ != VK_NULL_HANDLE)
+            {
                 vkDestroyCommandPool(device_, cmdPool_, nullptr);
             }
-            if (stagingBuffer_ != VK_NULL_HANDLE) {
+            if(stagingBuffer_ != VK_NULL_HANDLE)
+            {
                 vkDestroyBuffer(device_, stagingBuffer_, nullptr);
             }
-            if (stagingMemory_ != VK_NULL_HANDLE) {
+            if(stagingMemory_ != VK_NULL_HANDLE)
+            {
                 vkFreeMemory(device_, stagingMemory_, nullptr);
             }
             vkDestroyDevice(device_, nullptr);
         }
-        if (instance_ != VK_NULL_HANDLE) {
+        if(instance_ != VK_NULL_HANDLE)
+        {
             vkDestroyInstance(instance_, nullptr);
         }
     }
@@ -289,12 +330,14 @@ public:
     /* Upload RGBA data into a Vulkan image via staging buffer + copy. */
     bool uploadToImage(VkImage image, std::uint32_t imgW, std::uint32_t imgH,
                        const std::uint8_t* rgbaData, std::size_t rgbaSize,
-                       int* outSyncFd) {
+                       int* outSyncFd)
+    {
         *outSyncFd = -1;
 
         /* Map staging buffer and copy data */
         void* mapped = nullptr;
-        if (vkMapMemory(device_, stagingMemory_, 0, VK_WHOLE_SIZE, 0, &mapped) != VK_SUCCESS) {
+        if(vkMapMemory(device_, stagingMemory_, 0, VK_WHOLE_SIZE, 0, &mapped) != VK_SUCCESS)
+        {
             return false;
         }
         std::memcpy(mapped, rgbaData, std::min(rgbaSize, stagingSize_));
@@ -305,7 +348,8 @@ public:
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
         beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-        if (vkBeginCommandBuffer(cmdBuffer_, &beginInfo) != VK_SUCCESS) {
+        if(vkBeginCommandBuffer(cmdBuffer_, &beginInfo) != VK_SUCCESS)
+        {
             return false;
         }
 
@@ -353,7 +397,8 @@ public:
                              VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
                              0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-        if (vkEndCommandBuffer(cmdBuffer_) != VK_SUCCESS) {
+        if(vkEndCommandBuffer(cmdBuffer_) != VK_SUCCESS)
+        {
             return false;
         }
 
@@ -366,11 +411,13 @@ public:
         VkFenceCreateInfo fenceInfo{};
         fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
         VkFence fence = VK_NULL_HANDLE;
-        if (vkCreateFence(device_, &fenceInfo, nullptr, &fence) != VK_SUCCESS) {
+        if(vkCreateFence(device_, &fenceInfo, nullptr, &fence) != VK_SUCCESS)
+        {
             return false;
         }
 
-        if (vkQueueSubmit(queue_, 1, &submitInfo, fence) != VK_SUCCESS) {
+        if(vkQueueSubmit(queue_, 1, &submitInfo, fence) != VK_SUCCESS)
+        {
             vkDestroyFence(device_, fence, nullptr);
             return false;
         }
@@ -389,7 +436,8 @@ public:
         semInfo.pNext = &exportInfo;
 
         VkSemaphore sem = VK_NULL_HANDLE;
-        if (vkCreateSemaphore(device_, &semInfo, nullptr, &sem) != VK_SUCCESS) {
+        if(vkCreateSemaphore(device_, &semInfo, nullptr, &sem) != VK_SUCCESS)
+        {
             return true; /* proceed without sync fd */
         }
 
@@ -412,12 +460,14 @@ public:
         submit2.signalSemaphoreInfoCount = 1;
         submit2.pSignalSemaphoreInfos = &signalInfo;
 
-        if (vkQueueSubmit2(queue_, 1, &submit2, VK_NULL_HANDLE) == VK_SUCCESS) {
+        if(vkQueueSubmit2(queue_, 1, &submit2, VK_NULL_HANDLE) == VK_SUCCESS)
+        {
             VkSemaphoreGetFdInfoKHR fdInfo{};
             fdInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_GET_FD_INFO_KHR;
             fdInfo.semaphore = sem;
             fdInfo.handleType = VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
-            if (vkGetSemaphoreFdKHR(device_, &fdInfo, outSyncFd) != VK_SUCCESS) {
+            if(vkGetSemaphoreFdKHR(device_, &fdInfo, outSyncFd) != VK_SUCCESS)
+            {
                 *outSyncFd = -1;
             }
         }
@@ -427,7 +477,8 @@ public:
     }
 
 private:
-    void createInstance() {
+    void createInstance()
+    {
         VkApplicationInfo appInfo{};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
         appInfo.pApplicationName = "OpenRGB waywallen";
@@ -446,15 +497,17 @@ private:
         createInfo.enabledExtensionCount = static_cast<std::uint32_t>(extensions.size());
         createInfo.ppEnabledExtensionNames = extensions.data();
 
-        if (vkCreateInstance(&createInfo, nullptr, &instance_) != VK_SUCCESS) {
+        if(vkCreateInstance(&createInfo, nullptr, &instance_) != VK_SUCCESS)
+        {
             throw std::runtime_error("vkCreateInstance failed");
         }
     }
 
-    void pickPhysicalDevice() {
+    void pickPhysicalDevice()
+    {
         std::uint32_t count = 0;
         vkEnumeratePhysicalDevices(instance_, &count, nullptr);
-        if (count == 0) throw std::runtime_error("no Vulkan devices");
+        if(count == 0) throw std::runtime_error("no Vulkan devices");
 
         std::vector<VkPhysicalDevice> devices(count);
         vkEnumeratePhysicalDevices(instance_, &count, devices.data());
@@ -481,7 +534,8 @@ private:
         drmProps2.pNext = &drmProps;
         vkGetPhysicalDeviceProperties2(physDevice_, &drmProps2);
 
-        if (drmProps.hasRender) {
+        if(drmProps.hasRender)
+        {
             drmMajor_ = drmProps.renderMajor;
             drmMinor_ = drmProps.renderMinor;
         }
@@ -492,15 +546,18 @@ private:
         std::vector<VkQueueFamilyProperties> queues(qCount);
         vkGetPhysicalDeviceQueueFamilyProperties(physDevice_, &qCount, queues.data());
 
-        for (std::uint32_t i = 0; i < qCount; ++i) {
-            if (queues[i].queueFlags & VK_QUEUE_TRANSFER_BIT) {
+        for(std::uint32_t i = 0; i < qCount; ++i)
+        {
+            if(queues[i].queueFlags & VK_QUEUE_TRANSFER_BIT)
+            {
                 queueFamily_ = i;
                 break;
             }
         }
     }
 
-    void createDevice() {
+    void createDevice()
+    {
         const float queuePriority = 1.0f;
 
         VkDeviceQueueCreateInfo queueInfo{};
@@ -535,7 +592,8 @@ private:
         createInfo.ppEnabledExtensionNames = extensions.data();
         createInfo.pEnabledFeatures = &features;
 
-        if (vkCreateDevice(physDevice_, &createInfo, nullptr, &device_) != VK_SUCCESS) {
+        if(vkCreateDevice(physDevice_, &createInfo, nullptr, &device_) != VK_SUCCESS)
+        {
             throw std::runtime_error("vkCreateDevice failed");
         }
 
@@ -548,7 +606,8 @@ private:
             vkGetDeviceProcAddr(device_, "vkQueueSubmit2"));
     }
 
-    void createStagingBuffer() {
+    void createStagingBuffer()
+    {
         stagingSize_ = width_ * height_ * 4; /* RGBA8 */
 
         VkBufferCreateInfo bufferInfo{};
@@ -557,7 +616,8 @@ private:
         bufferInfo.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-        if (vkCreateBuffer(device_, &bufferInfo, nullptr, &stagingBuffer_) != VK_SUCCESS) {
+        if(vkCreateBuffer(device_, &bufferInfo, nullptr, &stagingBuffer_) != VK_SUCCESS)
+        {
             throw std::runtime_error("vkCreateBuffer failed");
         }
 
@@ -568,16 +628,19 @@ private:
         vkGetPhysicalDeviceMemoryProperties(physDevice_, &memProps);
 
         std::uint32_t memType = VK_MAX_MEMORY_TYPES;
-        for (std::uint32_t i = 0; i < memProps.memoryTypeCount; ++i) {
-            if ((memReqs.memoryTypeBits & (1 << i)) &&
+        for(std::uint32_t i = 0; i < memProps.memoryTypeCount; ++i)
+        {
+            if((memReqs.memoryTypeBits & (1 << i)) &&
                 (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
-                (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+                (memProps.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT))
+            {
                 memType = i;
                 break;
             }
         }
 
-        if (memType == VK_MAX_MEMORY_TYPES) {
+        if(memType == VK_MAX_MEMORY_TYPES)
+        {
             throw std::runtime_error("no suitable memory type for staging buffer");
         }
 
@@ -586,32 +649,37 @@ private:
         allocInfo.allocationSize = memReqs.size;
         allocInfo.memoryTypeIndex = memType;
 
-        if (vkAllocateMemory(device_, &allocInfo, nullptr, &stagingMemory_) != VK_SUCCESS) {
+        if(vkAllocateMemory(device_, &allocInfo, nullptr, &stagingMemory_) != VK_SUCCESS)
+        {
             throw std::runtime_error("vkAllocateMemory failed");
         }
 
         vkBindBufferMemory(device_, stagingBuffer_, stagingMemory_, 0);
     }
 
-    void createCommandPool() {
+    void createCommandPool()
+    {
         VkCommandPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         poolInfo.queueFamilyIndex = queueFamily_;
         poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-        if (vkCreateCommandPool(device_, &poolInfo, nullptr, &cmdPool_) != VK_SUCCESS) {
+        if(vkCreateCommandPool(device_, &poolInfo, nullptr, &cmdPool_) != VK_SUCCESS)
+        {
             throw std::runtime_error("vkCreateCommandPool failed");
         }
     }
 
-    void createCommandBuffer() {
+    void createCommandBuffer()
+    {
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.commandPool = cmdPool_;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount = 1;
 
-        if (vkAllocateCommandBuffers(device_, &allocInfo, &cmdBuffer_) != VK_SUCCESS) {
+        if(vkAllocateCommandBuffers(device_, &allocInfo, &cmdBuffer_) != VK_SUCCESS)
+        {
             throw std::runtime_error("vkAllocateCommandBuffers failed");
         }
     }
@@ -643,49 +711,57 @@ private:
  * The output image is at display resolution, with circles arranged in a grid
  * matching the matrix dimensions. */
 static std::vector<std::uint8_t> renderCirclesOnBlack(
-    const RGBFrame& matrix, std::uint32_t displayW, std::uint32_t displayH) {
+    const RGBFrame& matrix, std::uint32_t displayW, std::uint32_t displayH)
+{
     const std::size_t matrixW = matrix.width;
     const std::size_t matrixH = matrix.height;
-    
+
     // Create output buffer at display resolution (RGBA8)
     std::vector<std::uint8_t> output(displayW * displayH * 4, 0); // Black background
-    
-    if (matrix.pixels.empty() || matrixW == 0 || matrixH == 0) {
+
+    if(matrix.pixels.empty() || matrixW == 0 || matrixH == 0)
+    {
         return output;
     }
-    
+
     // Calculate cell size for the grid
     const float cellW = static_cast<float>(displayW) / static_cast<float>(matrixW);
     const float cellH = static_cast<float>(displayH) / static_cast<float>(matrixH);
-    
+
     // Use the smaller dimension to ensure circles fit in cells
     const float radius = std::min(cellW, cellH) * 0.4f; // 40% of cell size
-    
+
     // For each LED in the matrix, draw a circle
-    for (std::size_t y = 0; y < matrixH; ++y) {
-        for (std::size_t x = 0; x < matrixW; ++x) {
+    for(std::size_t y = 0; y < matrixH; ++y)
+    {
+        for(std::size_t x = 0; x < matrixW; ++x)
+        {
             const std::size_t idx = y * matrixW + x;
-            if (idx * 3 + 2 >= matrix.pixels.size()) break;
-            
+            if(idx * 3 + 2 >= matrix.pixels.size()) break;
+
             // Get RGB color for this LED
             const std::uint8_t r = matrix.pixels[idx * 3 + 0];
             const std::uint8_t g = matrix.pixels[idx * 3 + 1];
             const std::uint8_t b = matrix.pixels[idx * 3 + 2];
-            
+
             // Center of the circle in display coordinates
             const float cx = (static_cast<float>(x) + 0.5f) * cellW;
             const float cy = (static_cast<float>(y) + 0.5f) * cellH;
-            
+
             // Draw circle by setting pixels within radius
             const int rInt = static_cast<int>(std::ceil(radius));
-            for (int dy = -rInt; dy <= rInt; ++dy) {
-                for (int dx = -rInt; dx <= rInt; ++dx) {
+            for(int dy = -rInt; dy <= rInt; ++dy)
+            {
+                for(int dx = -rInt; dx <= rInt; ++dx)
+                {
                     const float distSq = static_cast<float>(dx * dx + dy * dy);
-                    if (distSq <= radius * radius) {
+                    if(distSq <= radius * radius)
+                    {
                         const int px = static_cast<int>(cx) + dx;
                         const int py = static_cast<int>(cy) + dy;
-                        if (px >= 0 && px < static_cast<int>(displayW) &&
-                            py >= 0 && py < static_cast<int>(displayH)) {
+                        if(px >= 0 && px < static_cast<int>(displayW) &&
+                            py >= 0 && py < static_cast<int>(displayH))
+                        {
                             const std::size_t outIdx = (static_cast<std::size_t>(py) * displayW + px) * 4;
                             output[outIdx + 0] = r;
                             output[outIdx + 1] = g;
@@ -697,7 +773,7 @@ static std::vector<std::uint8_t> renderCirclesOnBlack(
             }
         }
     }
-    
+
     return output;
 }
 
@@ -706,22 +782,27 @@ public:
     /* Create with a large enough Vulkan context to handle any display resolution.
      * The width/height parameters are the matrix dimensions, not the display resolution. */
     WaywallenBridge(std::string ipcPath, std::size_t matrixW, std::size_t matrixH)
-        : ipcPath_(std::move(ipcPath)), width_(matrixW), height_(matrixH) {}
+        : ipcPath_(std::move(ipcPath)), width_(matrixW), height_(matrixH)
+    {
+    }
 
-    ~WaywallenBridge() {
+    ~WaywallenBridge()
+    {
         stop();
     }
 
-    void connectAndHandshake() {
-        if (ipcPath_.empty()) return;
+    void connectAndHandshake()
+    {
+        if(ipcPath_.empty()) return;
         std::cerr << "[openrgb] connecting to waywallen IPC at " << ipcPath_ << std::endl;
         fd_ = ::socket(AF_UNIX, SOCK_STREAM, 0);
-        if (fd_ < 0) throw std::runtime_error("socketpair failed");
+        if(fd_ < 0) throw std::runtime_error("socketpair failed");
 
         sockaddr_un addr{};
         addr.sun_family = AF_UNIX;
         std::strncpy(addr.sun_path, ipcPath_.c_str(), sizeof(addr.sun_path) - 1);
-        if (::connect(fd_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0) {
+        if(::connect(fd_, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) < 0)
+        {
             ::close(fd_);
             fd_ = -1;
             throw std::runtime_error("connect failed");
@@ -747,7 +828,8 @@ public:
         init.image_usage_flags = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
         init.format_feature_flags = VK_FORMAT_FEATURE_TRANSFER_DST_BIT;
 
-        if (ww_bridge_pool_create(WW_POOL_BACKEND_VULKAN, &init, &pool_) != 0) {
+        if(ww_bridge_pool_create(WW_POOL_BACKEND_VULKAN, &init, &pool_) != 0)
+        {
             throw std::runtime_error("ww_bridge_pool_create failed");
         }
         std::cerr << "[openrgb] Vulkan pool created" << std::endl;
@@ -759,7 +841,8 @@ public:
         const int capsRet = ww_bridge_pool_advertise_caps(pool_, fd_,
                                           kMaxWidth, kMaxHeight,
                                           WW_MEM_HINT_DEVICE_LOCAL | WW_MEM_HINT_HOST_VISIBLE);
-        if (capsRet != 0) {
+        if(capsRet != 0)
+        {
             std::cerr << "[openrgb] ww_bridge_pool_advertise_caps returned " << capsRet << std::endl;
             throw std::runtime_error("ww_bridge_pool_advertise_caps failed");
         }
@@ -770,37 +853,45 @@ public:
         std::cerr << "[openrgb] event thread started" << std::endl;
     }
 
-    void stop() {
+    void stop()
+    {
         running_ = false;
-        if (eventThread_.joinable()) {
+        if(eventThread_.joinable())
+        {
             eventThread_.join();
         }
-        if (fd_ >= 0) {
+        if(fd_ >= 0)
+        {
             ::close(fd_);
             fd_ = -1;
         }
-        if (pool_ != nullptr) {
+        if(pool_ != nullptr)
+        {
             ww_bridge_pool_destroy(pool_);
             pool_ = nullptr;
         }
     }
 
-    void pushFrame(RGBFrame frame) {
+    void pushFrame(RGBFrame frame)
+    {
         std::lock_guard<std::mutex> lock(frameMutex_);
         latestFrame_ = std::move(frame);
         haveFrame_ = true;
     }
 
-    bool isReady() const {
+    bool isReady() const
+    {
         return poolReady_;
     }
 
-    void renderFrame() {
-        if (!running_ || pool_ == nullptr || !poolReady_) return;
+    void renderFrame()
+    {
+        if(!running_ || pool_ == nullptr || !poolReady_) return;
 
-        const auto slotIndex = nextSlot_++ % std::max<std::uint32_t>(1u, slotCount_);
+        const std::uint32_t slotIndex = nextSlot_++ % std::max<std::uint32_t>(1u, slotCount_);
         ww_pool_slot_t slot{};
-        if (ww_bridge_pool_acquire_slot(pool_, slotIndex, &slot) != 0) {
+        if(ww_bridge_pool_acquire_slot(pool_, slotIndex, &slot) != 0)
+        {
             return;
         }
 
@@ -815,24 +906,30 @@ public:
         bool haveData = false;
         {
             std::lock_guard<std::mutex> lock(frameMutex_);
-            if (haveFrame_) {
+            if(haveFrame_)
+            {
                 renderTarget = latestFrame_;
                 haveData = true;
-            } else {
+            }
+            else
+            {
                 renderTarget.width = width_;
                 renderTarget.height = height_;
             }
         }
 
         int syncFd = -1;
-        if (haveData && !renderTarget.pixels.empty()) {
+        if(haveData && !renderTarget.pixels.empty())
+        {
             /* Render the RGB matrix as circles on a black background at display resolution */
             std::vector<std::uint8_t> rgba = renderCirclesOnBlack(
                 renderTarget, slot.width, slot.height);
             vkContext_.uploadToImage(reinterpret_cast<VkImage>(slot.vk_image),
                                      slot.width, slot.height,
                                      rgba.data(), rgba.size(), &syncFd);
-        } else {
+        }
+        else
+        {
             /* No data yet — still need a valid sync fd for the daemon to
              * wait on. Upload a black frame to get one. */
             std::vector<std::uint8_t> black(slot.width * slot.height * 4, 0);
@@ -842,7 +939,8 @@ public:
         }
 
         const int rc = ww_bridge_pool_submit_slot(pool_, fd_, slotIndex, syncFd);
-        if (rc != 0) {
+        if(rc != 0)
+        {
             std::cerr << "[openrgb] submit_slot failed: " << rc << std::endl;
         }
 
@@ -850,99 +948,122 @@ public:
     }
 
 private:
-    static int openRenderNode() {
+    static int openRenderNode()
+    {
         const std::filesystem::path driPath("/dev/dri");
         std::error_code ec;
-        if (std::filesystem::exists(driPath, ec)) {
-            for (const auto& entry : std::filesystem::directory_iterator(driPath, ec)) {
+        if(std::filesystem::exists(driPath, ec))
+        {
+            for(const auto& entry : std::filesystem::directory_iterator(driPath, ec))
+            {
                 const std::string name = entry.path().filename().string();
-                if (name.rfind("renderD", 0) == 0) {
+                if(name.rfind("renderD", 0) == 0)
+                {
                     const int fd = ::open(entry.path().c_str(), O_RDWR | O_CLOEXEC);
-                    if (fd >= 0) return fd;
+                    if(fd >= 0) return fd;
                 }
             }
         }
         return ::open("/dev/dri/renderD128", O_RDWR | O_CLOEXEC);
     }
 
-    static std::vector<std::uint8_t> readExact(int socketFd, std::size_t size) {
+    static std::vector<std::uint8_t> readExact(int socketFd, std::size_t size)
+    {
         std::vector<std::uint8_t> buffer(size);
         std::size_t offset = 0;
-        while (offset < size) {
+        while(offset < size)
+        {
             const ssize_t chunk = ::recv(socketFd, buffer.data() + offset, size - offset, 0);
-            if (chunk <= 0) throw std::runtime_error("recv failed");
+            if(chunk <= 0) throw std::runtime_error("recv failed");
             offset += static_cast<std::size_t>(chunk);
         }
         return buffer;
     }
 
-    void readInitMessage() {
-        const auto header = readExact(fd_, 4);
+    void readInitMessage()
+    {
+        const std::vector<std::uint8_t> header = readExact(fd_, 4);
         const std::uint16_t opcode = static_cast<std::uint16_t>(header[0] | (header[1] << 8));
         const std::uint16_t total = static_cast<std::uint16_t>(header[2] | (header[3] << 8));
-        if (total < 4) throw std::runtime_error("invalid init frame");
+        if(total < 4) throw std::runtime_error("invalid init frame");
         const std::size_t bodyLen = total - 4;
-        if (bodyLen > 0) {
+        if(bodyLen > 0)
+        {
             readExact(fd_, bodyLen);
         }
-        if (opcode != WW_EVT_IN_INIT) {
+        if(opcode != WW_EVT_IN_INIT)
+        {
             throw std::runtime_error("unexpected control opcode");
         }
     }
 
-    void eventLoop() {
-        while (running_) {
+    void eventLoop()
+    {
+        while(running_)
+        {
             uint16_t opcode = 0;
             uint8_t* body = nullptr;
             size_t bodyLen = 0;
             int fds[8] = {};
             size_t nFds = 0;
             const int rc = ww_bridge_recv_frame(fd_, &opcode, &body, &bodyLen, fds, 8, &nFds);
-            if (rc != 0) {
-                if (!running_) break;
+            if(rc != 0)
+            {
+                if(!running_) break;
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 continue;
             }
 
             processIncomingMessage(opcode, body, bodyLen, fds, nFds);
 
-            if (body != nullptr) {
+            if(body != nullptr)
+            {
                 std::free(body);
                 body = nullptr;
             }
-            for (size_t i = 0; i < nFds; ++i) {
-                if (fds[i] >= 0) ::close(fds[i]);
+            for(size_t i = 0; i < nFds; ++i)
+            {
+                if(fds[i] >= 0) ::close(fds[i]);
             }
         }
     }
 
-    void processIncomingMessage(uint16_t opcode, const uint8_t* body, size_t bodyLen, const int* fds, size_t nFds) {
+    void processIncomingMessage(uint16_t opcode, const uint8_t* body, size_t bodyLen, const int* fds, size_t nFds)
+    {
         (void)fds;
         (void)nFds;
-        switch (opcode) {
-            case WW_EVT_IN_INIT: {
+        switch(opcode)
+        {
+            case WW_EVT_IN_INIT:
+            {
                 ww_evt_in_init_t init{};
-                if (ww_evt_in_init_decode(body, bodyLen, &init) == 0) {
+                if(ww_evt_in_init_decode(body, bodyLen, &init) == 0)
+                {
                     ww_evt_in_init_free(&init);
                 }
                 break;
             }
-            case WW_EVT_IN_NEGOTIATE_BUFFERS: {
+            case WW_EVT_IN_NEGOTIATE_BUFFERS:
+            {
                 ww_evt_in_negotiate_buffers_t directive{};
-                if (ww_evt_in_negotiate_buffers_decode(body, bodyLen, &directive) == 0) {
+                if(ww_evt_in_negotiate_buffers_decode(body, bodyLen, &directive) == 0)
+                {
                     handleNegotiateBuffers(directive);
                     ww_evt_in_negotiate_buffers_free(&directive);
                 }
                 break;
             }
-            case WW_EVT_IN_PLAY: {
+            case WW_EVT_IN_PLAY:
+            {
                 ww_evt_in_play_t play{};
-                if (ww_evt_in_play_decode(body, bodyLen, &play) == 0) {
+                if(ww_evt_in_play_decode(body, bodyLen, &play) == 0)
+                {
                     ww_evt_in_play_free(&play);
                 }
                 break;
             }
-            case WW_EVT_IN_SHUTDOWN: {
+            case WW_EVT_IN_SHUTDOWN:
+            {
                 running_ = false;
                 break;
             }
@@ -951,8 +1072,10 @@ private:
         }
     }
 
-    void handleNegotiateBuffers(const ww_evt_in_negotiate_buffers_t& directive) {
-        if (pool_ == nullptr) {
+    void handleNegotiateBuffers(const ww_evt_in_negotiate_buffers_t& directive)
+    {
+        if(pool_ == nullptr)
+        {
             std::cerr << "[openrgb] pool not created before negotiate_buffers" << std::endl;
             return;
         }
@@ -981,10 +1104,13 @@ private:
         apply.width = kMaxWidth;
         apply.height = kMaxHeight;
         apply.count = slotCount_;
-        if (ww_bridge_pool_apply_directive(pool_, fd_, &apply) == 0) {
+        if(ww_bridge_pool_apply_directive(pool_, fd_, &apply) == 0)
+        {
             poolReady_ = true;
             std::cerr << "[openrgb] buffer pool ready for rendering" << std::endl;
-        } else {
+        }
+        else
+        {
             std::cerr << "[openrgb] ww_bridge_pool_apply_directive failed" << std::endl;
         }
     }
@@ -1008,33 +1134,48 @@ private:
 
 } // namespace
 
-static Settings parseArgs(int argc, char** argv) {
+static Settings parseArgs(int argc, char** argv)
+{
     Settings settings;
-    for (int i = 1; i < argc; ++i) {
+    for(int i = 1; i < argc; ++i)
+    {
         const std::string arg = argv[i];
-        if (arg == "--udp-port" && i + 1 < argc) {
+        if(arg == "--udp-port" && i + 1 < argc)
+        {
             settings.udpPort = static_cast<std::uint16_t>(std::stoi(argv[++i]));
-        } else if (arg == "--background-image" && i + 1 < argc) {
+        }
+        else if(arg == "--background-image" && i + 1 < argc)
+        {
             settings.backgroundImage = argv[++i];
-        } else if (arg == "--background-color" && i + 1 < argc) {
+        }
+        else if(arg == "--background-color" && i + 1 < argc)
+        {
             settings.backgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
-        } else if (arg == "--width" && i + 1 < argc) {
+        }
+        else if(arg == "--width" && i + 1 < argc)
+        {
             settings.width = static_cast<std::size_t>(std::stoul(argv[++i]));
-        } else if (arg == "--height" && i + 1 < argc) {
+        }
+        else if(arg == "--height" && i + 1 < argc)
+        {
             settings.height = static_cast<std::size_t>(std::stoul(argv[++i]));
-        } else if (arg == "--ipc" && i + 1 < argc) {
+        }
+        else if(arg == "--ipc" && i + 1 < argc)
+        {
             settings.ipcPath = argv[++i];
         }
     }
     const char* envPort = std::getenv("OPENRGB_UDP_PORT");
-    if (envPort && *envPort) settings.udpPort = static_cast<std::uint16_t>(std::stoi(envPort));
+    if(envPort && *envPort) settings.udpPort = static_cast<std::uint16_t>(std::stoi(envPort));
     const char* envImage = std::getenv("OPENRGB_BACKGROUND_IMAGE");
-    if (envImage && *envImage) settings.backgroundImage = envImage;
+    if(envImage && *envImage) settings.backgroundImage = envImage;
     return settings;
 }
 
-int main(int argc, char** argv) {
-    try {
+int main(int argc, char** argv)
+{
+    try
+    {
         Settings settings = parseArgs(argc, argv);
         std::cout << "OpenRGB waywallen plugin listening on UDP " << settings.udpPort << std::endl;
 
@@ -1042,22 +1183,26 @@ int main(int argc, char** argv) {
         receiver.start();
 
         std::optional<WaywallenBridge> bridge;
-        if (!settings.ipcPath.empty()) {
+        if(!settings.ipcPath.empty())
+        {
             /* Wait for the OpenRGB settings packet to determine the actual
              * matrix resolution before creating the Vulkan context and
              * connecting to waywallen. The settings packet (type 1) carries
              * the matrix size type/tier which maps to the real WxH. */
             std::cout << "Waiting for OpenRGB settings packet to determine matrix size..." << std::endl;
             bool gotSettings = false;
-            for (int i = 0; i < 300; ++i) {  // up to 30s
+            for(int i = 0; i < 300; ++i)  // up to 30s
+            {
                 /* Check if settings were updated by inspecting the receiver */
-                if (receiver.hasSettingsPacket()) {
+                if(receiver.hasSettingsPacket())
+                {
                     gotSettings = true;
                     break;
                 }
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
-            if (!gotSettings) {
+            if(!gotSettings)
+            {
                 std::cout << "No settings packet received; using default 32x32" << std::endl;
             }
 
@@ -1068,11 +1213,14 @@ int main(int argc, char** argv) {
             bridge->connectAndHandshake();
         }
 
-        constexpr auto kFrameInterval = std::chrono::milliseconds(15); // ~60 fps
-        while (true) {
-            if (bridge.has_value()) {
+        constexpr std::chrono::milliseconds kFrameInterval(15); // ~60 fps
+        while(true)
+        {
+            if(bridge.has_value())
+            {
                 /* Drain any pending UDP frames into the bridge */
-                while (const auto frame = receiver.popFrame()) {
+                while(const std::optional<RGBFrame> frame = receiver.popFrame())
+                {
                     bridge->pushFrame(*frame);
                 }
                 /* Render a frame at a steady rate so waywallen never
@@ -1082,7 +1230,9 @@ int main(int argc, char** argv) {
             }
             std::this_thread::sleep_for(kFrameInterval);
         }
-    } catch (const std::exception& ex) {
+    }
+    catch(const std::exception& ex)
+    {
         std::cerr << ex.what() << std::endl;
         return 1;
     }
