@@ -42,6 +42,19 @@ OpenRGBWallpaperEngineWidget::OpenRGBWallpaperEngineWidget(OpenRGBWallpaperEngin
     connect(ui->sd_color_btn, &QPushButton::clicked, this, &OpenRGBWallpaperEngineWidget::OnSelectSdColor);
     connect(ui->browse_btn, &QPushButton::clicked, this, &OpenRGBWallpaperEngineWidget::OnBrowseCoverImage);
     connect(ui->save_btn, &QPushButton::clicked, this, &OpenRGBWallpaperEngineWidget::OnSaveChanges);
+    connect(ui->apply_btn, &QPushButton::clicked, this, &OpenRGBWallpaperEngineWidget::OnApplyChanges);
+    
+    connect(ui->blur_slider, &QSlider::valueChanged, this, [this](int value) {
+        ui->blur_value_label->setText(QString::number(value));
+    });
+    
+    connect(ui->radius_slider, &QSlider::valueChanged, this, [this](int value) {
+        ui->radius_value_label->setText(QString::number(value));
+    });
+    
+    connect(ui->padding_slider, &QSlider::valueChanged, this, [this](int value) {
+        ui->padding_value_label->setText(QString::number(value));
+    });
 }
 
 OpenRGBWallpaperEngineWidget::~OpenRGBWallpaperEngineWidget()
@@ -143,10 +156,13 @@ void OpenRGBWallpaperEngineWidget::LoadDeviceToForm(int idx)
     ui->port_spin->setValue(dev.port);
     ui->size_combo->setCurrentText(dev.size);
     ui->tier_combo->setCurrentText(dev.tier);
-    ui->blur_spin->setValue(dev.blur);
+    ui->blur_slider->setValue(dev.blur);
+    ui->blur_value_label->setText(QString::number(dev.blur));
     ui->shape_combo->setCurrentIndex(dev.shape);
-    ui->radius_spin->setValue(dev.radius);
-    ui->padding_spin->setValue(dev.padding);
+    ui->radius_slider->setValue(dev.radius);
+    ui->radius_value_label->setText(QString::number(dev.radius));
+    ui->padding_slider->setValue(dev.padding);
+    ui->padding_value_label->setText(QString::number(dev.padding));
     ui->cover_edit->setText(dev.cover_image);
     ui->shutdown_combo->setCurrentIndex(dev.shutdown_effect >= 0 && dev.shutdown_effect <= 12 ? dev.shutdown_effect : 0);
     ui->fps_checkbox->setChecked(dev.show_fps);
@@ -202,32 +218,56 @@ void OpenRGBWallpaperEngineWidget::UpdateColorButtonText(QPushButton* btn, const
         .arg(color.lightness() > 128 ? "black" : "white"));
 }
 
-void OpenRGBWallpaperEngineWidget::OnSaveChanges()
+void OpenRGBWallpaperEngineWidget::SaveFormToDevice(int idx)
 {
-    if (current_device_idx < 0 || current_device_idx >= (int)plugin->devices.size()) return;
+    if (idx < 0 || idx >= (int)plugin->devices.size()) return;
     
-    auto& dev = plugin->devices[current_device_idx];
+    auto& dev = plugin->devices[idx];
     dev.name            = ui->name_edit->text().trimmed();
     dev.host            = ui->host_edit->text().trimmed();
     dev.port            = ui->port_spin->value();
     dev.size            = ui->size_combo->currentText();
     dev.tier            = ui->tier_combo->currentText();
-    dev.blur            = ui->blur_spin->value();
+    dev.blur            = ui->blur_slider->value();
     dev.shape           = ui->shape_combo->currentIndex();
-    dev.radius          = ui->radius_spin->value();
-    dev.padding         = ui->padding_spin->value();
+    dev.radius          = ui->radius_slider->value();
+    dev.padding         = ui->padding_slider->value();
     dev.bg_color        = bg_color.name();
     dev.shutdown_color  = sd_color.name();
     dev.cover_image     = ui->cover_edit->text().trimmed();
     dev.shutdown_effect = ui->shutdown_combo->currentIndex();
     dev.show_fps        = ui->fps_checkbox->isChecked();
     dev.cover_stretch   = ui->stretch_combo->currentIndex();
+}
+
+void OpenRGBWallpaperEngineWidget::OnApplyChanges()
+{
+    if (current_device_idx < 0 || current_device_idx >= (int)plugin->devices.size()) return;
+    
+    SaveFormToDevice(current_device_idx);
+    
+    plugin->SaveConfig();
+    plugin->SendRGBData(plugin->devices[current_device_idx]);
+    
+    // Refresh item label in list
+    updating_ui = true;
+    auto& dev = plugin->devices[current_device_idx];
+    ui->device_list->item(current_device_idx)->setText(dev.name + " (" + dev.host + ":" + QString::number(dev.port) + ")");
+    updating_ui = false;
+}
+
+void OpenRGBWallpaperEngineWidget::OnSaveChanges()
+{
+    if (current_device_idx < 0 || current_device_idx >= (int)plugin->devices.size()) return;
+    
+    SaveFormToDevice(current_device_idx);
     
     plugin->SaveConfig();
     plugin->RecreateControllers();
     
     // Refresh item label in list
     updating_ui = true;
+    auto& dev = plugin->devices[current_device_idx];
     ui->device_list->item(current_device_idx)->setText(dev.name + " (" + dev.host + ":" + QString::number(dev.port) + ")");
     updating_ui = false;
 }
