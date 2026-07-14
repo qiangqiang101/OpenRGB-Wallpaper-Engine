@@ -45,8 +45,14 @@ Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting
 
 # 🔨 Build yourself
 ## Wallpaper
-1. Open the OpenRGBWallpaperEngine2.slnx file with Visual Studio 2026
-2. Click the Build on menu, select Build Solution.
+1. Open your terminal or developer command prompt in this directory:
+   ```bash
+   cd OpenRGBWallpaperEngine2
+   ```
+2. Build the wallpaper:
+   ```bash
+   dotnet build .\OpenRGBWallpaperEngine2.slnx -c Release
+   ```
 
 ## Plugin
 1. Open your terminal or developer command prompt in this directory:
