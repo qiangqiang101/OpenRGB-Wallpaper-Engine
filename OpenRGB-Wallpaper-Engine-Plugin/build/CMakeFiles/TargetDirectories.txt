@@ -1,5 +1,0 @@
-D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/AnOpenRGBWallpaperPlugin.dir
-D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/AnOpenRGBWallpaperPlugin_autogen_timestamp_deps.dir
-D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/AnOpenRGBWallpaperPlugin_autogen.dir
-D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/ALL_BUILD.dir
-D:/Users/WePro/Documents/GitHub/OpenRGB-Wallpaper-Engine/OpenRGB-Wallpaper-Engine-Plugin/build/CMakeFiles/ZERO_CHECK.dir
