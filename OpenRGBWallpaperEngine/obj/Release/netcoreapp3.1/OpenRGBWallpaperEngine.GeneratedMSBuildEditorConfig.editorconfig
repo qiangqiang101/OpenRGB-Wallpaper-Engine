@@ -1,9 +1,0 @@
-is_global = true
-build_property.ApplicationManifest = 
-build_property.StartupObject = OpenRGBWallpaperEngine.frmWallpaper
-build_property.ApplicationDefaultFont = 
-build_property.ApplicationHighDpiMode = 
-build_property.ApplicationUseCompatibleTextRendering = 
-build_property.ApplicationVisualStyles = 
-build_property.RootNamespace = OpenRGBWallpaperEngine
-build_property.ProjectDir = E:\Users\Admin\Documents\GitHub\OpenRGB-Wallpaper-Engine\OpenRGBWallpaperEngine\

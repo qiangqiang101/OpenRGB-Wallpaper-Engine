@@ -10,14 +10,14 @@
 [![Donate via PayPal](https://img.shields.io/badge/Donate-Paypal-brightgreen)](https://paypal.me/imnotmental)
 [![Follow on Patreon](https://img.shields.io/badge/Donate-Patreon-orange)](https://www.patreon.com/imnotmental)
 
-[中文 README](README.CN.md)
+[English README](README.md)
 
-Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting on your wallpaper and synchronize wallpaper with other OpenRGB compatible devices by [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB).
+将你的壁纸变成一个 OpenRGB 设备。现在你可以通过 [OpenRGB](https://gitlab.com/CalcProgrammer1/OpenRGB) 控制壁纸上的 RGB 灯效，并将其与其它支持 OpenRGB 的设备同步。
 
 <img width="904" height="711" alt="QQ_1783458311061" src="https://github.com/user-attachments/assets/b04a8d31-04e3-4a0a-ac78-678c364eedd2" />
 <img width="904" height="711" alt="QQ_1783458318865" src="https://github.com/user-attachments/assets/a008beb0-08aa-4f8b-a4da-b28a5c00792c" />
 
-# 📸 Showcase
+# 📸 展示
 <table>
    <tr>
       <td>![IMG_6915](https://user-images.githubusercontent.com/11488961/202174752-3ecf4780-be04-40de-9382-d5ad14732104.JPG)</td>
@@ -29,53 +29,53 @@ Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting
    </tr>
 </table>
 
-# 🛠️ Download
-### Wallpaper Plugin
-## OpenRGB 0.9+ Pipeline/Next (Plugin API Version 5)
-- [Download Github](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.1.0.1/AnOpenRGBWallpaperPlugin_api_5_win64.zip)
-- [Download GitLab](https://gitlab.com/-/project/84234272/uploads/268952d75c78542261faac68fff95f59/AnOpenRGBWallpaperPlugin_api_5_win64.zip)
+# 🛠️ 下载
+### 壁纸插件
+## OpenRGB 0.9+ Pipeline/Next (插件 API 版本 5)
+- [GitHub 下载](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.1.0.1/AnOpenRGBWallpaperPlugin_api_5_win64.zip)
+- [GitLab 下载](https://gitlab.com/-/project/84234272/uploads/268952d75c78542261faac68fff95f59/AnOpenRGBWallpaperPlugin_api_5_win64.zip)
 
-## OpenRGB 1.0 RC - 1.0 RC3 (Plugin API Version 4)
-- [Download Github](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.1.0.1/OpenRGBWallpaperPlugin_api4_win64.zip)
-- [Download GitLab](https://gitlab.com/-/project/84234272/uploads/57079f30de92122f1e62a03c0fa07811/OpenRGBWallpaperPlugin_win64.zip)
+## OpenRGB 1.0 RC - 1.0 RC3 (插件 API 版本 4)
+- [GitHub 下载](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.1.0.1/OpenRGBWallpaperPlugin_api4_win64.zip)
+- [GitLab 下载](https://gitlab.com/-/project/84234272/uploads/57079f30de92122f1e62a03c0fa07811/OpenRGBWallpaperPlugin_win64.zip)
 
-### Wallpaper Client
+### 壁纸客户端
 [GitHub](https://github.com/qiangqiang101/RGB-Wallpaper/releases) | [GitLab](https://gitlab.com/nollie/RGB-Wallpaper/-/releases)
 
-## Cover Images
-[Cover Images](coverimages.md)
+## 封面图片
+[封面图片](coverimages.md)
 
-# 🚧 Prerequisite
-- [OpenRGB by CalcProgrammer1](https://gitlab.com/CalcProgrammer1/OpenRGB)
-- [.NET 10.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
-- [Wallpaper Engine](https://store.steampowered.com/app/431960/Wallpaper_Engine/) or [Lively Wallpaper](https://github.com/rocksdanister/lively/releases/latest)
-- [Wallpaper Client (GitHub)](https://github.com/qiangqiang101/RGB-Wallpaper/releases) or [Wallpaper Client (GitLab)](https://gitlab.com/nollie/RGB-Wallpaper/-/releases)
+# 🚧 前置需求
+- [OpenRGB (by CalcProgrammer1)](https://gitlab.com/CalcProgrammer1/OpenRGB)
+- [.NET 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+- [小红车](https://store.steampowered.com/app/431960/Wallpaper_Engine/) 或 [Lively Wallpaper](https://github.com/rocksdanister/lively/releases/latest)
+- [壁纸客户端 (GitHub)](https://github.com/qiangqiang101/RGB-Wallpaper/releases) 或 [壁纸客户端 (GitLab)](https://gitlab.com/nollie/RGB-Wallpaper/-/releases)
 
-# 🔨 Build yourself
-1. Open your terminal or developer command prompt in this directory:
+# 🔨 自行构建
+1. 在当前目录下打开终端或开发者命令提示符：
    ```bash
    cd OpenRGB-Wallpaper-Engine-Plugin
    ```
-2. Create and enter a build directory:
+2. 创建并进入构建目录：
    ```bash
    mkdir build
    cd build
    ```
-3. Generate the build configuration:
-   * **For Qt6:**
+3. 生成构建配置：
+   * **Qt6 版本:**
      ```bash
      cmake -DCMAKE_PREFIX_PATH="C:/Qt/6.x/msvc2019_64" ..
      ```
-   * **For Qt5:**
+   * **Qt5 版本:**
      ```bash
      cmake -DCMAKE_PREFIX_PATH="C:/Qt/5.15.x/msvc2019_64" ..
      ```
-4. Build the plugin:
+4. 构建插件：
    ```bash
    cmake --build . --config Release
    ```
 
-Upon completion, you will find `AnOpenRGBWallpaperPlugin.dll` (on Windows) or `AnOpenRGBWallpaperPlugin.so` (on Linux) in your build folder.
+构建完成后，你将在 `build` 文件夹中找到 `AnOpenRGBWallpaperPlugin.dll`（Windows）或 `AnOpenRGBWallpaperPlugin.so`（Linux）。
 
-# 🚀 Similar Projects
-- [SignalRGB Wallpaper Engine](https://github.com/qiangqiang101/SignalRGB-Wallpaper-Engine) 
+# 🚀 类似项目
+- [SignalRGB Wallpaper Engine](https://github.com/qiangqiang101/SignalRGB-Wallpaper-Engine)
