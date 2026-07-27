@@ -1,0 +1,166 @@
+name: OpenRGB Wallpaper Engine plugin builds
+
+on:
+  push:
+    branches:
+      - main
+      - plugin-api-4
+  workflow_dispatch:
+    inputs:
+      source_branch:
+        description: Branch to build
+        required: true
+        default: main
+        type: choice
+        options:
+          - main
+          - plugin-api-4
+
+permissions:
+  contents: read
+
+concurrency:
+  group: openrgb-wallpaper-engine-plugin-${{ github.event_name == 'workflow_dispatch' && inputs.source_branch || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  configure:
+    name: Configure build matrix
+    runs-on: ubuntu-24.04
+    outputs:
+      api_version: ${{ steps.configure.outputs.api_version }}
+      matrix: ${{ steps.configure.outputs.matrix }}
+      source_branch: ${{ steps.configure.outputs.source_branch }}
+      source_ref: ${{ steps.configure.outputs.source_ref }}
+    steps:
+      - name: Select branch configuration
+        id: configure
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_BRANCH: ${{ inputs.source_branch }}
+          PUSH_BRANCH: ${{ github.ref_name }}
+          PUSH_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            source_branch="$INPUT_BRANCH"
+            source_ref="$INPUT_BRANCH"
+          else
+            source_branch="$PUSH_BRANCH"
+            source_ref="$PUSH_SHA"
+          fi
+          case "$source_branch" in
+            main)
+              api_version="5"
+              matrix='{"include":[{"target":"qt6-windows-x64","os":"windows","runner":"windows-2022","qt_version":"6.10.3","qt_host":"windows","qt_arch":"win64_msvc2022_64","cmake_arch":"x64"},{"target":"qt6-linux-amd64","os":"linux","runner":"ubuntu-24.04","platform":"linux/amd64","qt_package":"qt6-base-dev"},{"target":"qt6-linux-i386","os":"linux","runner":"ubuntu-24.04","platform":"linux/386","qt_package":"qt6-base-dev"},{"target":"qt6-linux-arm64","os":"linux","runner":"ubuntu-24.04","platform":"linux/arm64","qt_package":"qt6-base-dev"},{"target":"qt6-linux-armhf","os":"linux","runner":"ubuntu-24.04","platform":"linux/arm/v7","qt_package":"qt6-base-dev"}]}'
+              ;;
+            plugin-api-4)
+              api_version="4"
+              matrix='{"include":[{"target":"qt5-windows-x64","os":"windows","runner":"windows-2022","qt_version":"5.15.2","qt_host":"windows","qt_arch":"win64_msvc2019_64","cmake_arch":"x64"},{"target":"qt5-windows-x86","os":"windows","runner":"windows-2022","qt_version":"5.15.2","qt_host":"windows","qt_arch":"win32_msvc2019","cmake_arch":"Win32"},{"target":"qt5-linux-amd64","os":"linux","runner":"ubuntu-24.04","platform":"linux/amd64","qt_package":"qtbase5-dev"},{"target":"qt5-linux-i386","os":"linux","runner":"ubuntu-24.04","platform":"linux/386","qt_package":"qtbase5-dev"},{"target":"qt5-linux-arm64","os":"linux","runner":"ubuntu-24.04","platform":"linux/arm64","qt_package":"qtbase5-dev"},{"target":"qt5-linux-armhf","os":"linux","runner":"ubuntu-24.04","platform":"linux/arm/v7","qt_package":"qtbase5-dev"}]}'
+              ;;
+            *)
+              echo "Unsupported branch: $source_branch" >&2
+              exit 1
+              ;;
+          esac
+          printf '%s\n' \
+            "api_version=$api_version" \
+            "matrix=$matrix" \
+            "source_branch=$source_branch" \
+            "source_ref=$source_ref" >> "$GITHUB_OUTPUT"
+  build:
+    name: Plugin-API${{ needs.configure.outputs.api_version }}-${{ matrix.target }}
+    needs: configure
+    runs-on: ${{ matrix.runner }}
+    env:
+      ASSET_NAME: OpenRGB-Wallpaper-Engine-Plugin-API${{ needs.configure.outputs.api_version }}-${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.configure.outputs.matrix) }}
+
+    steps:
+      - name: Checkout ${{ needs.configure.outputs.source_branch }}
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.configure.outputs.source_ref }}
+          submodules: recursive
+
+      - name: Install Qt
+        if: matrix.os == 'windows'
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qt_version }}
+          host: ${{ matrix.qt_host }}
+          target: desktop
+          arch: ${{ matrix.qt_arch }}
+          cache: true
+
+      - name: Build plugin
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $buildDirectory = "build/$env:ASSET_NAME"
+          $packageDirectory = "package/$env:ASSET_NAME"
+          & cmake `
+            -S OpenRGB-Wallpaper-Engine-Plugin `
+            -B $buildDirectory `
+            -A "${{ matrix.cmake_arch }}" `
+            "-DCMAKE_CONFIGURATION_TYPES=$env:BUILD_TYPE" `
+            "-DCMAKE_PREFIX_PATH=$env:QT_ROOT_DIR"
+          if ($LASTEXITCODE -ne 0) { throw "CMake configuration failed" }
+          & cmake --build $buildDirectory --config $env:BUILD_TYPE --target AnOpenRGBWallpaperPlugin --parallel
+          if ($LASTEXITCODE -ne 0) { throw "Plugin build failed" }
+          New-Item -ItemType Directory -Force $packageDirectory, dist | Out-Null
+          $plugin = Get-ChildItem $buildDirectory -Recurse -File -Filter AnOpenRGBWallpaperPlugin.dll | Select-Object -First 1
+          if (-not $plugin) { throw "AnOpenRGBWallpaperPlugin.dll not found" }
+          Copy-Item $plugin.FullName $packageDirectory
+          Copy-Item LICENSE $packageDirectory
+          Compress-Archive -Path "$packageDirectory/*" -DestinationPath "dist/$env:ASSET_NAME.zip" -Force
+      - name: Enable Linux emulation
+        if: matrix.os == 'linux' && matrix.platform != 'linux/amd64'
+        run: docker run --privileged --rm tonistiigi/binfmt --install all
+
+      - name: Build plugin
+        if: matrix.os == 'linux'
+        env:
+          TARGET_PLATFORM: ${{ matrix.platform }}
+          QT_PACKAGE: ${{ matrix.qt_package }}
+        run: |
+          set -euo pipefail
+          docker run --rm --platform "$TARGET_PLATFORM" \
+            -e ASSET_NAME \
+            -e BUILD_TYPE \
+            -e QT_PACKAGE \
+            -e HOST_UID="$(id -u)" \
+            -e HOST_GID="$(id -g)" \
+            -e DEBIAN_FRONTEND=noninteractive \
+            -v "${GITHUB_WORKSPACE}:/work" \
+            -w /work \
+            debian:bookworm \
+            bash -lc '
+              set -euo pipefail
+              apt-get update
+              apt-get install -y --no-install-recommends build-essential ca-certificates cmake ninja-build pkg-config "$QT_PACKAGE" libgl1-mesa-dev
+              build_directory="build/$ASSET_NAME"
+              package_directory="package/$ASSET_NAME"
+              cmake -S OpenRGB-Wallpaper-Engine-Plugin -B "$build_directory" -G Ninja -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+              cmake --build "$build_directory" --target AnOpenRGBWallpaperPlugin --parallel
+              mkdir -p "$package_directory" dist
+              plugin="$(find "$build_directory" -name AnOpenRGBWallpaperPlugin.so -type f -print -quit)"
+              test -n "$plugin"
+              cp "$plugin" "$package_directory/"
+              cp LICENSE "$package_directory/"
+              tar -C "$package_directory" -czf "dist/$ASSET_NAME.tar.gz" .
+              chown -R "$HOST_UID:$HOST_GID" "$build_directory" "$package_directory" dist
+            '
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.ASSET_NAME }}
+          path: dist/${{ env.ASSET_NAME }}.*
+          if-no-files-found: error
