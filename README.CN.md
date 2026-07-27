@@ -20,24 +20,31 @@
 # 📸 展示
 <table>
    <tr>
-      <td>![IMG_6915](https://user-images.githubusercontent.com/11488961/202174752-3ecf4780-be04-40de-9382-d5ad14732104.JPG)</td>
-      <td>![IMG_6916](https://user-images.githubusercontent.com/11488961/202174762-a31ea030-35ec-47d6-a1b7-d8cee2229893.JPG)</td>
+      <td><img src="https://user-images.githubusercontent.com/11488961/202174752-3ecf4780-be04-40de-9382-d5ad14732104.JPG" /></td>
+      <td><img src="https://user-images.githubusercontent.com/11488961/202174762-a31ea030-35ec-47d6-a1b7-d8cee2229893.JPG" /></td>
    </tr>
    <tr>
-      <td>![IMG_6917](https://user-images.githubusercontent.com/11488961/202174765-5b2bbdfc-581e-4bf2-ab65-979c0533dd4b.JPG)</td>
-      <td>![IMG_6919](https://user-images.githubusercontent.com/11488961/202174769-6164a88d-039d-4922-a501-51649a4a2da6.JPG)</td>
+      <td><img src="https://user-images.githubusercontent.com/11488961/202174765-5b2bbdfc-581e-4bf2-ab65-979c0533dd4b.JPG" /></td>
+      <td><img src="https://user-images.githubusercontent.com/11488961/202174769-6164a88d-039d-4922-a501-51649a4a2da6.JPG" /></td>
    </tr>
 </table>
 
 # 🛠️ 下载
 ### 壁纸插件
 ## OpenRGB 0.9+ Pipeline/Next (插件 API 版本 5)
-- [GitHub 下载](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.1.0.1/AnOpenRGBWallpaperPlugin_api_5_win64.zip)
-- [GitLab 下载](https://gitlab.com/-/project/84234272/uploads/268952d75c78542261faac68fff95f59/AnOpenRGBWallpaperPlugin_api_5_win64.zip)
+- [Windows 64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API5-qt6-windows-x64.zip)
+- [Linux amd64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API5-qt6-linux-amd64.zip)
+- [Linux arm64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API5-qt6-linux-arm64.zip)
+- [Linux armhf](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API5-qt6-linux-armhf.zip)
+- [Linux i386](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API5-qt6-linux-i386.zip)
 
 ## OpenRGB 1.0 RC - 1.0 RC3 (插件 API 版本 4)
-- [GitHub 下载](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.1.0.1/OpenRGBWallpaperPlugin_api4_win64.zip)
-- [GitLab 下载](https://gitlab.com/-/project/84234272/uploads/57079f30de92122f1e62a03c0fa07811/OpenRGBWallpaperPlugin_win64.zip)
+- [Windows 86](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API4-qt5-windows-x86.zip)
+- [Windows 64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API4-qt5-windows-x64.zip)
+- [Linux amd64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API4-qt5-linux-amd64.zip)
+- [Linux arm64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API4-qt5-linux-arm64.zip)
+- [Linux armhf](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API4-qt5-linux-armhf.zip)
+- [Linux i386](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/API4-qt5-linux-i386.zip)
 
 ### 壁纸客户端
 [GitHub](https://github.com/qiangqiang101/RGB-Wallpaper/releases) | [GitLab](https://gitlab.com/nollie/RGB-Wallpaper/-/releases)
