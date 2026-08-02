@@ -569,9 +569,9 @@ std::vector<unsigned char> OpenRGBWallpaperEnginePlugin::InterpolateColors(const
 WallpaperRGBController::WallpaperRGBController(const WallpaperDeviceConfig& config)
 {
     name        = config.name.toStdString();
-    vendor      = "SignalRGB-WPE";
+    vendor      = "OpenRGB";
     description = "Virtual Wallpaper Engine Device";
-    version     = "2.0.0";
+    version     = "2.2.0";
     type        = DEVICE_TYPE_VIRTUAL;
     
     SizeGrid grid = GetGridSize(config.size, config.tier);

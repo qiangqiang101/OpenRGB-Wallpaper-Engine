@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>618</width>
+    <width>672</width>
     <height>692</height>
    </rect>
   </property>
@@ -148,11 +148,40 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QSpinBox" name="blur_spin">
-           <property name="maximum">
-            <number>100</number>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="blurLayout">
+           <item>
+            <widget class="QSlider" name="blur_slider">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+              <enum>QSlider::NoTicks</enum>
+             </property>
+             <property name="tickInterval">
+              <number>5</number>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="blur_value_label">
+             <property name="minimumSize">
+              <size>
+               <width>25</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item row="6" column="0">
           <widget class="QLabel" name="shapeLabel">
@@ -172,11 +201,34 @@
           </widget>
          </item>
          <item row="7" column="1">
-          <widget class="QSpinBox" name="radius_spin">
-           <property name="maximum">
-            <number>20</number>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="radiusLayout">
+           <item>
+            <widget class="QSlider" name="radius_slider">
+             <property name="maximum">
+              <number>20</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="radius_value_label">
+             <property name="minimumSize">
+              <size>
+               <width>25</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item row="8" column="0">
           <widget class="QLabel" name="paddingLabel">
@@ -186,11 +238,34 @@
           </widget>
          </item>
          <item row="8" column="1">
-          <widget class="QSpinBox" name="padding_spin">
-           <property name="maximum">
-            <number>250</number>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="paddingLayout">
+           <item>
+            <widget class="QSlider" name="padding_slider">
+             <property name="maximum">
+              <number>250</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="padding_value_label">
+             <property name="minimumSize">
+              <size>
+               <width>25</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item row="9" column="0">
           <widget class="QLabel" name="bgColorLabel">
@@ -268,17 +343,31 @@
           </layout>
          </item>
          <item row="15" column="1">
-          <widget class="QPushButton" name="save_btn">
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>Save Changes</string>
-           </property>
-           <property name="autoDefault">
-            <bool>false</bool>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="buttonLayout">
+           <item>
+            <widget class="QPushButton" name="apply_btn">
+             <property name="text">
+              <string>Apply</string>
+             </property>
+             <property name="autoDefault">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="save_btn">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>Save Changes</string>
+             </property>
+             <property name="autoDefault">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
@@ -305,7 +394,7 @@
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
          <property name="rightMargin">
-          <number>1</number>
+          <number>9</number>
          </property>
          <item>
           <widget class="QListWidget" name="device_list">
@@ -320,6 +409,14 @@
              <width>16777215</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QListView::item {
+	height: 50px;
+}</string>
+           </property>
+           <property name="viewMode">
+            <enum>QListView::ListMode</enum>
            </property>
           </widget>
          </item>

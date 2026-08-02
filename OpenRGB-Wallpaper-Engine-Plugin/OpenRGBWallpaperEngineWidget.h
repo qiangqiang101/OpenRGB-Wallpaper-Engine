@@ -28,6 +28,7 @@ private slots:
     void OnSelectBgColor();
     void OnSelectSdColor();
     void OnBrowseCoverImage();
+    void OnApplyChanges();
     void OnSaveChanges();
 
 private:
@@ -43,4 +44,5 @@ private:
     
     void                UpdateColorButtonText(QPushButton* btn, const QColor& color);
     void                LoadDeviceToForm(int idx);
+    void                SaveFormToDevice(int idx);
 };
