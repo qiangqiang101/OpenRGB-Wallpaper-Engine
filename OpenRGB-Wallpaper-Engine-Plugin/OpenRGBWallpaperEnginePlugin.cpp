@@ -176,11 +176,15 @@ void OpenRGBWallpaperEnginePlugin::Load(ResourceManagerInterface* resource_manag
     InitSocket();
     
     // Register controllers
-    for (const auto& dev : devices)
+    for (size_t i = 0; i < devices.size(); ++i)
     {
+        const auto& dev = devices[i];
         WallpaperRGBController* controller = new WallpaperRGBController(dev);
-        controller->update_callback = [this, dev](const std::vector<RGBColor>& colors) {
-            SendRGBData(dev, colors);
+        controller->update_callback = [this, i](const std::vector<RGBColor>& colors) {
+            if (i < devices.size())
+            {
+                SendRGBData(devices[i], colors);
+            }
         };
         controllers.push_back(controller);
         resource_manager->RegisterRGBController(controller);
@@ -192,14 +196,24 @@ void OpenRGBWallpaperEnginePlugin::Load(ResourceManagerInterface* resource_manag
 
 void OpenRGBWallpaperEnginePlugin::Unload()
 {
-    // Unregister and delete virtual controllers
+    // Unregister virtual controllers from OpenRGB first
     if (resource_manager)
     {
         for (auto* controller : controllers)
         {
+            controller->ClearCallbacks();
             resource_manager->UnregisterRGBController(controller);
+        }
+        
+        // Notify OpenRGB that the device list has changed BEFORE deleting controller memory
+        resource_manager->UpdateDeviceList();
+        
+        // Now safely delete the controller objects
+        for (auto* controller : controllers)
+        {
             delete controller;
         }
+        resource_manager = nullptr;
     }
     controllers.clear();
     
@@ -207,7 +221,7 @@ void OpenRGBWallpaperEnginePlugin::Unload()
     
     if (widget)
     {
-        delete widget;
+        widget->deleteLater();
         widget = nullptr;
     }
 }
@@ -328,21 +342,34 @@ void OpenRGBWallpaperEnginePlugin::RecreateControllers()
 {
     if (!resource_manager) return;
     
-    // Unregister and delete old ones
+    // 1. Unregister old controllers
     for (auto* controller : controllers)
     {
+        controller->ClearCallbacks();
         resource_manager->UnregisterRGBController(controller);
+    }
+    
+    // 2. Notify OpenRGB to release references to old controllers BEFORE deleting memory
+    resource_manager->UpdateDeviceList();
+    
+    // 3. Delete old controllers
+    for (auto* controller : controllers)
+    {
         delete controller;
     }
     controllers.clear();
     last_settings_map.clear();
     
-    // Register new ones
-    for (const auto& dev : devices)
+    // 4. Register new ones
+    for (size_t i = 0; i < devices.size(); ++i)
     {
+        const auto& dev = devices[i];
         WallpaperRGBController* controller = new WallpaperRGBController(dev);
-        controller->update_callback = [this, dev](const std::vector<RGBColor>& colors) {
-            SendRGBData(dev, colors);
+        controller->update_callback = [this, i](const std::vector<RGBColor>& colors) {
+            if (i < devices.size())
+            {
+                SendRGBData(devices[i], colors);
+            }
         };
         controllers.push_back(controller);
         resource_manager->RegisterRGBController(controller);
@@ -350,6 +377,9 @@ void OpenRGBWallpaperEnginePlugin::RecreateControllers()
         // Push initial config settings
         SendRGBData(dev, controller->colors);
     }
+    
+    // 5. Notify OpenRGB of new controllers
+    resource_manager->UpdateDeviceList();
 }
 
 void OpenRGBWallpaperEnginePlugin::InitSocket()
@@ -445,10 +475,10 @@ QByteArray OpenRGBWallpaperEnginePlugin::CreateSettingsPacket(const WallpaperDev
     packet.append((char)tier_idx);
     packet.append((char)dev.shutdown_effect);
     packet.append((char)(dev.show_fps ? 1 : 0));
-    packet.append((char)dev.blur);
+    packet.append((char)std::min(std::max(dev.blur, 0), 255));
     packet.append((char)dev.shape);
-    packet.append((char)dev.radius);
-    packet.append((char)dev.padding);
+    packet.append((char)std::min(std::max(dev.radius, 0), 255));
+    packet.append((char)std::min(std::max(dev.padding, 0), 255));
     packet.append((char)60); // Default FPS inside packet format
     packet.append((char)dev.cover_stretch);
     packet.append((char)0);  // CpuUsagePauseValue = 0
@@ -475,8 +505,9 @@ QByteArray OpenRGBWallpaperEnginePlugin::CreateSettingsPacket(const WallpaperDev
     }
     
     QByteArray cover_bytes = cover_url.toUtf8();
-    packet.append((char)cover_bytes.length());
-    packet.append(cover_bytes);
+    unsigned char cover_len = (unsigned char)std::min((size_t)255, (size_t)cover_bytes.length());
+    packet.append((char)cover_len);
+    packet.append(cover_bytes.constData(), cover_len);
     
     return packet;
 }

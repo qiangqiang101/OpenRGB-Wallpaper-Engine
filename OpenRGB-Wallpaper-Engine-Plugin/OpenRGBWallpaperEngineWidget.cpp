@@ -111,6 +111,9 @@ void OpenRGBWallpaperEngineWidget::OnAddDevice()
     dev.cover_stretch = 2;
     
     plugin->devices.push_back(dev);
+    plugin->SaveConfig();
+    plugin->RecreateControllers();
+    
     RefreshDevicesList();
     ui->device_list->setCurrentRow(ui->device_list->count() - 1);
 }
@@ -127,6 +130,9 @@ void OpenRGBWallpaperEngineWidget::OnRemoveDevice()
     }
     
     plugin->devices.erase(plugin->devices.begin() + row);
+    plugin->SaveConfig();
+    plugin->RecreateControllers();
+    
     RefreshDevicesList();
 }
 
@@ -247,11 +253,19 @@ void OpenRGBWallpaperEngineWidget::OnApplyChanges()
     SaveFormToDevice(current_device_idx);
     
     plugin->SaveConfig();
-    plugin->SendRGBData(plugin->devices[current_device_idx], plugin->controllers[current_device_idx]->colors);
+    
+    auto& dev = plugin->devices[current_device_idx];
+    
+    // Force sending the settings packet over UDP without recreating controllers
+    plugin->last_settings_map.erase(dev.port);
+    
+    if (current_device_idx < (int)plugin->controllers.size())
+    {
+        plugin->SendRGBData(dev, plugin->controllers[current_device_idx]->colors);
+    }
     
     // Refresh item label in list
     updating_ui = true;
-    auto& dev = plugin->devices[current_device_idx];
     ui->device_list->item(current_device_idx)->setText(dev.name + " (" + dev.host + ":" + QString::number(dev.port) + ")");
     updating_ui = false;
 }
