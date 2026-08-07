@@ -32,19 +32,19 @@ Turn your wallpaper into an OpenRGB device. You can now control the RGB lighting
 # 🛠️ Download
 ### Wallpaper Plugin
 ## OpenRGB 0.9+ Pipeline/Next (Plugin API Version 5)
-- [Windows 64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API5-qt6-windows-x64.zip)
-- [Linux amd64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API5-qt6-linux-amd64.zip)
-- [Linux arm64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API5-qt6-linux-arm64.zip)
-- [Linux armhf](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API5-qt6-linux-armhf.zip)
-- [Linux i386](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API5-qt6-linux-i386.zip)
+- [Windows 64](releases)
+- [Linux amd64](releases)
+- [Linux arm64](releases)
+- [Linux armhf](releases)
+- [Linux i386](releases)
 
 ## OpenRGB 1.0 RC - 1.0 RC3 (Plugin API Version 4)
-- [Windows 86](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API4-qt5-windows-x86.zip)
-- [Windows 64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API4-qt5-windows-x64.zip)
-- [Linux amd64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API4-qt5-linux-amd64.zip)
-- [Linux arm64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API4-qt5-linux-arm64.zip)
-- [Linux armhf](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API4-qt5-linux-armhf.zip)
-- [Linux i386](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases/download/v2.2.0/2.2.0b-API4-qt5-linux-i386.zip)
+- [Windows 86](releases)
+- [Windows 64](releases)
+- [Linux amd64](releases)
+- [Linux arm64](releases)
+- [Linux armhf](releases)
+- [Linux i386](releases)
 
 ### Wallpaper Client
 [GitHub](https://github.com/qiangqiang101/RGB-Wallpaper/releases) | [GitLab](https://gitlab.com/nollie/RGB-Wallpaper/-/releases)
