@@ -32,19 +32,19 @@
 # 🛠️ 下载
 ### 壁纸插件
 ## OpenRGB 0.9+ Pipeline/Next (插件 API 版本 5)
-- [Windows 64](releases)
-- [Linux amd64](releases)
-- [Linux arm64](releases)
-- [Linux armhf](releases)
-- [Linux i386](releases)
+- [Windows 64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Linux amd64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Linux arm64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Linux armhf](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Linux i386](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
 
 ## OpenRGB 1.0 RC - 1.0 RC3 (插件 API 版本 4)
-- [Windows 86](releases)
-- [Windows 64](releases)
-- [Linux amd64](releases)
-- [Linux arm64](releases)
-- [Linux armhf](releases)
-- [Linux i386](releases)
+- [Windows 86](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Windows 64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Linux amd64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Linux arm64](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Linux armhf](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
+- [Linux i386](https://github.com/qiangqiang101/OpenRGB-Wallpaper-Engine/releases)
 
 ### 壁纸客户端
 [GitHub](https://github.com/qiangqiang101/RGB-Wallpaper/releases) | [GitLab](https://gitlab.com/nollie/RGB-Wallpaper/-/releases)
